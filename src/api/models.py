@@ -18,9 +18,7 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
 
-class Pet(db.Model):
-    __tablename__ = 'pets'
-    
+class Pet(db.Model):    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     breed = db.Column(db.String(50), nullable=False)
