@@ -17,3 +17,22 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+    
+class Owner(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+        
+
+    def __repr__(self):
+        return f'<Owner {self.email}>'
+
+    def serialize(self):
+        return {
+            "name": self.name,
+            "email": self.email,
+            "password": self.password,
+            "id": self.id
+                
+    }
