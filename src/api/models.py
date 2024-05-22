@@ -36,3 +36,26 @@ class Owner(db.Model):
             "id": self.id
                 
     }
+
+class Pet(db.Model):
+    __tablename__ = 'pets'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    breed = db.Column(db.String(50), nullable=False)
+    sex = db.Column(db.String(10), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    pedigree = db.Column(db.Boolean, nullable=False)
+    photo = db.Column(db.String(100), nullable=True)
+
+    def __repr__(self):
+        return f'<Pet {self.name}>'
+    
+class City(db.Model):
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    pet_friendly = db.Column(db.String(250), nullable=False)
+
+    def __repr__(self):
+        return f'<City {self.name}>'
