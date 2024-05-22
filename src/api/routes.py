@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet
+from api.models import db, User, Pet, City
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -49,7 +49,7 @@ def add_pet():
     )
     db.session.add(new_pet)
     db.session.commit()
-    return jsonify({'message': 'New pet added!'})
+
 
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
@@ -72,3 +72,43 @@ def update_pet(id):
     
     db.session.commit()
     return jsonify({'message': 'Pet updated successfully!'})
+
+@api.route('/city', methods=['GET'])
+def get_city():
+    city = City.query.all()
+    return jsonify([{
+        'id': city.id,
+        'name': city.name,
+        'pet_friendly': city.pet_friendly,
+
+    } for city in city])
+
+@api.route('/city', methods=['POST'])
+def add_city():
+    data = request.get_json()
+    new_city = City(
+        name=data['name'],
+        pet_friendly=data['pet_friendly'],
+    )
+    db.session.add(new_city)
+    db.session.commit()
+    return jsonify({'message': 'New city added!'})
+
+
+@api.route('/city/<int:id>', methods=['DELETE'])
+def delete_city(id):
+    city = City.query.get_or_404(id)
+    db.session.delete(city)
+    db.session.commit()
+    return jsonify({'message': 'City deleted successfully!'})
+
+@api.route('/city/<int:id>', methods=['PUT'])
+def update_city(id):
+    data = request.get_json()
+    city = City.query.get_or_404(id)
+    
+    city.name = data.get('name', city.name)
+    city.pet_friendly = data.get('pet_friendly', city.pet_friendly)
+
+    db.session.commit()
+    return jsonify({'message': 'City updated successfully!'})
