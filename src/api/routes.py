@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner
+from api.models import db, User, Pet, City, Owner, Breed
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -162,3 +162,45 @@ def update_city(id):
 
     db.session.commit()
     return jsonify({'message': 'City updated successfully!'})
+
+
+#Breed razas de perros
+
+@api.route('/breed', methods=['GET'])
+def get_breed():
+    breed = Breed.query.all()
+    return jsonify([{
+        'id': breed.id,
+        'name': breed.name,
+        'type': breed.type,
+
+    } for breed in breed])
+
+@api.route('/breed', methods=['POST'])
+def add_breed():
+    data = request.get_json()
+    new_breed = Breed(
+        name=data['name'],
+        type=data['type'],
+    )
+    db.session.add(new_breed)
+    db.session.commit()
+    return jsonify({'message': 'New breed added!'})
+
+@api.route('/breed/<int:id>', methods=['DELETE'])
+def delete_breed(id):
+    breed = Breed.query.get_or_404(id)
+    db.session.delete(breed)
+    db.session.commit()
+    return jsonify({'message': 'Breed deleted successfully!'})
+
+@api.route('/breed/<int:id>', methods=['PUT'])
+def update_breed(id):
+    data = request.get_json()
+    breed = Breed.query.get_or_404(id)
+    
+    breed.name = data.get('name', breed.name)
+    breed.type = data.get('type', breed.type)
+
+    db.session.commit()
+    return jsonify({'message': 'Breed updated successfully!'})
