@@ -91,6 +91,24 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ pets: data }))
 					.catch(error => console.error("Error fetching pets:", error));
 			},
+			addPet: async (pet) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(pet)
+                    });
+                    if (response.ok) {
+                        getActions().fetchPets(); // Refresh the list
+                    } else {
+                        console.error("Failed to add pet");
+                    }
+                } catch (error) {
+                    console.error("Error adding pet:", error);
+                }
+            },
 			fetchDeletePet: (id) => {
 				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
 					

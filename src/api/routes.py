@@ -88,7 +88,7 @@ def get_pets():
         'photo': pet.photo
     } for pet in pets])
 
-@api.route('/add_pet', methods=['POST'])
+@api.route('/pets', methods=['POST'])
 def add_pet():
     data = request.get_json()
     if not all(key in data for key in ['name', 'breed', 'sex', 'age', 'pedigree', 'photo']):
