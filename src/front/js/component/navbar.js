@@ -12,6 +12,12 @@ export const Navbar = () => {
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>
+					<Link to="/ownersignup">
+						<button className="btn btn-warning m-2">Owner Signup</button>
+					</Link>
+					<Link to="/showowner">
+						<button className="btn btn-warning m-2">View Owners</button>
+					</Link>
 				</div>
 				{/* Boton para ir al formulario de agregar Raza */}
 				<div className="ml-auto">
