@@ -1,9 +1,11 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			message: null,
+			
+			errorMessage: null,
 			email: null,
 			owners: [],
+			message: null,
 			demo: [
 				{
 					title: "FIRST",
@@ -49,29 +51,30 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
-			signUp: (name, email, password) => {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': "application/json" },
-                    body: JSON.stringify({ name, email, password })
-                };
-                fetch(process.env.BACKEND_URL + "/api/add_owner", requestOptions)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error("User already exists");
-                        }
-                    })
-                    .then(data => {
-                        setStore({ auth: true, email: email });
-                        localStorage.setItem("token", data.access_token);
-                    })
-                    .catch(error => {
-                        console.error("There was an error!", error);
-                        setStore({ errorMessage: error.message });
-                    });
+			signUp: async (name, email, password) => {
+                try {
+                    const requestOptions = {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, password })
+                    };
+                    const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ auth: true, email: email, errorMessage: null });
+                        localStorage.setItem('token', data.access_token);
+                    } else if (response.status === 409) { // Handle conflict error
+                        setStore({ errorMessage: 'Owner already exists!' });
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'An error occurred');
+                    }
+                } catch (error) {
+                    console.error('There was an error!', error);
+                    setStore({ errorMessage: error.message });
+                }
             },
+			
 			fetchOwners: () => {
                 fetch(process.env.BACKEND_URL + "/api/owner")
                     .then(response => response.json())
