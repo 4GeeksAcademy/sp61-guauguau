@@ -31,12 +31,17 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-<<<<<<< HEAD
+
                         <Route element={<Pets/>} path="/pets" />
-=======
+
                         <Route element={<OwnerSignup />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowner" />
->>>>>>> develop
+
+
+                        <Route element={<OwnerSignup />} path="/ownersignup" />
+                        <Route element={<ShowOwners />} path="/showowner" />
+                        <Route element={<Pets/>} path="/pets" />
+
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
