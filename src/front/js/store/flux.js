@@ -2,6 +2,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			message: null,
+			email: null,
+			owners: [],
 			demo: [
 				{
 					title: "FIRST",
@@ -47,33 +49,55 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
-			SignUp: (email, password) => {
-				console.log('signup desde Flux')
+			signUp: (name, email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': "application/json" },
+                    body: JSON.stringify({ name, email, password })
+                };
+                fetch(process.env.BACKEND_URL + "/api/add_owner", requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("User already exists");
+                        }
+                    })
+                    .then(data => {
+                        setStore({ auth: true, email: email });
+                        localStorage.setItem("token", data.access_token);
+                    })
+                    .catch(error => {
+                        console.error("There was an error!", error);
+                        setStore({ errorMessage: error.message });
+                    });
+            },
+			fetchOwners: () => {
+                fetch(process.env.BACKEND_URL + "/api/owner")
+                    .then(response => response.json())
+                    .then(data => setStore({ owners: data }))
+                    .catch(error => console.error("Error fetching owners:", error));
+            },
+			deleteOwner: ownerId => {
 				const requestOptions = {
-					method: 'POST',
-					headers: { 'Content-Type': "application/json" },
-					body: JSON.stringify({
-						"email": email,
-						"password": password
-					})
+					method: 'DELETE'
 				};
-				fetch(process.env.BACKEND_URL + "/api/signup", requestOptions)
+				fetch(process.env.BACKEND_URL + `/api/owner/${ownerId}`, requestOptions)
 					.then(response => {
 						if (response.ok) {
 							return response.json();
 						} else {
-							throw new Error("User already exists"); 
+							throw new Error("Failed to delete owner");
 						}
 					})
 					.then(data => {
-						setStore({ auth: true, email: email });
-						localStorage.setItem("token", data.access_token);
+						// Obtener las acciones
+						const actions = getActions();
+						// Ejecutar la acción fetchOwners para actualizar la lista de propietarios después de eliminar uno
+						actions.fetchOwners();
 					})
-					.catch(error => {
-						console.error("There was an error!", error);
-						setStore({ errorMessage: error.message }); 
-					});
-			},
+					.catch(error => console.error("Error deleting owner:", error));
+			}
 		}
 	};
 };
