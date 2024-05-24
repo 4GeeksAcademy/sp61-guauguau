@@ -30,7 +30,7 @@ def get_owners():
    
     return jsonify(results), 200
 
-@api.route('/owner', methods=['POST'])
+@api.route('/add_owner', methods=['POST'])
 def create_owner():
     data = request.json
     required_fields = ["email", "password", "name"]
@@ -40,7 +40,7 @@ def create_owner():
     db.session.add(new_owner)
     db.session.commit()
 
-    return "Owner created!", 200
+    return jsonify({"message": "Owner created!"}), 200
 
 @api.route("/owner/<int:owner_id>", methods=["GET"])
 def get_owner(owner_id):
