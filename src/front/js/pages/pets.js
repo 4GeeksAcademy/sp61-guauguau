@@ -1,41 +1,37 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-
 import { Context } from "../store/appContext";
 
 export const Pets = () => {
-	const { store, actions } = useContext(Context);
+    const { store, actions } = useContext(Context);
 
-	return (
-		<div className="container">
-			<ul className="list-group">
-				{store.demo.map((item, index) => {
-					return (
-						<li
-							key={index}
-							className="list-group-item d-flex justify-content-between"
-							style={{ background: item.background }}>
-							<Link to={"/single/" + index}>
-								<span>Link to: {item.title}</span>
-							</Link>
-							{// Conditional render example
-							// Check to see if the background is orange, if so, display the message
-							item.background === "orange" ? (
-								<p style={{ color: item.initial }}>
-									Check store/flux.js scroll to the actions to see the code
-								</p>
-							) : null}
-							<button className="btn btn-success" onClick={() => actions.changeColor(index, "orange")}>
-								Change Color
-							</button>
-						</li>
-					);
-				})}
-			</ul>
-			<br />
-			<Link to="/">
-				<button className="btn btn-primary">Back home</button>
-			</Link>
-		</div>
-	);
+    useEffect(() => {
+        actions.fetchPets(); 
+    }, []);
+
+    return (
+        <div className="container">
+            <h1>List of Pets</h1>
+            <ul>
+                {store.pets && store.pets.length > 0 ? (
+                    store.pets.map(pet => (
+                        <li key={pet.id}>
+                            <div>
+                                <h2>{pet.name}</h2>
+                                <p>Breed: {pet.breed}</p>
+                                <p>Sex: {pet.sex}</p>
+                                <p>Age: {pet.age}</p>
+                                <p>Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
+                                {pet.photo && <img src={pet.photo} alt={pet.name} />}
+                                <button onClick={() => actions.fetchDeletePet(pet.id)}>Delete</button>
+                            </div>
+                        </li>
+                    ))
+                ) : (
+                    <li>No pets available</li>
+                )}
+            </ul>
+        </div>
+    );
 };
+

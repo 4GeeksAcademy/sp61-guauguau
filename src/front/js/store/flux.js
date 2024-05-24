@@ -4,6 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: null,
 			email: null,
 			owners: [],
+			pets: [],
 			demo: [
 				{
 					title: "FIRST",
@@ -78,6 +79,40 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .then(data => setStore({ owners: data }))
                     .catch(error => console.error("Error fetching owners:", error));
             },
+			fetchPets: () => {
+				console.log(process.env.BACKEND_URL + "/api/pets")
+				fetch(process.env.BACKEND_URL + "/api/pets")
+					.then(response => {
+						if (!response.ok) {
+							throw new Error("Network response was not ok " + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => setStore({ pets: data }))
+					.catch(error => console.error("Error fetching pets:", error));
+			},
+			fetchDeletePet: (id) => {
+				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
+					
+					method: 'DELETE',
+					headers: {
+						"Content-type": "application/json",
+						'Access-Control-Allow-Origin': '*',
+					},
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("Network response was not ok " + response.statusText);
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("Pet deleted successfully:", data);
+					
+					getActions().fetchPets(); 
+				})
+				.catch(error => console.error("Error deleting pet:", error));
+			},
 			deleteOwner: ownerId => {
 				const requestOptions = {
 					method: 'DELETE'
