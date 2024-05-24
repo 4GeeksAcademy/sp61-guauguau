@@ -47,6 +47,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			}
+			getBreed:() =>{
+				fetch(process.env.BACKEND_URL + "/api/breed")
+				.then(response => response.json())
+				.then(data => setStore({city:data}))
+				.catch(error => console.error("Error fetching breed:", error));
+
+
+			}
 		}
 	};
 };
