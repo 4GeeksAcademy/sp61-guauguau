@@ -13,7 +13,10 @@ export const Navbar = () => {
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>
 					<Link to="/ownersignup">
-						<button className="btn btn-primary">Owner Signup</button>
+						<button className="btn btn-warning m-2">Owner Signup</button>
+					</Link>
+					<Link to="/showowner">
+						<button className="btn btn-warning m-2">View Owners</button>
 					</Link>
 				</div>
 			</div>
