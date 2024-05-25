@@ -2,7 +2,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			
-			errorMessage: null,
 			email: null,
 			owners: [],
 			message: null,
@@ -52,28 +51,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ demo: demo });
 			},
 			signUp: async (name, email, password) => {
-                try {
-                    const requestOptions = {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email, password })
-                    };
-                    const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setStore({ auth: true, email: email, errorMessage: null });
-                        localStorage.setItem('token', data.access_token);
-                    } else if (response.status === 409) { // Handle conflict error
-                        setStore({ errorMessage: 'Owner already exists!' });
-                    } else {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || 'An error occurred');
-                    }
-                } catch (error) {
-                    console.error('There was an error!', error);
-                    setStore({ errorMessage: error.message });
-                }
-            },
+				try {
+					const requestOptions = {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ name, email, password })
+					};
+					const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
+					if (response.ok) {
+						const data = await response.json();
+						setStore({ auth: true, email: email });
+						localStorage.setItem('token', data.access_token);
+						return data; 
+					} else if (response.status === 409) {  // el codigo 409 lo toma del endpoint add_owner donde lo he definido
+						throw new Error('Email already exists!');
+					} else {
+						const errorData = await response.json();
+						throw new Error(errorData.message || 'An error occurred');
+					}
+				} catch (error) {
+					console.error('There was an error!', error);
+					throw error; 
+				}
+			},
 			
 			fetchOwners: () => {
                 fetch(process.env.BACKEND_URL + "/api/owner")
