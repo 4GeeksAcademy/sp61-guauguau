@@ -3,23 +3,45 @@ import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const OwnerSignup = () => {
-    const { store, actions } = useContext(Context);
+    const { actions } = useContext(Context);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        actions.signUp(name, email, password);
+        setErrorMessage(""); // Resetea el mensaje de error una vez enviado el formulario
+        setSuccessMessage(""); // Resetea el mensaje de success una vez enviado el formulario
+
+        actions.signUp(name, email, password)
+        .then(data => {
+            // deja los campos del formulario en blanco y actualiza el successMessage si ha habido exito
+            setName("");
+            setEmail("");
+            setPassword("");
+            setSuccessMessage("Owner created!");
+    })
+    .catch(error => {
+        // En caso de error actualiza errorMesage con los mensajes de error que toma de flux en signup y si no muestra un mensaje generico
+        setErrorMessage(error.message || "An error occurred while signing up. Please try again later.");
+    });
     };
 
     return (
         <div className="container bg-dark p-3">
             <form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
                 <h1 className="text-center p-3">Fill the form and sign up!</h1>
-                {store.errorMessage && (
+                {errorMessage && (
                     <div className="alert alert-danger" role="alert">
-                        {store.errorMessage}
+                        {errorMessage}
+                    </div>
+                )}
+                {successMessage && (
+                    <div className="alert alert-success" role="alert">
+                        {successMessage}
                     </div>
                 )}
                 <div className="col-12">
