@@ -1,7 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			
+			auth: false,
 			email: null,
 			owners: [],
 			message: null,
@@ -50,6 +50,49 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
+			login: (email, password) => {
+				const requestOptions = {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email, password })
+				};
+				return fetch(process.env.BACKEND_URL + "/api/login", requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Email or password wrong");
+						}
+					})
+					.then(data => {
+						localStorage.setItem("token", data.access_token);
+						setStore({ auth: true, email });
+					})
+					.catch(error => {
+						setStore({ auth: false, email: null });
+						throw error;
+					});
+			},
+
+			verifyToken: async () => {
+                try {
+                    const token = localStorage.getItem("token");
+                    if (token) {
+                        setStore({ auth: true });
+                    } else {
+                        setStore({ auth: false });
+                    }
+                } catch (error) {
+                    console.error("Error al verificar el token:", error);
+                }
+            },
+
+			logout: () => {
+				console.log("log out desde flux")
+				localStorage.removeItem("token");
+				setStore({auth: false})
+			},
+
 			signUp: async (name, email, password) => {
 				try {
 					const requestOptions = {
