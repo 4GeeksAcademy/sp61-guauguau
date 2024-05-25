@@ -2,7 +2,9 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+
 from api.models import db, User, Pet, City, Owner, Breed
+
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -25,6 +27,7 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
 
 #OWNER
 
@@ -81,6 +84,7 @@ def update_owner(owner_id):
     db.session.commit()
     return jsonify(owner.serialize()), 200
 
+
 @api.route('/login', methods=['POST'])
 def login():
     email = request.json.get("email", None)
@@ -100,6 +104,7 @@ def protected():
     # Access the identity of the current user with get_jwt_identity
     current_owner = get_jwt_identity()
     return jsonify(logged_in_as=current_owner), 200 
+
 
 @api.route('/pets', methods=['GET'])
 def get_pets():
@@ -130,6 +135,8 @@ def add_pet():
     db.session.add(new_pet)
     db.session.commit()
 
+    return jsonify({'message': 'New pet added!'})
+
 
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
@@ -151,6 +158,7 @@ def update_pet(id):
     pet.photo = data.get('photo', pet.photo)
     
     db.session.commit()
+
     return jsonify({'message': 'Pet updated successfully!'})
 
 @api.route('/city', methods=['GET'])
@@ -234,3 +242,4 @@ def update_breed(id):
 
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
+
