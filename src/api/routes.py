@@ -75,6 +75,7 @@ def update_owner(owner_id):
     db.session.commit()
     return jsonify(owner.serialize()), 200
 
+####ENDPOINTS PETS##################
 @api.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
@@ -87,6 +88,22 @@ def get_pets():
         'pedigree': pet.pedigree,
         'photo': pet.photo
     } for pet in pets])
+
+@api.route('/pets/<int:pet_id>', methods=['GET'])
+def get_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if pet:
+        return jsonify({
+            'id': pet.id,
+            'name': pet.name,
+            'breed': pet.breed,
+            'sex': pet.sex,
+            'age': pet.age,
+            'pedigree': pet.pedigree,
+            'photo': pet.photo
+        }), 200
+    else:
+        return jsonify({'error': 'Pet not found'}), 404
 
 @api.route('/pets', methods=['POST'])
 def add_pet():
@@ -106,6 +123,30 @@ def add_pet():
 
     return jsonify({'message': 'New pet added!'})
 
+@api.route('/pets/<int:pet_id>', methods=['PUT'])
+def update_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if pet:
+        data = request.json
+        pet.name = data.get('name', pet.name)
+        pet.breed = data.get('breed', pet.breed)
+        pet.sex = data.get('sex', pet.sex)
+        pet.age = data.get('age', pet.age)
+        pet.pedigree = data.get('pedigree', pet.pedigree)
+        pet.photo = data.get('photo', pet.photo)
+        db.session.commit()
+        return jsonify({
+            'id': pet.id,
+            'name': pet.name,
+            'breed': pet.breed,
+            'sex': pet.sex,
+            'age': pet.age,
+            'pedigree': pet.pedigree,
+            'photo': pet.photo
+        }), 200
+    else:
+        return jsonify({'error': 'Pet not found'}), 404
+
 
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
@@ -114,21 +155,6 @@ def delete_pet(id):
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully!'})
 
-@api.route('/update_pet/<int:id>', methods=['PUT'])
-def update_pet(id):
-    data = request.get_json()
-    pet = Pet.query.get_or_404(id)
-    
-    pet.name = data.get('name', pet.name)
-    pet.breed = data.get('breed', pet.breed)
-    pet.sex = data.get('sex', pet.sex)
-    pet.age = data.get('age', pet.age)
-    pet.pedigree = data.get('pedigree', pet.pedigree)
-    pet.photo = data.get('photo', pet.photo)
-    
-    db.session.commit()
-
-    return jsonify({'message': 'Pet updated successfully!'})
 
 @api.route('/city', methods=['GET'])
 def get_city():

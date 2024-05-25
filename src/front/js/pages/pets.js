@@ -17,7 +17,9 @@ export const Pets = () => {
                     store.pets.map(pet => (
                         <li key={pet.id}>
                             <div>
-                                <h2>{pet.name}</h2>
+                                <h2>
+                                    <Link to={`/pet/${pet.id}`}>{pet.name}</Link>
+                                </h2>
                                 <p>Breed: {pet.breed}</p>
                                 <p>Sex: {pet.sex}</p>
                                 <p>Age: {pet.age}</p>
