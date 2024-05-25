@@ -6,6 +6,11 @@ from api.models import db, User, Pet, City, Owner, Breed
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
@@ -75,6 +80,27 @@ def update_owner(owner_id):
 
     db.session.commit()
     return jsonify(owner.serialize()), 200
+
+@api.route('/login', methods=['POST'])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    owner = Owner.query.filter_by(email= email).first()
+    if owner is None:
+        return jsonify({"message":"Email not found"}), 401
+    if password != owner.password:
+        return jsonify({"message": "Wrong password"}), 401
+    
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token)
+
+@api.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_owner = get_jwt_identity()
+    return jsonify(logged_in_as=current_owner), 200 
+
 @api.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
