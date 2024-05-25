@@ -12,10 +12,13 @@ export const Navbar = () => {
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>
+					<Link to="/login">
+						<button className="btn btn-warning m-2">Owner Login</button>
+					</Link>
 					<Link to="/ownersignup">
 						<button className="btn btn-warning m-2">Owner Signup</button>
 					</Link>
-					<Link to="/showowner">
+					<Link to="/showowners">
 						<button className="btn btn-warning m-2">View Owners</button>
 					</Link>
 					<Link to="/pets">
