@@ -4,6 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: null,
 			email: null,
 			owners: [],
+			city:[],
 			demo: [
 				{
 					title: "FIRST",
@@ -97,6 +98,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 						actions.fetchOwners();
 					})
 					.catch(error => console.error("Error deleting owner:", error));
+			},
+
+			getCity: () => {
+				fetch(process.env.BACKEND_URL + "/api/city")
+					.then(response => response.json())
+					.then(data => setStore({ city: data }))
+					.catch(error => console.error("Error fetching city:", error));
 			}
 		}
 	};

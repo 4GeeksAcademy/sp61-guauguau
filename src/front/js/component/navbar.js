@@ -18,6 +18,9 @@ export const Navbar = () => {
 					<Link to="/showowner">
 						<button className="btn btn-warning m-2">View Owners</button>
 					</Link>
+					<Link to="/city">
+						<button className="btn btn-warning m-2">View Cities</button>
+					</Link>
 				</div>
 			</div>
 		</nav>
