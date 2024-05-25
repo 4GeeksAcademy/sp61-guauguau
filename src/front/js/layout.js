@@ -13,6 +13,7 @@ import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
+import { Breed } from "./pages/breed";
 
 
 
@@ -33,7 +34,7 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-
+                        <Route element={<Breed />} path="/breed" />
                         <Route element={<OwnerSignup />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowner" />
                         <Route element={<Pets/>} path="/pets" />
