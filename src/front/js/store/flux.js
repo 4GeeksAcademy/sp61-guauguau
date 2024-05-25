@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			email: null,
 			owners: [],
 			pets: [],
+			currentPet: null,
 			demo: [
 				{
 					title: "FIRST",
@@ -91,6 +92,39 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ pets: data }))
 					.catch(error => console.error("Error fetching pets:", error));
 			},
+			fetchPetById: async (id) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    setStore({ currentPet: data });
+					console.log(`Fetching pet with ID: ${id}`);
+                } catch (error) {
+                    console.error("Error fetching pet by ID:", error);
+                }
+            },
+			updatePet: async (id, petDetails) => {
+                try {
+                    console.log(`Updating pet with ID: ${id}`);
+                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(petDetails)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log("Updated pet data:", data);
+                    setStore({ currentPet: data });
+                } catch (error) {
+                    console.error("Error updating pet by ID:", error);
+                }
+            },
 			addPet: async (pet) => {
                 try {
                     const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
