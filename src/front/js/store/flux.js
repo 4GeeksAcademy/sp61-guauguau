@@ -15,7 +15,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			breed:[],
+			
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -97,15 +99,59 @@ const getState = ({ getStore, getActions, setStore }) => {
 						actions.fetchOwners();
 					})
 					.catch(error => console.error("Error deleting owner:", error));
-			}
+			},
 			getBreed:() =>{
 				fetch(process.env.BACKEND_URL + "/api/breed")
 				.then(response => response.json())
-				.then(data => setStore({city:data}))
+				.then(data => setStore({breed:data}))
 				.catch(error => console.error("Error fetching breed:", error));
 
 
-			}
+			},
+			signUpBreed: (name, type ) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': "application/json" },
+                    body: JSON.stringify({ name, type})
+                };
+                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("User already exists");
+                        }
+                    })
+                    .then(data => {
+                        setStore({ auth: true, name: name });
+                    })
+                    .catch(error => {
+                        console.error("There was an error!", error);
+                        setStore({ errorMessage: error.message });
+                    });
+            },
+			deleteBreed: breedId => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Failed to delete breed");
+						}
+					})
+					.then(data => {
+						// Obtener las acciones
+						const actions = getActions();
+						// Ejecutar la acción fetchOwners para actualizar la lista de propietarios después de eliminar uno
+						actions.fetchbreed();
+					})
+					.catch(error => console.error("Error deleting breed:", error));
+			},
+	
+			
 		}
 	};
 };
