@@ -8,6 +8,7 @@ import { Demo } from "./pages/demo";
 import { OwnerSignup } from "./pages/ownersignup";
 import { ShowOwners } from "./pages/showowners";
 import { Single } from "./pages/single";
+import { City } from "./pages/city"
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -34,6 +35,7 @@ const Layout = () => {
 
                         <Route element={<OwnerSignup />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowner" />
+                        <Route element={<City/>} path="/city" />
                         <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<h1>Not found!</h1>} />
