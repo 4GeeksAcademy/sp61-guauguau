@@ -205,7 +205,7 @@ def add_city():
     )
     db.session.add(new_city)
     db.session.commit()
-    return jsonify({'message': 'New city added!'})
+    return jsonify({'message': 'New city added!'},(new_city.serialize()), 201)
 
 
 @api.route('/city/<int:id>', methods=['DELETE'])
@@ -219,10 +219,8 @@ def delete_city(id):
 def update_city(id):
     data = request.get_json()
     city = City.query.get_or_404(id)
-    
     city.name = data.get('name', city.name)
     city.pet_friendly = data.get('pet_friendly', city.pet_friendly)
-
     db.session.commit()
     return jsonify({'message': 'City updated successfully!'})
 
