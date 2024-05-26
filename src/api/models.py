@@ -52,10 +52,9 @@ class Pet(db.Model):
         return f'<Pet {self.name}>'
     
 class City(db.Model):
-    
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
-    pet_friendly = db.Column(db.String(250), nullable=False)
+    pet_friendly = db.Column(db.String(80), nullable=False)
 
     def __repr__(self):
         return f'<City {self.name}>'
