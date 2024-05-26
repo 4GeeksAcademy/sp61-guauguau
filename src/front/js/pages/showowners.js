@@ -20,8 +20,9 @@ export const ShowOwners = () => {
             .then(data => setOwners(data))
             .catch(error => console.error("Error fetching owners:", error));
     };
-    const handleDeleteOwner = ownerId => {
-        actions.deleteOwner(ownerId); 
+    
+    const handleDeleteBreed = ownerId => {
+        actions.deleteBreed(ownerId); 
     };
 
 	return (
