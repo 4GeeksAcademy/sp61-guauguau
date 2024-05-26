@@ -8,6 +8,11 @@ from api.models import db, User, Pet, City, Owner, Breed
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
@@ -39,6 +44,10 @@ def create_owner():
     required_fields = ["email", "password", "name"]
     for field in required_fields:
         if field not in data: return "The '" + field + "' cannot be empty", 400
+    existing_owner = Owner.query.filter_by(email=data['email']).first()
+    if existing_owner:
+        return jsonify({"error": "Email already exists!"}), 409
+    
     new_owner = Owner(email = data['email'], password = data['password'], name = data['name'])
     db.session.add(new_owner)
     db.session.commit()
@@ -75,6 +84,28 @@ def update_owner(owner_id):
     db.session.commit()
     return jsonify(owner.serialize()), 200
 
+
+@api.route('/login', methods=['POST'])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    owner = Owner.query.filter_by(email= email).first()
+    if owner is None:
+        return jsonify({"message":"Email not found"}), 401
+    if password != owner.password:
+        return jsonify({"message": "Wrong password"}), 401
+    
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token)
+
+@api.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    # Access the identity of the current user with get_jwt_identity
+    current_owner = get_jwt_identity()
+    return jsonify(logged_in_as=current_owner), 200 
+
+#####ROUTES PETS#########################################
 @api.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
@@ -88,7 +119,23 @@ def get_pets():
         'photo': pet.photo
     } for pet in pets])
 
-@api.route('/add_pet', methods=['POST'])
+@api.route('/pets/<int:pet_id>', methods=['GET'])
+def get_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if pet:
+        return jsonify({
+            'id': pet.id,
+            'name': pet.name,
+            'breed': pet.breed,
+            'sex': pet.sex,
+            'age': pet.age,
+            'pedigree': pet.pedigree,
+            'photo': pet.photo
+        }), 200
+    else:
+        return jsonify({'error': 'Pet not found'}), 404
+
+@api.route('/pets', methods=['POST'])
 def add_pet():
     data = request.get_json()
     if not all(key in data for key in ['name', 'breed', 'sex', 'age', 'pedigree', 'photo']):
@@ -106,6 +153,30 @@ def add_pet():
 
     return jsonify({'message': 'New pet added!'})
 
+@api.route('/pets/<int:pet_id>', methods=['PUT'])
+def update_pet(pet_id):
+    pet = Pet.query.get(pet_id)
+    if pet:
+        data = request.json
+        pet.name = data.get('name', pet.name)
+        pet.breed = data.get('breed', pet.breed)
+        pet.sex = data.get('sex', pet.sex)
+        pet.age = data.get('age', pet.age)
+        pet.pedigree = data.get('pedigree', pet.pedigree)
+        pet.photo = data.get('photo', pet.photo)
+        db.session.commit()
+        return jsonify({
+            'id': pet.id,
+            'name': pet.name,
+            'breed': pet.breed,
+            'sex': pet.sex,
+            'age': pet.age,
+            'pedigree': pet.pedigree,
+            'photo': pet.photo
+        }), 200
+    else:
+        return jsonify({'error': 'Pet not found'}), 404
+
 
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
@@ -114,21 +185,6 @@ def delete_pet(id):
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully!'})
 
-@api.route('/update_pet/<int:id>', methods=['PUT'])
-def update_pet(id):
-    data = request.get_json()
-    pet = Pet.query.get_or_404(id)
-    
-    pet.name = data.get('name', pet.name)
-    pet.breed = data.get('breed', pet.breed)
-    pet.sex = data.get('sex', pet.sex)
-    pet.age = data.get('age', pet.age)
-    pet.pedigree = data.get('pedigree', pet.pedigree)
-    pet.photo = data.get('photo', pet.photo)
-    
-    db.session.commit()
-
-    return jsonify({'message': 'Pet updated successfully!'})
 
 @api.route('/city', methods=['GET'])
 def get_city():
