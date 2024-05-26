@@ -55,7 +55,7 @@ export const Breed = (props) => {
                               </button>
                          </td>
                          <td>
-                           <button onClick={() => handleDeleteBreed(breed.id)} className="btn btn-danger">
+                           <button onClick= {() => actions.editBreed ()} className="btn btn-danger">
                            <i className="fa-solid fa-pen-to-square"></i>
                               </button>
                          </td>

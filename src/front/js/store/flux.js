@@ -147,6 +147,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					.catch(error => console.error("Error deleting breed:", error));
 			},
+			editBreed: (breedId)=>{
+				const requestOptions = {
+					method: 'POST'
+				};
+				fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
+					.then(response => 
+					)
+			},
 	
 			
 		}
