@@ -4,6 +4,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
+			pets: [],
+			currentPet: null,
 			message: null,
 			demo: [
 				{
@@ -124,6 +126,91 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .then(data => setStore({ owners: data }))
                     .catch(error => console.error("Error fetching owners:", error));
             },
+			fetchPets: () => {
+				console.log(process.env.BACKEND_URL + "/api/pets")
+				fetch(process.env.BACKEND_URL + "/api/pets")
+					.then(response => {
+						if (!response.ok) {
+							throw new Error("Network response was not ok " + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => setStore({ pets: data }))
+					.catch(error => console.error("Error fetching pets:", error));
+			},
+			fetchPetById: async (id) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    setStore({ currentPet: data });
+					console.log(`Fetching pet with ID: ${id}`);
+                } catch (error) {
+                    console.error("Error fetching pet by ID:", error);
+                }
+            },
+			updatePet: async (id, petDetails) => {
+                try {
+                    console.log(`Updating pet with ID: ${id}`);
+                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(petDetails)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log("Updated pet data:", data);
+                    setStore({ currentPet: data });
+                } catch (error) {
+                    console.error("Error updating pet by ID:", error);
+                }
+            },
+			addPet: async (pet) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(pet)
+                    });
+                    if (response.ok) {
+                        getActions().fetchPets(); // Refresh the list
+                    } else {
+                        console.error("Failed to add pet");
+                    }
+                } catch (error) {
+                    console.error("Error adding pet:", error);
+                }
+            },
+			fetchDeletePet: (id) => {
+				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
+					
+					method: 'DELETE',
+					headers: {
+						"Content-type": "application/json",
+						'Access-Control-Allow-Origin': '*',
+					},
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("Network response was not ok " + response.statusText);
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("Pet deleted successfully:", data);
+					
+					getActions().fetchPets(); 
+				})
+				.catch(error => console.error("Error deleting pet:", error));
+			},
 			deleteOwner: ownerId => {
 				const requestOptions = {
 					method: 'DELETE'

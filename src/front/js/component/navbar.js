@@ -21,6 +21,12 @@ export const Navbar = () => {
 					<Link to="/showowners">
 						<button className="btn btn-warning m-2">View Owners</button>
 					</Link>
+					<Link to="/pets">
+						<button className="btn btn-warning m-2">View Pets</button>
+					</Link>
+					<Link to="/petSignUp">
+						<button className="btn btn-warning m-2">Pet SignUp</button>
+					</Link>
 				</div>
 			</div>
 		</nav>
