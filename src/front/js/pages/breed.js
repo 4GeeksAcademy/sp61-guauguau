@@ -54,6 +54,11 @@ export const Breed = (props) => {
                                  <i className="fas fa-trash-alt"></i> 
                               </button>
                          </td>
+                         <td>
+                           <button onClick={() => handleDeleteBreed(breed.id)} className="btn btn-danger">
+                           <i className="fa-solid fa-pen-to-square"></i>
+                              </button>
+                         </td>
                         </tr>
     ))}
                 </tbody>
