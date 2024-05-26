@@ -21,6 +21,9 @@ export const Navbar = () => {
 					<Link to="/showowners">
 						<button className="btn btn-warning m-2">View Owners</button>
 					</Link>
+					<Link to="/city">
+						<button className="btn btn-warning m-2">View Cities</button>
+          </Link>
 					<Link to="/pets">
 						<button className="btn btn-warning m-2">View Pets</button>
 					</Link>
