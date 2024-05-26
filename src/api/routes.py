@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 
-from api.models import db, User, Pet, City, Owner, Breed
+from api.models import db, User, Pet, City, Owner, Breed, Adminn
 
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -266,3 +266,52 @@ def update_breed(id):
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
 
+#ADMIN
+@api.route('/admin', methods=['GET'])
+def get_admins():
+    all_admins= Admin.query.all()
+    results = list(map(lambda admin: admin.serialize(), all_admins))
+   
+    return jsonify(results), 200
+
+@api.route('/add_admin', methods=['POST'])
+def create_admin():
+    data = request.json
+    required_fields = ["email", "password", "name"]
+    for field in required_fields:
+        if field not in data: return "The '" + field + "' cannot be empty", 400
+    new_admin = Admin(email = data['email'], password = data['password'], name = data['name'])
+    db.session.add(new_admin)
+    db.session.commit()
+
+    return jsonify({"message": "Admin created!"}), 200
+
+@api.route("/admin/<int:admin_id>", methods=["GET"])
+def get_admin(admin_id):
+    admin = Admin.query.get(admin_id)
+    return jsonify(admin.serialize()), 200
+
+@api.route("/admin/<int:admin_id>", methods=["DELETE"])
+def delete_admin(admin_id):
+    admin = Admin.query.get(admin_id)
+
+    db.session.delete(admin)
+    db.session.commit()
+    return jsonify({'message': 'Admin deleted'}), 200
+
+@api.route("/admin/<int:admin_id>", methods=["PUT"])
+def update_admin(admin_id):
+    admin = Admin.query.get(admin_id)
+    if not admin:
+        return jsonify({"message": "Admin not found"}), 404
+    
+    data = request.json
+    if "email" in data:
+        admin.email = data["email"]
+    if "password" in data:
+        admin.password = data["password"]
+    if "name" in data:
+        admin.name = data["name"]
+
+    db.session.commit()
+    return jsonify(admin.serialize()), 200

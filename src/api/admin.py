@@ -2,7 +2,7 @@
 import os
 from flask_admin import Admin
 
-from .models import db, User, Pet, City, Owner, Breed
+from .models import db, User, Pet, City, Owner, Breed, Adminn
 
 from .models import db, User, Pet
 
@@ -21,6 +21,7 @@ def setup_admin(app):
     admin.add_view(ModelView(Pet, db.session))
     admin.add_view(ModelView(City, db.session))
     admin.add_view(ModelView(Breed, db.session))
+    admin.add_view(ModelView(Adminn, db.session))
 
     
 
