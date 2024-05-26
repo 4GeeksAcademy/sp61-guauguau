@@ -105,7 +105,7 @@ def protected():
     current_owner = get_jwt_identity()
     return jsonify(logged_in_as=current_owner), 200 
 
-
+#####ROUTES PETS#########################################
 @api.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
