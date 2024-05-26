@@ -16,6 +16,8 @@ import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
+import { PetSignUp } from "./pages/petSignUp";
+import { OnePet } from "./pages/onePet";
 
 
 //create your first component
@@ -34,16 +36,12 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-
-                        <Route element={<OwnerSignup />} path="/ownersignup" />
-
-                        <Route element={<Login />} path="/login" />
-                        <Route element={<Private />} path="/private" />
-                        <Route element={<ShowOwners />} path="/showowners" />
-
-                        
                         <Route element={<Pets/>} path="/pets" />
-
+                        <Route element={<OnePet/>} path="/pet/:petId" />
+                        <Route element={<PetSignUp/>} path="/petSignUp" />
+                        <Route element={<OwnerSignup />} path="/ownersignup" />
+                        <Route element={<ShowOwners />} path="/showowner" />
+                        <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
                         <Route element={<h1>Not found!</h1>} />
