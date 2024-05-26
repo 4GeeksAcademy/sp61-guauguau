@@ -100,6 +100,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.catch(error => console.error("Error deleting owner:", error));
 			},
+			
+
 			getBreed:() =>{
 				fetch(process.env.BACKEND_URL + "/api/breed")
 				.then(response => response.json())
@@ -142,12 +144,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 							throw new Error("Failed to delete breed");
 						}
 					})
-					.then(data => {
-						// Obtener las acciones
-						const actions = getActions();
-						// Ejecutar la acción fetchOwners para actualizar la lista de propietarios después de eliminar uno
-						actions.fetchbreed();
-					})
+					
 					.catch(error => console.error("Error deleting breed:", error));
 			},
 	
