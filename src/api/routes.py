@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-
+import cloudinary.uploader
 from api.models import db, User, Pet, City, Owner, Breed
 
 from api.utils import generate_sitemap, APIException
@@ -272,3 +272,61 @@ def update_breed(id):
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
 
+#UPLOAD PHOTO 
+
+@api.route('/upload', methods=['POST'])
+def upload_image():
+    file_to_upload = request.files['file']
+    if file_to_upload:
+        upload_result = cloudinary.uploader.upload(file_to_upload)
+        return jsonify(upload_result)
+    return jsonify({'error': 'No file uploaded'}), 400
+
+@api.route('/owner/<int:owner_id>/upload_profile_picture', methods=['POST'])
+def upload_owner_profile_picture(owner_id):
+    owner = Owner.query.get(owner_id)
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+    
+    file_to_upload = request.files['file']
+    if file_to_upload:
+        upload_result = cloudinary.uploader.upload(file_to_upload)
+        owner.profile_picture_url = upload_result['secure_url']
+        db.session.commit()
+        return jsonify(owner.serialize())
+    
+    return jsonify({'error': 'No file uploaded'}), 400
+
+@api.route('/update_profile_picture', methods=['PUT'])
+def update_profile_picture():
+    data = request.json
+    email = data.get("email")
+    profile_picture_url = data.get("profile_picture_url")
+
+    owner = Owner.query.filter_by(email=email).first()
+    if not owner:
+        return jsonify({"message": "Owner not found"}), 404
+
+    owner.profile_picture_url = profile_picture_url
+    db.session.commit()
+
+    return jsonify(owner.serialize()), 200
+
+@api.route('/upload_profile_picture/<int:owner_id>', methods=['POST'])
+def upload_profile_picture(owner_id):
+    owner = Owner.query.get(owner_id)
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+    
+    file_to_upload = request.files['file']
+    if file_to_upload:
+        upload_result = cloudinary.uploader.upload(file_to_upload)
+        owner.profile_picture_url = upload_result['secure_url']
+        db.session.commit()
+        return jsonify(owner.serialize())
+    
+    return jsonify({'error': 'No file uploaded'}), 400
+
+
+
+    

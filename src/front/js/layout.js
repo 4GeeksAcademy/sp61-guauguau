@@ -37,20 +37,17 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <Navbar />
-                    
+                    <Navbar />                
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-
                         <Route element={<Breed/>} path="/breed" />
-
-                        
                         <Route element={<OnePet/>} path="/pet/:petId" />
                         <Route element={<PetSignUp/>} path="/petSignUp" />
-
                         <Route element={<OwnerSignup />} path="/ownersignup" />
-                        <Route element={<ShowOwners />} path="/showowner" />
+                        <Route element={<ShowOwners />} path="/showowners" />
+                        <Route element={<Login />} path="/login" />
+                        <Route element={<Private />} path="/private" />
                         <Route element={<City/>} path="/city" />
                         <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />

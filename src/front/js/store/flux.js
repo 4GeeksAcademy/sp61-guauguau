@@ -4,7 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
-			
+			profilePictureUrl: null,
 			city:[],
 			pets: [],
 			currentPet: null,
@@ -366,7 +366,41 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.error("Error updating owner:", error);
 				}
-			}
+			},
+			uploadProfilePicture: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + '/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const profilePictureUrl = data.secure_url;
+
+                        // Actualizar el perfil del propietario con la URL de la foto de perfil
+                        const email = getStore().email;
+                        const ownerResponse = await fetch(process.env.BACKEND_URL + '/api/update_profile_picture', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, profile_picture_url: profilePictureUrl })
+                        });
+
+                        if (ownerResponse.ok) {
+                            const updatedOwner = await ownerResponse.json();
+                            // Actualizar el store con la nueva URL de la foto de perfil
+                            setStore({ profilePictureUrl: updatedOwner.profile_picture_url });
+                        }
+                    } else {
+                        throw new Error("Failed to upload image");
+                    }
+                } catch (error) {
+                    console.error("Error uploading profile picture:", error);
+                }
+            },
 		}
 	}
 	
