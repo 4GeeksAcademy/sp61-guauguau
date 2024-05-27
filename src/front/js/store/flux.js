@@ -15,17 +15,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			],
-			breed:[],
-			currentBreed:null,
-			
+			]
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
+			// Aquí van las acciones
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
 			},
-
 			getMessage: async () => {
 				try{
 					// fetching data from the backend
@@ -38,61 +34,53 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.log("Error loading message from backend", error)
 				}
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
+			getCity: () => {
+				fetch(process.env.BACKEND_URL + "/api/city")
+					.then(response => response.json())
+					.then(data => setStore({ city: data }))
+					.catch(error => console.error("Error loading cities:", error));
 			},
-			signUp: (name, email, password) => {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': "application/json" },
-                    body: JSON.stringify({ name, email, password })
-                };
-                fetch(process.env.BACKEND_URL + "/api/add_owner", requestOptions)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error("User already exists");
-                        }
-                    })
-                    .then(data => {
-                        setStore({ auth: true, email: email });
-                        localStorage.setItem("token", data.access_token);
-                    })
-                    .catch(error => {
-                        console.error("There was an error!", error);
-                        setStore({ errorMessage: error.message });
-                    });
-            },
-			fetchOwners: () => {
-                fetch(process.env.BACKEND_URL + "/api/owner")
-                    .then(response => response.json())
-                    .then(data => setStore({ owners: data }))
-                    .catch(error => console.error("Error fetching owners:", error));
-            },
-			deleteOwner: ownerId => {
+
+			addCity: (newCity) => {
+				const requestOptions = {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(newCity)
+				};
+				fetch(process.env.BACKEND_URL + "/api/city", requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({ city: [...store.city, data] });
+					})
+					.catch(error => console.error("Error adding city:", error));
+			},
+
+			editCity: (updatedCity) => {
+				const requestOptions = {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(updatedCity)
+				};
+				fetch(process.env.BACKEND_URL + `/api/city/${updatedCity.id}`, requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({
+							city: store.city.map(city =>
+								city.id === updatedCity.id ? updatedCity : city
+							)
+						});
+					})
+					.catch(error => console.error("Error editing city:", error));
+			},
+
+			deleteCity: (id) => {
 				const requestOptions = {
 					method: 'DELETE'
 				};
-				fetch(process.env.BACKEND_URL + `/api/owner/${ownerId}`, requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Failed to delete owner");
-						}
-					})
+				fetch(process.env.BACKEND_URL + `/api/city/${id}`, requestOptions)
+					.then(response => response.json())
 					.then(data => {
 						// Obtener las acciones
 						const actions = getActions();
@@ -100,72 +88,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						actions.fetchOwners();
 					})
 					.catch(error => console.error("Error deleting owner:", error));
-			},
-			
-
-			getBreed:() =>{
-				fetch(process.env.BACKEND_URL + "/api/breed")
-				.then(response => response.json())
-				.then(data => setStore({breed:data}))
-				.catch(error => console.error("Error fetching breed:", error));
-
-
-			},
-			signUpBreed: (name, type ) => {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': "application/json" },
-                    body: JSON.stringify({ name, type})
-                };
-                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error("User already exists");
-                        }
-                    })
-                    .then(data => {
-                        setStore({ auth: true, name: name });
-                    })
-                    .catch(error => {
-                        console.error("There was an error!", error);
-                        setStore({ errorMessage: error.message });
-                    });
-            },
-			deleteBreed: breedId => {
-				const requestOptions = {
-					method: 'DELETE'
-				};
-				fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Failed to delete breed");
-						}
-					})
-					
-					.catch(error => console.error("Error deleting breed:", error));
-			},
-			editBreed: async (breedId, updatedBreed) => {
-                const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedBreed)
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
-                    setStore({ breed: updatedBreeds });
-                } else {
-                    console.error('Error al actualizar la raza');
-                }
-            },
-	
-			
+			}
 		}
 	};
 };

@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+// src/views/ShowOwners.js
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-
 import { Context } from "../store/appContext";
 
 export const ShowOwners = () => {
-	const { store, actions } = useContext(Context);
-    
+    const { store, actions } = useContext(Context);
 
-    const [owners, setOwners] = useState([]);
-
-    
     useEffect(() => {
         fetchOwners();
     }, []);
@@ -20,13 +16,12 @@ export const ShowOwners = () => {
             .then(data => setOwners(data))
             .catch(error => console.error("Error fetching owners:", error));
     };
-    
-    const handleDeleteBreed = ownerId => {
-        actions.deleteBreed(ownerId); 
+    const handleDeleteOwner = ownerId => {
+        actions.deleteOwner(ownerId); 
     };
 
-	return (
-		<div className="container">
+    return (
+        <div className="container">
             <h2>Owners</h2>
             <table className="table">
                 <thead>
@@ -37,13 +32,16 @@ export const ShowOwners = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {owners.map(owner => (
+                    {store.owners.map(owner => (
                         <tr key={owner.id}>
                             <td>{owner.name}</td>
                             <td>{owner.email}</td>
                             <td>
+                                <Link to={`/editowner/${owner.id}`} className="btn btn-primary">
+                                    <i className="fas fa-edit"></i>
+                                </Link>
                                 <button onClick={() => handleDeleteOwner(owner.id)} className="btn btn-danger">
-                                    <i className="fas fa-trash-alt"></i> 
+                                    <i className="fas fa-trash-alt"></i>
                                 </button>
                             </td>
                         </tr>
@@ -51,11 +49,8 @@ export const ShowOwners = () => {
                 </tbody>
             </table>
             <Link to="/">
-				<button className="btn btn-primary">Back home</button>
-			</Link>
+                <button className="btn btn-primary">Back home</button>
+            </Link>
         </div>
-    )
-			
-		
-	
+    );
 };
