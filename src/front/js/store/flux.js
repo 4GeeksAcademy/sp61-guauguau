@@ -153,6 +153,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching pet by ID:", error);
                 }
             },
+			fetchBreeds: () => {
+                fetch(process.env.BACKEND_URL + "/api/breed")
+                    .then(response => response.json())
+                    .then(data => setStore({ breeds: data }))
+                    .catch(error => console.error("Error fetching breeds:", error));
+            },
 			updatePet: async (id, petDetails) => {
                 try {
                     console.log(`Updating pet with ID: ${id}`);
@@ -307,7 +313,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             }
 		}
-	};
+	}
+	}
 };
 
 export default getState;
