@@ -17,6 +17,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			],
 			breed:[],
+			currentBreed:null,
 			
 		},
 		actions: {
@@ -147,14 +148,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					.catch(error => console.error("Error deleting breed:", error));
 			},
-			editBreed: (breedId)=>{
-				const requestOptions = {
-					method: 'POST'
-				};
-				fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
-					.then(response => 
-					)
-			},
+			editBreed: async (breedId, updatedBreed) => {
+                const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedBreed)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
+                    setStore({ breed: updatedBreeds });
+                } else {
+                    console.error('Error al actualizar la raza');
+                }
+            },
 	
 			
 		}

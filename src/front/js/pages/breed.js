@@ -1,41 +1,48 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-export const Breed = (props) => {
+export const Breed = () => {
 	const { store, actions } = useContext(Context);
     const [name, setName] = useState("");
     const [type, setType] = useState("");
-    
-    const [breed, setBreed] = useState([]);
-// ----------------------------------------------------------------------------------------
+    const [editMode, setEditMode] = useState(false);
+    const [editBreedId, setEditBreedId] = useState(null);
+    const [editName, setEditName] = useState("");
+    const [editType, setEditType] = useState("");
 
-// ------------------------------------------------------------------------------------------
     const handleSubmit = (e) => {
         e.preventDefault();
-        actions.signUpBreed(name, type);
+        if (editMode) {
+            actions.editBreed(editBreedId, { name: editName, type: editType });
+            setEditMode(false);
+            setEditBreedId(null);
+            setEditName("");
+            setEditType("");
+        } else {
+            actions.signUpBreed(name, type);
+            setName("");
+            setType("");
+        }
     };
 	
     useEffect(() => {
         actions.getBreed();
-		fetchBreed();
-       
-	  }, []);
-    const fetchBreed = () => {
-        fetch(process.env.BACKEND_URL + "/api/breed")
-            .then(response => response.json())
-            .then(data => setBreed(data))
-            .catch(error => console.error("Error fetching breed:", error));
-    };
+    }, [actions]);
+    
     const handleDeleteBreed = breedId => {
         actions.deleteBreed(breedId); 
     };
-  
-	return (
-		<div className="container">
-           <h1>Listar Razas</h1>
 
-         
+    const handleEditClick = (breed) => {
+        setEditMode(true);
+        setEditBreedId(breed.id);
+        setEditName(breed.name);
+        setEditType(breed.type);
+    };
+
+    return (
+        <div className="container">
+           <h1>Listar Razas</h1>
             <table className="table">
                 <thead>
                     <tr>
@@ -45,7 +52,7 @@ export const Breed = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                {breed.map(breed =>(
+                {store.breed.map(breed =>(
                         <tr key={breed.id} >
                         <td> <p>{breed.name}</p> </td>
                            <td><p>{breed.type}</p></td>
@@ -55,41 +62,45 @@ export const Breed = (props) => {
                               </button>
                          </td>
                          <td>
-                           <button onClick= {() => actions.editBreed ()} className="btn btn-danger">
+                           <button onClick={() => handleEditClick(breed)} className="btn btn-primary">
                            <i className="fa-solid fa-pen-to-square"></i>
                               </button>
                          </td>
                         </tr>
-    ))}
+                ))}
                 </tbody>
             </table>
-           
-     
-        
-			
-		
+
             <div className="container bg-dark p-3">
-						<form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
-                            <h1 className="text-center p-3">Registar Raza</h1>
-                            <div className="col-12">
-                                <label htmlFor="inputName" className="form-label">Name</label>
-                                <input type="text" className="form-control" id="inputName" placeholder="your name" value={name}
-                            onChange={(e) => setName(e.target.value)}/>
-                            </div>
-                                
-                                <div className="col-12">
-                                    <label htmlFor="inputName" className="form-label">type</label>
-                                    <input type="text" className="form-control" id="inputName" placeholder="your type"
-                                onChange={(e) => setType(e.target.value)}/>
-                                </div>
-                            
-                            <div className="col-12">
-                                <button type="submit" className="btn btn-primary">Sign in</button>
-                            </div>
-                        </form>
-                        </div>
-                       
-                        </div>
-		
-	);
+                <form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
+                    <h1 className="text-center p-3">{editMode ? "Editar Raza" : "Registrar Raza"}</h1>
+                    <div className="col-12">
+                        <label htmlFor="inputName" className="form-label">Name</label>
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            id="inputName" 
+                            placeholder="your name" 
+                            value={editMode ? editName : name}
+                            onChange={(e) => editMode ? setEditName(e.target.value) : setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-12">
+                        <label htmlFor="inputType" className="form-label">Type</label>
+                        <input 
+                            type="text" 
+                            className="form-control" 
+                            id="inputType" 
+                            placeholder="your type"
+                            value={editMode ? editType : type}
+                            onChange={(e) => editMode ? setEditType(e.target.value) : setType(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-12">
+                        <button type="submit" className="btn btn-primary">{editMode ? "Guardar Cambios" : "Registrar"}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 };
