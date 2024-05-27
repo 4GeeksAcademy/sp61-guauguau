@@ -31,7 +31,7 @@ export const AdminSignUp = () => {
     return (
         <div className="container bg-dark p-3">
             <form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
-                <h1 className="text-center p-3">Fill the form and sign up!</h1>
+                <h1 className="text-center p-3">Fill the form and sign up as a GuauuGuauu Admin!</h1>
                 {errorMessage && (
                     <div className="alert alert-danger" role="alert">
                         {errorMessage}

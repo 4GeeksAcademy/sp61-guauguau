@@ -31,7 +31,7 @@ export const Navbar = () => {
 						<button className="btn btn-warning m-2">Pet SignUp</button>
 					</Link>
 					<Link to="/admin">
-						<button className="btn btn-warning m-2">Pet SignUp</button>
+						<button className="btn btn-warning m-2">Admin SignUp</button>
 					</Link>
 				</div>
 			</div>

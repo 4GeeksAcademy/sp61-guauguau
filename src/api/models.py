@@ -15,7 +15,7 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, its a security breach
+            # No serializar la contraseña, es una brecha de seguridad
         }
 
 class Owner(db.Model):
@@ -72,6 +72,13 @@ class City(db.Model):
     def __repr__(self):
         return f'<City {self.name}>'
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "pet_friendly": self.pet_friendly
+        }
+
 class Breed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
@@ -80,21 +87,26 @@ class Breed(db.Model):
     def __repr__(self):
         return f'<Breed {self.name}>'
 
-class Adminn (db.Model):
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": self.type
+        }
+
+class Adminn(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
-        
+    password = db.Column(db.String(80), unique=False, nullable=False)   
 
     def __repr__(self):
-        return f'<Admin {self.email}>'
+        return f'<Adminn {self.email}>'
 
     def serialize(self):
         return {
+            "id": self.id,
             "name": self.name,
             "email": self.email,
-            "password": self.password,
-            "id": self.id
-                
-    }
+            "password": self.password
+        }

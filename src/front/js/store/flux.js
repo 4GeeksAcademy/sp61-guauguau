@@ -4,7 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
-			admin:[],
+			admins:[],
 			city:[],
 			pets: [],
 			currentPet: null,
@@ -290,24 +290,23 @@ const getState = ({ getStore, getActions, setStore }) => {
                         setStore({ city: store.city.filter(city => city.id !== id) });
                     })
                     .catch(error => console.error("Error deleting city:", error));
-			      updateOwner: async owner => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': "application/json" },
-                        body: JSON.stringify(owner)
-                    });
-                    if (!response.ok) throw new Error("Failed to update owner");
-                    const updatedOwner = await response.json();
-                    const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
-                    setStore({ owners: updatedOwners });
-                } catch (error) {
-                    console.error("Error updating owner:", error);
-                }
-
-            }
-		},
-		signUpAdmin: (name, email, password) => {
+				},
+			updatedCity: async city => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + `/api/city/${city.id}`, {
+						method: 'PUT',
+						headers: { 'Content-Type': "application/json" },
+						body: JSON.stringify(city)
+					});
+					if (!response.ok) throw new Error("Failed to update city");
+					const updatedCity = await response.json();
+					const updatedCities = getStore().city.map(o => o.id === city.id ? updatedCity : o);
+					setStore({ city: updatedCities });
+				} catch (error) {
+					console.error("Error updating City:", error);
+				}
+			},
+			signUpAdmin: (name, email, password) => {
 			const requestOptions = {
 				method: 'POST',
 				headers: { 'Content-Type': "application/json" },
