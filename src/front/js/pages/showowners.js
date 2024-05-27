@@ -16,8 +16,11 @@ export const ShowOwners = () => {
             .then(data => setOwners(data))
             .catch(error => console.error("Error fetching owners:", error));
     };
-    const handleDeleteOwner = ownerId => {
-        actions.deleteOwner(ownerId); 
+    
+
+    const handleDeleteOwner = async ownerId => {
+        await actions.deleteOwner(ownerId);
+
     };
 
     return (

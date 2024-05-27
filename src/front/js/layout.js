@@ -18,6 +18,12 @@ import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
 
+import { Breed } from "./pages/breed";
+
+import { PetSignUp } from "./pages/petSignUp";
+import { OnePet } from "./pages/onePet";
+
+
 
 //create your first component
 const Layout = () => {
@@ -36,7 +42,9 @@ const Layout = () => {
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-
+                        <Route element={<Breed/>} path="/breed" />
+                        <Route element={<OnePet/>} path="/pet/:petId" />
+                        <Route element={<PetSignUp/>} path="/petSignUp" />
                         <Route element={<OwnerSignup />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowner" />
                         <Route element={<City/>} path="/city" />

@@ -15,7 +15,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			breed:[],
+			currentBreed:null,
+			// Aquí van los estados iniciales
+
 		},
 		actions: {
 			// Aquí van las acciones
@@ -88,6 +92,85 @@ const getState = ({ getStore, getActions, setStore }) => {
 						actions.fetchOwners();
 					})
 					.catch(error => console.error("Error deleting owner:", error));
+			},
+			
+
+			getBreed:() =>{
+				fetch(process.env.BACKEND_URL + "/api/breed")
+				.then(response => response.json())
+				.then(data => setStore({breed:data}))
+				.catch(error => console.error("Error fetching breed:", error));
+
+
+			},
+			signUpBreed: (name, type ) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': "application/json" },
+                    body: JSON.stringify({ name, type})
+                };
+                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("User already exists");
+                        }
+                    })
+                    .then(data => {
+                        setStore({ auth: true, name: name });
+                    })
+                    .catch(error => {
+                        console.error("There was an error!", error);
+                        setStore({ errorMessage: error.message });
+                    });
+            },
+			deleteBreed: breedId => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Failed to delete breed");
+						}
+					})
+					
+					.catch(error => console.error("Error deleting breed:", error));
+			},
+			editBreed: async (breedId, updatedBreed) => {
+                const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedBreed)
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
+                    setStore({ breed: updatedBreeds });
+                } else {
+                    console.error('Error al actualizar la raza');
+                }
+            },
+
+			updateOwner: async (owner) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
+						method: 'PUT',
+						headers: { 'Content-Type': "application/json" },
+						body: JSON.stringify(owner)
+					});
+					if (!response.ok) throw new Error("Failed to update owner");
+					const updatedOwner = await response.json();
+					const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
+					setStore({ owners: updatedOwners });
+				} catch (error) {
+					console.error("Error updating owner:", error);
+				}
 			}
 		}
 	};
