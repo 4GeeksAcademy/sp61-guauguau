@@ -1,28 +1,28 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-
-			message: null,
+			auth: false,
 			email: null,
 			owners: [],
+			
+			city:[],
+			pets: [],
+			currentPet: null,
+			message: null,
+			breed: [],
+			currentBreed:null,
 			demo: [
 				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
+				title: "FIRST",
+				background: "white",
+				initial: "white"
 				},
 				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
+				title: "SECOND",
+				background: "white",
+				initial: "white"
 				}
-			],
-			breed:[],
-			currentBreed:null,
-			
-
-			// Aquí van los estados iniciales
-
+			]
 		},
 		actions: {
 			// Aquí van las acciones
@@ -351,10 +351,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error al actualizar la raza');
                 }
             },
-	
-
-					.catch(error => console.error("Error deleting city:", error));
-			},
 
 			updateOwner: async (owner) => {
 				try {
@@ -373,7 +369,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			}
 		}
 	}
-	}
+	
 };
 
 export default getState;
