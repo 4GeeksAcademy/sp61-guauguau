@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-
 import { Context } from "../store/appContext";
 
 export const PetSignUp = () => {
-	const { actions } = useContext(Context);
+    const { store, actions } = useContext(Context);
     const [formData, setFormData] = useState({
         name: "",
-        breed: "",
+        breed_id: "",
         sex: "",
         age: "",
         pedigree: false,
-        photo: ""
+        photo: "",
+        owner_id: ""
     });
+
+    useEffect(() => {
+        actions.fetchOwners();
+        actions.fetchBreeds();  // Asegúrate de que esta línea llama a la función correctamente
+    }, [actions]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -44,16 +49,20 @@ export const PetSignUp = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="breed" className="form-label">Breed</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="breed" 
-                        name="breed" 
-                        value={formData.breed} 
+                    <label htmlFor="breed_id" className="form-label">Breed</label>
+                    <select 
+                        className="form-select" 
+                        id="breed_id" 
+                        name="breed_id" 
+                        value={formData.breed_id} 
                         onChange={handleChange} 
-                        required 
-                    />
+                        required
+                    >
+                        <option value="">Select Breed</option>
+                        {store.breeds && store.breeds.map(breed => (
+                            <option key={breed.id} value={breed.id}>{breed.name}</option>
+                        ))}
+                    </select>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="sex" className="form-label">Sex</label>
@@ -100,6 +109,22 @@ export const PetSignUp = () => {
                         value={formData.photo} 
                         onChange={handleChange} 
                     />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="owner_id" className="form-label">Owner</label>
+                    <select 
+                        className="form-select" 
+                        id="owner_id" 
+                        name="owner_id" 
+                        value={formData.owner_id} 
+                        onChange={handleChange} 
+                        required
+                    >
+                        <option value="">Select Owner</option>
+                        {store.owners && store.owners.map(owner => (
+                            <option key={owner.id} value={owner.id}>{owner.name}</option>
+                        ))}
+                    </select>
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
