@@ -17,8 +17,12 @@ import injectContext from "./store/appContext";
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
+
+import { Breed } from "./pages/breed";
+
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+
 
 
 //create your first component
@@ -34,12 +38,17 @@ const Layout = () => {
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <Navbar />
+                    
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-                        <Route element={<Pets/>} path="/pets" />
+
+                        <Route element={<Breed/>} path="/breed" />
+
+                        
                         <Route element={<OnePet/>} path="/pet/:petId" />
                         <Route element={<PetSignUp/>} path="/petSignUp" />
+
                         <Route element={<OwnerSignup />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowner" />
                         <Route element={<City/>} path="/city" />

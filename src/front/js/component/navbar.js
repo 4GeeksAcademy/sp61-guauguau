@@ -31,6 +31,12 @@ export const Navbar = () => {
 						<button className="btn btn-warning m-2">Pet SignUp</button>
 					</Link>
 				</div>
+				{/* Boton para ir al formulario de agregar Raza */}
+				<div className="ml-auto">
+					<Link to="/breed">
+						<button className="btn btn-primary">Agrega Raza</button>
+					</Link>
+				</div>
 			</div>
 		</nav>
 	);

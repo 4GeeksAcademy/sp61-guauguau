@@ -10,8 +10,18 @@ export const ShowOwners = () => {
         actions.fetchOwners();
     }, [actions]);
 
+
+    const fetchOwners = () => {
+        fetch(process.env.BACKEND_URL + "/api/owner")
+            .then(response => response.json())
+            .then(data => setOwners(data))
+            .catch(error => console.error("Error fetching owners:", error));
+    };
+    
+
     const handleDeleteOwner = async ownerId => {
         await actions.deleteOwner(ownerId);
+
     };
 
     return (
