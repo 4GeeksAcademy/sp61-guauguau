@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 import cloudinary.uploader
-from api.models import db, User, Pet, City, Owner, Breed
+from api.models import db, User, Pet, City, Owner, Breed, OwnerProfilePicture
 
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -57,7 +57,17 @@ def create_owner():
 @api.route("/owner/<int:owner_id>", methods=["GET"])
 def get_owner(owner_id):
     owner = Owner.query.get(owner_id)
-    return jsonify(owner.serialize()), 200
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+    
+    # Obtener la URL de la foto de perfil más reciente del propietario, si existe
+    profile_picture = OwnerProfilePicture.query.filter_by(owner_id=owner_id).order_by(OwnerProfilePicture.id.desc()).first()
+    profile_picture_url = profile_picture.picture_url if profile_picture else None
+
+    owner_data = owner.serialize()
+    owner_data["profile_picture_url"] = profile_picture_url
+
+    return jsonify(owner_data), 200
 
 @api.route("/owner/<int:owner_id>", methods=["DELETE"])
 def delete_owner(owner_id):
@@ -291,9 +301,21 @@ def upload_owner_profile_picture(owner_id):
     file_to_upload = request.files['file']
     if file_to_upload:
         upload_result = cloudinary.uploader.upload(file_to_upload)
-        owner.profile_picture_url = upload_result['secure_url']
+        picture_url = upload_result['secure_url']
+        
+        # Verificar si ya existe una foto de perfil para este propietario
+        profile_picture = OwnerProfilePicture.query.filter_by(owner_id=owner_id).first()
+        if profile_picture:
+            # Si ya existe, actualizar la URL de la imagen
+            profile_picture.picture_url = picture_url
+        else:
+            # Si no existe, crear una nueva fila en la tabla OwnerProfilePicture
+            new_profile_picture = OwnerProfilePicture(owner_id=owner_id, picture_url=picture_url)
+            db.session.add(new_profile_picture)
+
         db.session.commit()
-        return jsonify(owner.serialize())
+
+        return jsonify({"message": "Profile picture uploaded successfully"}), 200
     
     return jsonify({'error': 'No file uploaded'}), 400
 
