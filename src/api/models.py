@@ -23,7 +23,10 @@ class Owner(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-
+    address = db.Column(db.String(250), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    
     pets = db.relationship('Pet', backref='owner', lazy=True)
 
     def __repr__(self):
