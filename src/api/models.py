@@ -37,7 +37,10 @@ class Owner(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "password": self.password
+            "password": self.password,
+            "address": self.address,
+            "latitude": self.latitude,
+            "longitude": self.longitude
         }
 
 class Pet(db.Model):

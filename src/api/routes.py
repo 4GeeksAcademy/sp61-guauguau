@@ -41,14 +41,21 @@ def get_owners():
 @api.route('/add_owner', methods=['POST'])
 def create_owner():
     data = request.json
-    required_fields = ["email", "password", "name"]
+    required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
     for field in required_fields:
         if field not in data: return "The '" + field + "' cannot be empty", 400
     existing_owner = Owner.query.filter_by(email=data['email']).first()
     if existing_owner:
         return jsonify({"error": "Email already exists!"}), 409
     
-    new_owner = Owner(email = data['email'], password = data['password'], name = data['name'])
+    new_owner = Owner(
+        email = data['email'], 
+        password = data['password'], 
+        name = data['name'],
+        address = data['address'],
+        latitude = data['latitude'],
+        longitude = data['longitude']
+    )
     db.session.add(new_owner)
     db.session.commit()
 
