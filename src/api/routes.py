@@ -3,7 +3,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 
-from api.models import db, User, Pet, City, Owner, Breed
+from api.models import db, User, Pet, City, Owner, Breed, Photo
 
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -272,3 +272,27 @@ def update_breed(id):
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
 
+
+
+@api.route('/photo', methods=['GET'])
+def get_photo():
+    all_photo= Photo.query.all()
+    results = list(map(lambda photo: photo.serialize(), all_photo))
+   
+    return jsonify(results), 200
+
+@api.route('/add_photo', methods=['POST'])
+def create_photo():
+    data = request.json
+    required_fields = ["url"]
+    for field in required_fields:
+        if field not in data: return "The '" + field + "' cannot be empty", 400
+    existing_owner = Photo.query.filter_by(url=data['url']).first()
+    if existing_owner:
+        return jsonify({"error": "URL already exists!"}), 409
+    
+    new_photo = Photo(url = data['url'])
+    db.session.add(new_photo)
+    db.session.commit()
+
+    return jsonify({"message": "Photo created!"}), 200
