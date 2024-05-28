@@ -18,10 +18,12 @@ import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
 
+
 import { Breed } from "./pages/breed";
 
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+import { Photo } from "./pages/photo";
 
 
 
@@ -44,7 +46,7 @@ const Layout = () => {
                         <Route element={<Demo />} path="/demo" />
 
                         <Route element={<Breed/>} path="/breed" />
-
+                        <Route element={<Photo/>} path="/photo" />
                         
                         <Route element={<OnePet/>} path="/pet/:petId" />
                         <Route element={<PetSignUp/>} path="/petSignUp" />
