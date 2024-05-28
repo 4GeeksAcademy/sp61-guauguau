@@ -1,72 +1,131 @@
-import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
-import { Context } from "../store/appContext";
+import React, { useState } from "react";
+import GeocodingService from "./GeocodingService";
 
-export const OwnerSignup = () => {
-    const { actions } = useContext(Context);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setErrorMessage(""); // Resetea el mensaje de error una vez enviado el formulario
-        setSuccessMessage(""); // Resetea el mensaje de success una vez enviado el formulario
-
-        actions.signUp(name, email, password)
-        .then(data => {
-            // deja los campos del formulario en blanco y actualiza el successMessage si ha habido exito
-            setName("");
-            setEmail("");
-            setPassword("");
-            setSuccessMessage("Owner created!");
-    })
-    .catch(error => {
-        // En caso de error actualiza errorMesage con los mensajes de error que toma de flux en signup y si no muestra un mensaje generico
-        setErrorMessage(error.message || "An error occurred while signing up. Please try again later.");
+export const OwnerSignUp = () => {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        address: "",
+        latitude: "",
+        longitude: ""
     });
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const handleAddressChange = async (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+        if (name === "address") {
+            try {
+                const data = await GeocodingService.getCoordinates(value);
+                if (data.results && data.results.length > 0) {
+                    const location = data.results[0].geometry.location;
+                    setFormData({
+                        ...formData,
+                        address: value,
+                        latitude: location.lat,
+                        longitude: location.lng
+                    });
+                }
+            } catch (error) {
+                console.error("Error during geocoding:", error);
+            }
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Llamar a la acción de registrar dueño con formData
     };
 
     return (
-        <div className="container bg-dark p-3">
-            <form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
-                <h1 className="text-center p-3">Fill the form and sign up!</h1>
-                {errorMessage && (
-                    <div className="alert alert-danger" role="alert">
-                        {errorMessage}
-                    </div>
-                )}
-                {successMessage && (
-                    <div className="alert alert-success" role="alert">
-                        {successMessage}
-                    </div>
-                )}
-                <div className="col-12">
-                    <label htmlFor="inputName" className="form-label">Name</label>
-                    <input type="text" className="form-control" id="inputName" placeholder="your name" value={name}
-                        onChange={(e) => setName(e.target.value)} />
+        <div className="container">
+            <h2>Owner Sign Up</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                    <label htmlFor="name" className="form-label">Name</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        id="name" 
+                        name="name" 
+                        value={formData.name} 
+                        onChange={handleChange} 
+                        required 
+                    />
                 </div>
-                <div className="col-md-6">
-                    <label htmlFor="inputEmail4" className="form-label">Email</label>
-                    <input type="email" className="form-control" id="inputEmail4" value={email}
-                        onChange={(e) => setEmail(e.target.value)} />
+                <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Email</label>
+                    <input 
+                        type="email" 
+                        className="form-control" 
+                        id="email" 
+                        name="email" 
+                        value={formData.email} 
+                        onChange={handleChange} 
+                        required 
+                    />
                 </div>
-                <div className="col-md-6">
-                    <label htmlFor="inputPassword4" className="form-label">Password</label>
-                    <input type="password" className="form-control" id="inputPassword4" value={password}
-                        onChange={(e) => setPassword(e.target.value)} />
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        className="form-control" 
+                        id="password" 
+                        name="password" 
+                        value={formData.password} 
+                        onChange={handleChange} 
+                        required 
+                    />
                 </div>
-                <div className="col-12">
-                    <button type="submit" className="btn btn-primary">Sign in</button>
+                <div className="mb-3">
+                    <label htmlFor="address" className="form-label">Address</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        id="address" 
+                        name="address" 
+                        value={formData.address} 
+                        onChange={handleAddressChange} 
+                        required 
+                    />
                 </div>
+                <div className="mb-3">
+                    <label htmlFor="latitude" className="form-label">Latitude</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        id="latitude" 
+                        name="latitude" 
+                        value={formData.latitude} 
+                        readOnly 
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="longitude" className="form-label">Longitude</label>
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        id="longitude" 
+                        name="longitude" 
+                        value={formData.longitude} 
+                        readOnly 
+                    />
+                </div>
+                <button type="submit" className="btn btn-primary">Submit</button>
             </form>
-            <br />
-            <Link to="/">
-                <button className="btn btn-primary">Back home</button>
-            </Link>
         </div>
     );
 };
+
+
