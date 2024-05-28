@@ -55,6 +55,9 @@ export const Private = () => {
                     <Link to="/">
                         <button className="btn btn-warning m-2" onClick={() => actions.logout()}>Log Out</button>
                     </Link>
+                    <Link to="/petSignUp">
+                        <button className="btn btn-warning m-2" onClick={() => actions.addPet()}>Add new pet</button>
+                    </Link>
                 </div>
             </div>
             <Link to="/">
