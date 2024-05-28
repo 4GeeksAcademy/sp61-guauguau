@@ -4,7 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
-			
+			profilePictureUrl: null,
 			city:[],
 			pets: [],
 			currentPet: null,
@@ -55,29 +55,41 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
-			login: (email, password) => {
-				const requestOptions = {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password })
-				};
-				return fetch(process.env.BACKEND_URL + "/api/login", requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Email or password wrong");
-						}
-					})
-					.then(data => {
-						localStorage.setItem("token", data.access_token);
-						setStore({ auth: true, email });
-					})
-					.catch(error => {
-						setStore({ auth: false, email: null });
-						throw error;
-					});
-			},
+			login: async (email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                };
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/login", requestOptions);
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem("token", data.access_token);
+                        setStore({ auth: true, email });
+
+                        // Obtener datos del propietario autenticado
+                        const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${data.access_token}`
+                            }
+                        });
+                        if (ownerResponse.ok) {
+                            const ownerData = await ownerResponse.json();
+                            setStore({
+                                profilePictureUrl: ownerData.owner.profile_picture_url,
+                                email: ownerData.owner.email
+                            });
+                        }
+                    } else {
+                        throw new Error("Email or password wrong");
+                    }
+                } catch (error) {
+                    setStore({ auth: false, email: null });
+                    throw error;
+                }
+            },
 
 			verifyToken: async () => {
                 try {
@@ -93,10 +105,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
 			logout: () => {
-				console.log("log out desde flux")
-				localStorage.removeItem("token");
-				setStore({auth: false})
-			},
+                localStorage.removeItem("token");
+                setStore({ auth: false, email: null, profilePictureUrl: null });
+            },
 
 			signUp: async (name, email, password) => {
 				try {
@@ -366,7 +377,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 				} catch (error) {
 					console.error("Error updating owner:", error);
 				}
-			}
+			},
+			uploadProfilePicture: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + '/api/upload_profile_picture', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ profilePictureUrl: data.profile_picture_url });
+                    } else {
+                        throw new Error("Failed to upload image");
+                    }
+                } catch (error) {
+                    console.error("Error uploading profile picture:", error);
+                }
+            }
 		}
 	}
 	
