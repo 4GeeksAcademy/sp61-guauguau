@@ -2,7 +2,8 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-
+import cloudinary.uploader
+from cloudinary.uploader import upload
 from api.models import db, User, Pet, City, Owner, Breed
 
 from api.utils import generate_sitemap, APIException
@@ -57,7 +58,17 @@ def create_owner():
 @api.route("/owner/<int:owner_id>", methods=["GET"])
 def get_owner(owner_id):
     owner = Owner.query.get(owner_id)
-    return jsonify(owner.serialize()), 200
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+    
+    # Obtener la URL de la foto de perfil más reciente del propietario, si existe
+    profile_picture = OwnerProfilePicture.query.filter_by(owner_id=owner_id).order_by(OwnerProfilePicture.id.desc()).first()
+    profile_picture_url = profile_picture.picture_url if profile_picture else None
+
+    owner_data = owner.serialize()
+    owner_data["profile_picture_url"] = profile_picture_url
+
+    return jsonify(owner_data), 200
 
 @api.route("/owner/<int:owner_id>", methods=["DELETE"])
 def delete_owner(owner_id):
@@ -101,9 +112,12 @@ def login():
 @api.route("/protected", methods=["GET"])
 @jwt_required()
 def protected():
-    # Access the identity of the current user with get_jwt_identity
     current_owner = get_jwt_identity()
-    return jsonify(logged_in_as=current_owner), 200 
+    owner = Owner.query.filter_by(email=current_owner).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    return jsonify({"owner": owner.serialize()}), 200
 
 #####ROUTES PETS#########################################
 @api.route('/pets', methods=['GET'])
@@ -272,3 +286,31 @@ def update_breed(id):
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
 
+#UPLOAD PHOTO 
+
+
+# Ruta para subir la foto de perfil
+@api.route('/upload_profile_picture', methods=['POST'])
+@jwt_required()
+def upload_profile_picture():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    result = upload(file, public_id=f"owner_{owner.id}_profile_picture")
+    owner.profile_picture_url = result['secure_url']
+    db.session.commit()
+
+    return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
+
+
+
+
+    
