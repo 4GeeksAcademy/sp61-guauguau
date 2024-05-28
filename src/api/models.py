@@ -91,9 +91,8 @@ class Photo(db.Model):
 
     def __repr__(self):
         return f'<Photo {self.url}>'
-     def serialize(self):
+    def serialize(self):
         return {
-            "id": self.id,
             "url": self.url,
             # do not serialize the password, its a security breach
         }
