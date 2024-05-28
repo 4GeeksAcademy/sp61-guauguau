@@ -93,6 +93,7 @@ class Photo(db.Model):
         return f'<Photo {self.url}>'
     def serialize(self):
         return {
+            "id": self.id,
             "url": self.url,
             # do not serialize the password, its a security breach
         }

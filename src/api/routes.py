@@ -281,18 +281,30 @@ def get_photo():
    
     return jsonify(results), 200
 
-@api.route('/add_photo', methods=['POST'])
+
+@api.route('/photo', methods=['POST'])
 def create_photo():
-    data = request.json
-    required_fields = ["url"]
-    for field in required_fields:
-        if field not in data: return "The '" + field + "' cannot be empty", 400
-    existing_owner = Photo.query.filter_by(url=data['url']).first()
-    if existing_owner:
-        return jsonify({"error": "URL already exists!"}), 409
-    
-    new_photo = Photo(url = data['url'])
+    data = request.get_json()
+    new_photo = Photo(
+        url=data['url'],
+    )
     db.session.add(new_photo)
     db.session.commit()
+    return jsonify({'message': 'New photo added!'})
 
-    return jsonify({"message": "Photo created!"}), 200
+@api.route('/photo/<int:id>', methods=['DELETE'])
+def delete_photo(id):
+    photo = Photo.query.get_or_404(id)
+    db.session.delete(photo)
+    db.session.commit()
+    return jsonify({'message': 'Photo deleted successfully!'})
+
+@api.route('/photo/<int:id>', methods=['PUT'])
+def update_photo(id):
+    data = request.get_json()
+    photo = Photo.query.get_or_404(id)
+    
+    photo.url = data.get('url', photo.url)
+
+    db.session.commit()
+    return jsonify({'message': 'Photo updated successfully!'})
