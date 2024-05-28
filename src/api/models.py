@@ -81,7 +81,3 @@ class Breed(db.Model):
         return f'<Breed {self.name}>'
 
 
-class OwnerProfilePicture(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
-    picture_url = db.Column(db.String(200), nullable=False)

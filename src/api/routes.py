@@ -3,7 +3,8 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 import cloudinary.uploader
-from api.models import db, User, Pet, City, Owner, Breed, OwnerProfilePicture
+from cloudinary.uploader import upload
+from api.models import db, User, Pet, City, Owner, Breed
 
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -111,9 +112,12 @@ def login():
 @api.route("/protected", methods=["GET"])
 @jwt_required()
 def protected():
-    # Access the identity of the current user with get_jwt_identity
     current_owner = get_jwt_identity()
-    return jsonify(logged_in_as=current_owner), 200 
+    owner = Owner.query.filter_by(email=current_owner).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    return jsonify({"owner": owner.serialize()}), 200
 
 #####ROUTES PETS#########################################
 @api.route('/pets', methods=['GET'])
@@ -284,70 +288,28 @@ def update_breed(id):
 
 #UPLOAD PHOTO 
 
-@api.route('/upload', methods=['POST'])
-def upload_image():
-    file_to_upload = request.files['file']
-    if file_to_upload:
-        upload_result = cloudinary.uploader.upload(file_to_upload)
-        return jsonify(upload_result)
-    return jsonify({'error': 'No file uploaded'}), 400
 
-@api.route('/owner/<int:owner_id>/upload_profile_picture', methods=['POST'])
-def upload_owner_profile_picture(owner_id):
-    owner = Owner.query.get(owner_id)
+# Ruta para subir la foto de perfil
+@api.route('/upload_profile_picture', methods=['POST'])
+@jwt_required()
+def upload_profile_picture():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
-    
-    file_to_upload = request.files['file']
-    if file_to_upload:
-        upload_result = cloudinary.uploader.upload(file_to_upload)
-        picture_url = upload_result['secure_url']
-        
-        # Verificar si ya existe una foto de perfil para este propietario
-        profile_picture = OwnerProfilePicture.query.filter_by(owner_id=owner_id).first()
-        if profile_picture:
-            # Si ya existe, actualizar la URL de la imagen
-            profile_picture.picture_url = picture_url
-        else:
-            # Si no existe, crear una nueva fila en la tabla OwnerProfilePicture
-            new_profile_picture = OwnerProfilePicture(owner_id=owner_id, picture_url=picture_url)
-            db.session.add(new_profile_picture)
 
-        db.session.commit()
-
-        return jsonify({"message": "Profile picture uploaded successfully"}), 200
-    
-    return jsonify({'error': 'No file uploaded'}), 400
-
-@api.route('/update_profile_picture', methods=['PUT'])
-def update_profile_picture():
-    data = request.json
-    email = data.get("email")
-    profile_picture_url = data.get("profile_picture_url")
-
-    owner = Owner.query.filter_by(email=email).first()
-    if not owner:
-        return jsonify({"message": "Owner not found"}), 404
-
-    owner.profile_picture_url = profile_picture_url
+    result = upload(file, public_id=f"owner_{owner.id}_profile_picture")
+    owner.profile_picture_url = result['secure_url']
     db.session.commit()
 
-    return jsonify(owner.serialize()), 200
+    return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
 
-@api.route('/upload_profile_picture/<int:owner_id>', methods=['POST'])
-def upload_profile_picture(owner_id):
-    owner = Owner.query.get(owner_id)
-    if not owner:
-        return jsonify({"error": "Owner not found"}), 404
-    
-    file_to_upload = request.files['file']
-    if file_to_upload:
-        upload_result = cloudinary.uploader.upload(file_to_upload)
-        owner.profile_picture_url = upload_result['secure_url']
-        db.session.commit()
-        return jsonify(owner.serialize())
-    
-    return jsonify({'error': 'No file uploaded'}), 400
 
 
 
