@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import GeocodingService from "./GeocodingService";
+import { Context } from "../store/appContext";
 
 export const OwnerSignUp = () => {
+    const { actions } = useContext(Context);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -45,7 +47,7 @@ export const OwnerSignUp = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Llamar a la acción de registrar dueño con formData
+        actions.signUp(formData.name, formData.email, formData.password, formData.address, formData.latitude, formData.longitude);
     };
 
     return (
@@ -127,5 +129,3 @@ export const OwnerSignUp = () => {
         </div>
     );
 };
-
-
