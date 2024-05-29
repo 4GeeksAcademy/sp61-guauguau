@@ -2,7 +2,8 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-
+import cloudinary.uploader
+from cloudinary.uploader import upload
 from api.models import db, User, Pet, City, Owner, Breed
 
 from api.utils import generate_sitemap, APIException
@@ -64,7 +65,17 @@ def create_owner():
 @api.route("/owner/<int:owner_id>", methods=["GET"])
 def get_owner(owner_id):
     owner = Owner.query.get(owner_id)
-    return jsonify(owner.serialize()), 200
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+    
+    # Obtener la URL de la foto de perfil más reciente del propietario, si existe
+    profile_picture = OwnerProfilePicture.query.filter_by(owner_id=owner_id).order_by(OwnerProfilePicture.id.desc()).first()
+    profile_picture_url = profile_picture.picture_url if profile_picture else None
+
+    owner_data = owner.serialize()
+    owner_data["profile_picture_url"] = profile_picture_url
+
+    return jsonify(owner_data), 200
 
 @api.route("/owner/<int:owner_id>", methods=["DELETE"])
 def delete_owner(owner_id):
@@ -108,9 +119,12 @@ def login():
 @api.route("/protected", methods=["GET"])
 @jwt_required()
 def protected():
-    # Access the identity of the current user with get_jwt_identity
     current_owner = get_jwt_identity()
-    return jsonify(logged_in_as=current_owner), 200 
+    owner = Owner.query.filter_by(email=current_owner).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    return jsonify({"owner": owner.serialize()}), 200
 
 #####ROUTES PETS#########################################
 @api.route('/pets', methods=['GET'])
@@ -119,11 +133,13 @@ def get_pets():
     return jsonify([{
         'id': pet.id,
         'name': pet.name,
-        'breed': pet.breed,
+        'breed': pet.breed.name if pet.breed else None,
         'sex': pet.sex,
         'age': pet.age,
         'pedigree': pet.pedigree,
-        'photo': pet.photo
+        'photo': pet.photo,
+        'owner_id': pet.owner_id,
+        'owner_name': pet.owner.name if pet.owner else None
     } for pet in pets])
 
 @api.route('/pets/<int:pet_id>', methods=['GET'])
@@ -133,11 +149,13 @@ def get_pet(pet_id):
         return jsonify({
             'id': pet.id,
             'name': pet.name,
-            'breed': pet.breed,
+            'breed': pet.breed.name if pet.breed else None,
             'sex': pet.sex,
             'age': pet.age,
             'pedigree': pet.pedigree,
-            'photo': pet.photo
+            'photo': pet.photo,
+            'owner_id': pet.owner_id,
+            'owner_name': pet.owner.name if pet.owner else None
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
@@ -145,20 +163,20 @@ def get_pet(pet_id):
 @api.route('/pets', methods=['POST'])
 def add_pet():
     data = request.get_json()
-    if not all(key in data for key in ['name', 'breed', 'sex', 'age', 'pedigree', 'photo']):
+    if not all(key in data for key in ['name', 'breed_id', 'sex', 'age', 'pedigree', 'photo', 'owner_id']):
         return jsonify({'error': 'Missing data'}), 400
     new_pet = Pet(
         name=data['name'],
-        breed=data['breed'],
+        breed_id=data['breed_id'],
         sex=data['sex'],
         age=data['age'],
         pedigree=data['pedigree'],
-        photo=data['photo']
+        photo=data['photo'],
+        owner_id=data['owner_id']
     )
     db.session.add(new_pet)
     db.session.commit()
-
-    return jsonify({'message': 'New pet added!'})
+    return jsonify({'message': 'New pet added!', 'pet_id': new_pet.id}), 201
 
 @api.route('/pets/<int:pet_id>', methods=['PUT'])
 def update_pet(pet_id):
@@ -166,31 +184,33 @@ def update_pet(pet_id):
     if pet:
         data = request.json
         pet.name = data.get('name', pet.name)
-        pet.breed = data.get('breed', pet.breed)
+        pet.breed_id = data.get('breed_id', pet.breed_id)
         pet.sex = data.get('sex', pet.sex)
         pet.age = data.get('age', pet.age)
         pet.pedigree = data.get('pedigree', pet.pedigree)
         pet.photo = data.get('photo', pet.photo)
+        pet.owner_id = data.get('owner_id', pet.owner_id)
         db.session.commit()
         return jsonify({
             'id': pet.id,
             'name': pet.name,
-            'breed': pet.breed,
+            'breed': pet.breed.name if pet.breed else None,
             'sex': pet.sex,
             'age': pet.age,
             'pedigree': pet.pedigree,
-            'photo': pet.photo
+            'photo': pet.photo,
+            'owner_id': pet.owner_id,
+            'owner_name': pet.owner.name if pet.owner else None
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
-
 
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
     pet = Pet.query.get_or_404(id)
     db.session.delete(pet)
     db.session.commit()
-    return jsonify({'message': 'Pet deleted successfully!'})
+    return jsonify({'message': 'Pet deleted successfully!'}), 200
 
 
 @api.route('/city', methods=['GET'])
@@ -273,3 +293,31 @@ def update_breed(id):
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
 
+#UPLOAD PHOTO 
+
+
+# Ruta para subir la foto de perfil
+@api.route('/upload_profile_picture', methods=['POST'])
+@jwt_required()
+def upload_profile_picture():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    result = upload(file, public_id=f"owner_{owner.id}_profile_picture")
+    owner.profile_picture_url = result['secure_url']
+    db.session.commit()
+
+    return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
+
+
+
+
+    
