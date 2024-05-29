@@ -2,10 +2,9 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from api.models import db, User, Pet, City, Owner, Breed, Photo
 import cloudinary.uploader
 from cloudinary.uploader import upload
-from api.models import db, User, Pet, City, Owner, Breed
-
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
@@ -293,6 +292,42 @@ def update_breed(id):
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
 
+
+
+@api.route('/photo', methods=['GET'])
+def get_photo():
+    all_photo= Photo.query.all()
+    results = list(map(lambda photo: photo.serialize(), all_photo))
+   
+    return jsonify(results), 200
+
+
+@api.route('/photo', methods=['POST'])
+def create_photo():
+    data = request.get_json()
+    new_photo = Photo(
+        url=data['url'],
+    )
+    db.session.add(new_photo)
+    db.session.commit()
+    return jsonify({'message': 'New photo added!'})
+
+@api.route('/photo/<int:id>', methods=['DELETE'])
+def delete_photo(id):
+    photo = Photo.query.get_or_404(id)
+    db.session.delete(photo)
+    db.session.commit()
+    return jsonify({'message': 'Photo deleted successfully!'})
+
+@api.route('/photo/<int:id>', methods=['PUT'])
+def update_photo(id):
+    data = request.get_json()
+    photo = Photo.query.get_or_404(id)
+    
+    photo.url = data.get('url', photo.url)
+
+    db.session.commit()
+    return jsonify({'message': 'Photo updated successfully!'})
 #UPLOAD PHOTO 
 
 
