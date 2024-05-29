@@ -48,12 +48,12 @@ export const Photo = () => {
                 </tbody>
             </table>
 
-            <form onSubmit={handleUpload}>
+            <form>
                 <div className="form-group">
                     <label htmlFor="fileInput">Subir Archivo</label>
                     <input type="file" className="form-control" id="fileInput" onChange={handleFileChange} />
                 </div>
-                <button type="submit" className="btn btn-primary" id="SubirArchivo">
+                <button type="submit" onSubmit={handleUpload}  className="btn btn-primary" id="SubirArchivo">
                     <i className="fa-solid fa-upload"></i> enviar
                 </button>
             </form>
