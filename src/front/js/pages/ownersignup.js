@@ -28,6 +28,12 @@ export const OwnerSignUp = () => {
         googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
 
+    useEffect(() => {
+        if (formData.latitude && formData.longitude) {
+            getAddressFromCoordinates(formData.latitude, formData.longitude);
+        }
+    }, [formData.latitude, formData.longitude]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -57,6 +63,30 @@ export const OwnerSignUp = () => {
             } catch (error) {
                 console.error("Error during geocoding:", error);
             }
+        }
+    };
+
+    const handleMarkerDragEnd = async (e) => {
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        setFormData({
+            ...formData,
+            latitude: lat,
+            longitude: lng
+        });
+    };
+
+    const getAddressFromCoordinates = async (lat, lng) => {
+        try {
+            const data = await GeocodingService.getCoordinates(`${lat},${lng}`);
+            if (data.results && data.results.length > 0) {
+                setFormData({
+                    ...formData,
+                    address: data.results[0].formatted_address
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching address from coordinates:", error);
         }
     };
 
@@ -149,7 +179,11 @@ export const OwnerSignUp = () => {
                     zoom={14}
                     center={{ lat: formData.latitude, lng: formData.longitude }}
                 >
-                    <Marker position={{ lat: formData.latitude, lng: formData.longitude }} />
+                    <Marker
+                        position={{ lat: formData.latitude, lng: formData.longitude }}
+                        draggable={true}
+                        onDragEnd={handleMarkerDragEnd}
+                    />
                 </GoogleMap>
             </div>
         </div>
