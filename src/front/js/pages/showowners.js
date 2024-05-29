@@ -1,4 +1,3 @@
-// src/views/ShowOwners.js
 import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
@@ -10,18 +9,8 @@ export const ShowOwners = () => {
         actions.fetchOwners();
     }, [actions]);
 
-
-    const fetchOwners = () => {
-        fetch(process.env.BACKEND_URL + "/api/owner")
-            .then(response => response.json())
-            .then(data => setOwners(data))
-            .catch(error => console.error("Error fetching owners:", error));
-    };
-    
-
     const handleDeleteOwner = async ownerId => {
         await actions.deleteOwner(ownerId);
-
     };
 
     return (
@@ -32,6 +21,9 @@ export const ShowOwners = () => {
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Address</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -40,6 +32,9 @@ export const ShowOwners = () => {
                         <tr key={owner.id}>
                             <td>{owner.name}</td>
                             <td>{owner.email}</td>
+                            <td>{owner.address}</td>
+                            <td>{owner.latitude}</td>
+                            <td>{owner.longitude}</td>
                             <td>
                                 <Link to={`/editowner/${owner.id}`} className="btn btn-primary">
                                     <i className="fas fa-edit"></i>
