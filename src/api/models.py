@@ -23,7 +23,10 @@ class Owner(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    profile_picture_url = db.Column(db.String(200), nullable=True)  # Nuevo campo para la foto de perfil del owner
+    address = db.Column(db.String(250), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    
     pets = db.relationship('Pet', backref='owner', lazy=True)
 
     def __repr__(self):
@@ -35,7 +38,9 @@ class Owner(db.Model):
             "name": self.name,
             "email": self.email,
             "password": self.password,
-            "profile_picture_url": self.profile_picture_url #nuevo
+            "address": self.address,
+            "latitude": self.latitude,
+            "longitude": self.longitude
         }
 
 class Pet(db.Model):
