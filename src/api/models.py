@@ -52,7 +52,6 @@ class Pet(db.Model):
     pedigree = db.Column(db.Boolean, nullable=False)
     photo = db.Column(db.String(100), nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
-
     breed = db.relationship('Breed', backref='pets')
 
     def __repr__(self):
@@ -85,3 +84,5 @@ class Breed(db.Model):
 
     def __repr__(self):
         return f'<Breed {self.name}>'
+
+
