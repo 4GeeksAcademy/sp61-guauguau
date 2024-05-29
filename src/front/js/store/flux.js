@@ -109,28 +109,28 @@ const getState = ({ getStore, getActions, setStore }) => {
                 setStore({ auth: false, email: null, profilePictureUrl: null });
             },
 
-			signUp: async (name, email, password) => {
+			signUp: async (name, email, password, address, latitude, longitude) => {
 				try {
 					const requestOptions = {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ name, email, password })
+						body: JSON.stringify({ name, email, password, address, latitude, longitude })
 					};
 					const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ auth: true, email: email });
 						localStorage.setItem('token', data.access_token);
-						return data; 
-					} else if (response.status === 409) {  // el codigo 409 lo toma del endpoint add_owner donde lo he definido
+						return data;
+					} else if (response.status === 409) {
 						throw new Error('Email already exists!');
 					} else {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'An error occurred');
+						const errorData = await response.text();
+						throw new Error(errorData || 'An error occurred');
 					}
 				} catch (error) {
 					console.error('There was an error!', error);
-					throw error; 
+					throw error;
 				}
 			},
 			

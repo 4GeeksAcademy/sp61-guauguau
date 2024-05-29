@@ -1,6 +1,17 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import GeocodingService from "./GeocodingService";
 import { Context } from "../store/appContext";
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+
+const mapContainerStyle = {
+    width: "100%",
+    height: "400px"
+};
+
+const center = {
+    lat: 40.712776,
+    lng: -74.005974
+};
 
 export const OwnerSignUp = () => {
     const { actions } = useContext(Context);
@@ -9,8 +20,12 @@ export const OwnerSignUp = () => {
         email: "",
         password: "",
         address: "",
-        latitude: "",
-        longitude: ""
+        latitude: center.lat,
+        longitude: center.lng
+    });
+
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
 
     const handleChange = (e) => {
@@ -49,6 +64,8 @@ export const OwnerSignUp = () => {
         e.preventDefault();
         actions.signUp(formData.name, formData.email, formData.password, formData.address, formData.latitude, formData.longitude);
     };
+
+    if (!isLoaded) return <div>Loading...</div>;
 
     return (
         <div className="container">
@@ -126,6 +143,15 @@ export const OwnerSignUp = () => {
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+            <div className="mt-4">
+                <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    zoom={14}
+                    center={{ lat: formData.latitude, lng: formData.longitude }}
+                >
+                    <Marker position={{ lat: formData.latitude, lng: formData.longitude }} />
+                </GoogleMap>
+            </div>
         </div>
     );
 };
