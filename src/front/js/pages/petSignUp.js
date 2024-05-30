@@ -17,7 +17,7 @@ export const PetSignUp = () => {
     useEffect(() => {
         actions.fetchOwners();
         actions.getBreed();  // Asegúrate de que esta línea llama a la función correctamente
-    }, []);
+    }, [actions]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

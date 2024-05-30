@@ -186,22 +186,25 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			addPet: async (pet) => {
-				try {
-					const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
-						method: "POST",
-						body: pet // Enviar pet directamente como FormData
-					});
-					if (response.ok) {
-						const newPet = await response.json();
-						getActions().fetchPets(); // Refresh the list
-						return newPet;
-					} else {
-						console.error("Failed to add pet");
-					}
-				} catch (error) {
-					console.error("Error adding pet:", error);
-				}
-			},
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(pet)
+                    });
+                    if (response.ok) {
+                        getActions().fetchPets(); // Refresh the list
+						
+                    } else {
+                        console.error("Failed to add pet");
+                    }
+                } catch (error) {
+                    console.error("Error adding pet:", error);
+                }
+            },
+			
 			fetchDeletePet: (id) => {
 				fetch(process.env.BACKEND_URL + `/api/pets/${id}`, {
 					
@@ -317,12 +320,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                     headers: { 'Content-Type': "application/json" },
                     body: JSON.stringify({ name, type})
                 };
-                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
+                fetch(process.env.BACKEND_URL + "/api/breeds", requestOptions)
                     .then(response => {
                         if (response.ok) {
                             return response.json();
                         } else {
-                            throw new Error("User already exists");
+                            throw new Error("Breed already exists");
                         }
                     })
                     .then(data => {
