@@ -13,7 +13,7 @@ export const Pets = () => {
         };
 
         fetchData();
-    }, [actions]);
+    }, []);
 
     return (
         <div className="container">
