@@ -7,31 +7,28 @@ import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import Login from "./pages/login";
 import { Private } from "./pages/private";
-import { OwnerSignup } from "./pages/ownersignup";
+import { OwnerSignUp } from "./pages/ownersignup";
 import { ShowOwners } from "./pages/showowners";
 import { EditOwner } from "./pages/editowner";
 import { Single } from "./pages/single";
-import { City } from "./pages/city"
+import { City } from "./pages/city";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
 
+
 import { Breed } from "./pages/breed";
 
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+import { Photo } from "./pages/photo";
 
-
-
-//create your first component
 const Layout = () => {
-    //the basename is used when your project is published in a subdirectory and not in the root of the domain
-    // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
     const basename = process.env.BASENAME || "";
 
-    if(!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL/ >;
+    if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
 
     return (
         <div>
@@ -42,9 +39,11 @@ const Layout = () => {
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Breed/>} path="/breed" />
+                        <Route element={<Photo/>} path="/photo" />
+                        
                         <Route element={<OnePet/>} path="/pet/:petId" />
                         <Route element={<PetSignUp/>} path="/petSignUp" />
-                        <Route element={<OwnerSignup />} path="/ownersignup" />
+                        <Route element={<OwnerSignUp />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowners" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
@@ -52,7 +51,8 @@ const Layout = () => {
                         <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route element={<Login />} path="/login" />
+                        <Route element={<h1>Not found!</h1>} path="*" />
                     </Routes>
                     <Footer />
                 </ScrollToTop>

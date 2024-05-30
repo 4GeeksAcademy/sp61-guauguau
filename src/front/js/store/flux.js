@@ -12,6 +12,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			message: null,
 			breed: [],
 			currentBreed:null,
+			photo: [],
 			demo: [
 				{
 				title: "FIRST",
@@ -24,6 +25,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				initial: "white"
 				}
 			]
+			
 		},
 		actions: {
 			// Aquí van las acciones
@@ -315,7 +317,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': "application/json" },
-                    body: JSON.stringify({ name, type})
+                    body: JSON.stringify({ name, type })
                 };
                 fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
                     .then(response => {
@@ -333,35 +335,42 @@ const getState = ({ getStore, getActions, setStore }) => {
                         setStore({ errorMessage: error.message });
                     });
             },
-			deleteBreed: breedId => {
-				const requestOptions = {
-					method: 'DELETE'
-				};
-				fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Failed to delete breed");
-						}
-					})
-					
-					.catch(error => console.error("Error deleting breed:", error));
-			},
-			editBreed: async (breedId, updatedBreed) => {
-                const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(updatedBreed)
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
-                    setStore({ breed: updatedBreeds });
-                } else {
-                    console.error('Error al actualizar la raza');
+            deleteBreed: breedId => {
+                const requestOptions = {
+                    method: 'DELETE'
+                };
+                fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("Failed to delete breed");
+                        }
+                    })
+                    .then(() => {
+                        const store = getStore();
+                        setStore({ breed: store.breed.filter(b => b.id !== breedId) });
+                    })
+                    .catch(error => console.error("Error deleting breed:", error));
+            },
+            editBreed: async (breedId, updatedBreed) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedBreed)
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
+                        setStore({ breed: updatedBreeds });
+                    } else {
+                        console.error('Error al actualizar la raza');
+                    }
+                } catch (error) {
+                    console.error("Error editing breed:", error);
                 }
             },
 
@@ -404,6 +413,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error uploading profile picture:", error);
                 }
             },
+
 			uploadPetPhoto: async (petId, file) => {
                 const formData = new FormData();
                 formData.append("file", file);
@@ -418,10 +428,62 @@ const getState = ({ getStore, getActions, setStore }) => {
                 } catch (error) {
                     console.error("Error uploading pet photo:", error);
                 }
-            }
+            },
+
+				
+			getPhoto:() =>{
+				fetch(process.env.BACKEND_URL + "/api/photo")
+				.then(response => response.json())
+				.then(data => setStore({photo:data}))
+				.catch(error => console.error("Error fetching photo:", error));
+
+
+			},
+			uploadPhoto: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('URL_DEL_ENDPOINT', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const newPhoto = await response.json();
+                        const store = getStore();
+                        setStore({ photo: [...store.photo, newPhoto] });
+                    } else {
+                        console.error('Error al subir el archivo');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            
+            },
+			deletePhoto: photoId => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/photo/${photoId}`, requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Failed to delete photo");
+						}
+					})
+					
+					.catch(error => console.error("Error deleting photo:", error));
+			},
+
+
 		}
 	}
+
 	
 };
 
+
 export default getState;
+
