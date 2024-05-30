@@ -8,15 +8,10 @@ export const ShowOwners = () => {
 
     useEffect(() => {
         actions.fetchOwners();
-    }, [actions]);
+    }, []);
 
 
-    const fetchOwners = () => {
-        fetch(process.env.BACKEND_URL + "/api/owner")
-            .then(response => response.json())
-            .then(data => setOwners(data))
-            .catch(error => console.error("Error fetching owners:", error));
-    };
+    
     
 
     const handleDeleteOwner = async ownerId => {
@@ -40,6 +35,7 @@ export const ShowOwners = () => {
                         <tr key={owner.id}>
                             <td>{owner.name}</td>
                             <td>{owner.email}</td>
+                            
                             <td>
                                 <Link to={`/editowner/${owner.id}`} className="btn btn-primary">
                                     <i className="fas fa-edit"></i>
