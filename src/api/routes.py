@@ -193,7 +193,6 @@ def get_city():
         'id': city.id,
         'name': city.name,
         'pet_friendly': city.pet_friendly,
-
     } for city in city])
 
 @api.route('/city', methods=['POST'])
