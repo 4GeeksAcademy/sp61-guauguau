@@ -53,7 +53,10 @@ export const Private = () => {
                 <div className="container d-flex flex-column justify-content-center align-items-center">
                     <p className="signup pe-2">Do you want to exit?</p>
                     <Link to="/">
-                        <button className="btn btn-warning m-2" onClick={() => actions.logout()}>Log Out</button>
+                        <button className="btn btn-danger m-2" onClick={() => actions.logout()}>Log Out</button>
+                    </Link>
+                    <Link to="/petSignUp">
+                        <button className="btn btn-warning m-2" onClick={() => actions.addPet()}>Add new pet</button>
                     </Link>
                 </div>
             </div>
