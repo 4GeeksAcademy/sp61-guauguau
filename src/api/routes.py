@@ -1,3 +1,6 @@
+"""
+This module takes care of starting the API Server, Loading the DB and Adding the endpoints
+"""
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Pet, City, Owner, Breed, Photo
 import cloudinary.uploader
@@ -15,18 +18,24 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
+
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
+
     response_body = {
         "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
     }
+
     return jsonify(response_body), 200
 
-# OWNER
+
+#OWNER
+
 @api.route('/owner', methods=['GET'])
 def get_owners():
     all_owners= Owner.query.all()
     results = list(map(lambda owner: owner.serialize(), all_owners))
+   
     return jsonify(results), 200
 
 @api.route('/add_owner', methods=['POST'])
@@ -57,13 +66,20 @@ def get_owner(owner_id):
     owner = Owner.query.get(owner_id)
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
+    
+    # Obtener la URL de la foto de perfil más reciente del propietario, si existe
+    profile_picture = OwnerProfilePicture.query.filter_by(owner_id=owner_id).order_by(OwnerProfilePicture.id.desc()).first()
+    profile_picture_url = profile_picture.picture_url if profile_picture else None
 
     owner_data = owner.serialize()
+    owner_data["profile_picture_url"] = profile_picture_url
+
     return jsonify(owner_data), 200
 
 @api.route("/owner/<int:owner_id>", methods=["DELETE"])
 def delete_owner(owner_id):
     owner = Owner.query.get(owner_id)
+
     db.session.delete(owner)
     db.session.commit()
     return jsonify({'message': 'Owner deleted'}), 200
@@ -84,6 +100,7 @@ def update_owner(owner_id):
 
     db.session.commit()
     return jsonify(owner.serialize()), 200
+
 
 @api.route('/login', methods=['POST'])
 def login():
@@ -108,7 +125,7 @@ def protected():
 
     return jsonify({"owner": owner.serialize()}), 200
 
-##### ROUTES PETS #########################################
+#####ROUTES PETS#########################################
 @api.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
@@ -124,7 +141,7 @@ def get_pets():
         'owner_name': pet.owner.name if pet.owner else None
     } for pet in pets])
 
-@api.route('/pet/<int:pet_id>', methods=['GET'])
+@api.route('/pets/<int:pet_id>', methods=['GET'])
 def get_pet(pet_id):
     pet = Pet.query.get(pet_id)
     if pet:
@@ -141,14 +158,12 @@ def get_pet(pet_id):
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
-    
+
 @api.route('/pets', methods=['POST'])
 def add_pet():
-    data = request.json
+    data = request.get_json()
     if not all(key in data for key in ['name', 'breed_id', 'sex', 'age', 'pedigree', 'photo', 'owner_id']):
         return jsonify({'error': 'Missing data'}), 400
-    
-    # Create the new pet with the provided data
     new_pet = Pet(
         name=data['name'],
         breed_id=data['breed_id'],
@@ -162,161 +177,117 @@ def add_pet():
     db.session.commit()
     return jsonify({'message': 'New pet added!', 'pet_id': new_pet.id}), 201
 
-@api.route('/upload_pet_profile_picture/<int:pet_id>', methods=['POST'])
-def upload_pet_profile_picture(pet_id):
-    pet = Pet.query.get(pet_id)
-    if not pet:
-        return jsonify({'error': 'Pet not found'}), 404
-
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part in the request'}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected for uploading'}), 400
-
-    try:
-        upload_result = cloudinary.uploader.upload(file)
-        pet.photo = upload_result['secure_url']
-        db.session.commit()
-        return jsonify({'message': 'Pet profile picture updated!', 'photo_url': pet.photo}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-
-
-@api.route('/pets/<int:pet_id>', methods=['DELETE'])
-def delete_pet(pet_id):
+@api.route('/pets/<int:pet_id>', methods=['PUT'])
+def update_pet(pet_id):
     pet = Pet.query.get(pet_id)
     if pet:
-        db.session.delete(pet)
+        data = request.json
+        pet.name = data.get('name', pet.name)
+        pet.breed_id = data.get('breed_id', pet.breed_id)
+        pet.sex = data.get('sex', pet.sex)
+        pet.age = data.get('age', pet.age)
+        pet.pedigree = data.get('pedigree', pet.pedigree)
+        pet.photo = data.get('photo', pet.photo)
+        pet.owner_id = data.get('owner_id', pet.owner_id)
         db.session.commit()
-        return jsonify({'message': 'Pet deleted!'}), 200
+        return jsonify({
+            'id': pet.id,
+            'name': pet.name,
+            'breed': pet.breed.name if pet.breed else None,
+            'sex': pet.sex,
+            'age': pet.age,
+            'pedigree': pet.pedigree,
+            'photo': pet.photo,
+            'owner_id': pet.owner_id,
+            'owner_name': pet.owner.name if pet.owner else None
+        }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
-@api.route('/pet/<int:pet_id>', methods=['PUT'])
-def update_pet(pet_id):
-    pet = Pet.query.get(pet_id)
-    if not pet:
-        return jsonify({'error': 'Pet not found'}), 404
-
-    data = request.json
-    pet.name = data.get('name', pet.name)
-    pet.breed_id = data.get('breed_id', pet.breed_id)
-    pet.sex = data.get('sex', pet.sex)
-    pet.age = data.get('age', pet.age)
-    pet.pedigree = data.get('pedigree', pet.pedigree)
-    pet.photo = data.get('photo', pet.photo)
-    pet.owner_id = data.get('owner_id', pet.owner_id)
+@api.route('/delete_pet/<int:id>', methods=['DELETE'])
+def delete_pet(id):
+    pet = Pet.query.get_or_404(id)
+    db.session.delete(pet)
     db.session.commit()
-    return jsonify({'message': 'Pet updated!'}), 200
+    return jsonify({'message': 'Pet deleted successfully!'}), 200
 
-##### ROUTES CITIES ######################################
+
 @api.route('/city', methods=['GET'])
 def get_city():
-    cities = City.query.all()
-    return jsonify([city.serialize() for city in cities]), 200
+    city = City.query.all()
+    return jsonify([{
+        'id': city.id,
+        'name': city.name,
+        'pet_friendly': city.pet_friendly,
 
-@api.route('/city/<int:city_id>', methods=['GET'])
-def get_city_by_id(city_id):
-    city = City.query.get(city_id)
-    if not city:
-        return jsonify({'message': 'City not found'}), 404
-    return jsonify(city.serialize()), 200
+    } for city in city])
 
 @api.route('/city', methods=['POST'])
-def create_city():
-    data = request.json
+def add_city():
+    data = request.get_json()
     new_city = City(
         name=data['name'],
-        pet_friendly=data['pet_friendly']
+        pet_friendly=data['pet_friendly'],
     )
     db.session.add(new_city)
     db.session.commit()
-    return jsonify({'message': 'City created!'}), 201
+    return jsonify({'message': 'New city added!'},(new_city.serialize()), 201)
 
-@api.route('/city/<int:city_id>', methods=['DELETE'])
-def delete_city(city_id):
-    city = City.query.get(city_id)
-    if not city:
-        return jsonify({'message': 'City not found'}), 404
+
+@api.route('/city/<int:id>', methods=['DELETE'])
+def delete_city(id):
+    city = City.query.get_or_404(id)
     db.session.delete(city)
     db.session.commit()
-    return jsonify({'message': 'City deleted!'}), 200
+    return jsonify({'message': 'City deleted successfully!'})
 
-@api.route('/city/<int:city_id>', methods=['PUT'])
-def update_city(city_id):
-    data = request.json
-    city = City.query.get(city_id)
-    if not city:
-        return jsonify({'message': 'City not found'}), 404
-    city.name = data['name']
-    city.pet_friendly = data['pet_friendly']
+@api.route('/city/<int:id>', methods=['PUT'])
+def update_city(id):
+    data = request.get_json()
+    city = City.query.get_or_404(id)
+    city.name = data.get('name', city.name)
+    city.pet_friendly = data.get('pet_friendly', city.pet_friendly)
     db.session.commit()
-    return jsonify({'message': 'City updated!'}), 200
+    return jsonify({'message': 'City updated successfully!'})
 
-##### ROUTES BREEDS ######################################
-@api.route('/breeds', methods=['GET'])
-def get_breeds():
-    try:
-        breeds = Breed.query.all()
-        # Serialize the data to JSON
-        breed_data = [{
-            'id': breed.id,
-            'name': breed.name,
-            'type': breed.type
-        } for breed in breeds]
-        # Return the data as JSON response
-        return jsonify(breed_data), 200
-    except Exception as e:
-        # Handle any errors and return an error response
-        return jsonify({'error': str(e)}), 500
 
-@api.route('/breeds/<int:breed_id>', methods=['GET'])
-def get_breed_by_id(breed_id):
-    breed = Breed.query.get(breed_id)
-    if not breed:
-        return jsonify({'error': 'Breed not found'}), 404
-    return jsonify({
+#Breed razas de perros
+
+@api.route('/breed', methods=['GET'])
+def get_breed():
+    breed = Breed.query.all()
+    return jsonify([{
         'id': breed.id,
         'name': breed.name,
-        'type': breed.type
-    }), 200
+        'type': breed.type,
 
-@api.route('/breeds', methods=['POST'])
-def create_breed():
-    data = request.json
+    } for breed in breed])
+
+@api.route('/breed', methods=['POST'])
+def add_breed():
+    data = request.get_json()
     new_breed = Breed(
         name=data['name'],
-        type=data['type']
+        type=data['type'],
     )
     db.session.add(new_breed)
     db.session.commit()
-    return jsonify({'message': 'Breed created!'}), 201
+    return jsonify({'message': 'New breed added!'})
 
-@api.route('/breeds/<int:breed_id>', methods=['DELETE'])
-def delete_breed(breed_id):
-    breed = Breed.query.get(breed_id)
-    if not breed:
-        return jsonify({'error': 'Breed not found'}), 404
+@api.route('/breed/<int:id>', methods=['DELETE'])
+def delete_breed(id):
+    breed = Breed.query.get_or_404(id)
     db.session.delete(breed)
     db.session.commit()
-    return jsonify({'message': 'Breed deleted!'}), 200
+    return jsonify({'message': 'Breed deleted successfully!'})
 
-@api.route('/breeds/<int:breed_id>', methods=['PUT'])
-def update_breed(breed_id):
-    breed = Breed.query.get(breed_id)
-    if not breed:
-        return jsonify({'error': 'Breed not found'}), 404
-
-    data = request.json
+@api.route('/breed/<int:id>', methods=['PUT'])
+def update_breed(id):
+    data = request.get_json()
+    breed = Breed.query.get_or_404(id)
+    
     breed.name = data.get('name', breed.name)
     breed.type = data.get('type', breed.type)
-
-    db.session.commit()
-    return jsonify({'message': 'Breed updated!'}), 200
-
 
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
@@ -385,4 +356,3 @@ def upload_profile_picture():
 
 
     
-

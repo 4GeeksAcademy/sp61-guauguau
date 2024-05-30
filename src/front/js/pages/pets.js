@@ -11,9 +11,9 @@ export const Pets = () => {
             await actions.fetchPets();
             setIsLoading(false);
         };
-    
+
         fetchData();
-    }, []);
+    }, [actions]);
 
     return (
         <div className="container">
