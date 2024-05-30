@@ -19,6 +19,7 @@ import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+import { EditCity } from "./pages/editcity";
 
 
 //create your first component
@@ -43,6 +44,7 @@ const Layout = () => {
                         <Route element={<OwnerSignup />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowner" />
                         <Route element={<City/>} path="/city" />
+                        <Route element={<EditCity/>} path="/editcity/:id" />
                         <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
