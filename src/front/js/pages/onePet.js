@@ -1,44 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Context } from '../store/appContext';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useContext, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Context } from "../store/appContext";
 
 export const OnePet = () => {
-    const { petId } = useParams();
     const { store, actions } = useContext(Context);
+    const { petId } = useParams();
+    const [isEditing, setIsEditing] = useState(false);
     const [petDetails, setPetDetails] = useState({
         name: '',
-        age: '',
+        breed: '',
         sex: '',
-        pedigree: false
+        age: '',
+        pedigree: false,
+        photo: ''
     });
-    const [file, setFile] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        let isMounted = true;
-    
-        const fetchPetDetails = async () => {
-            try {
-                const pet = await actions.getPetDetails(petId);
-                if (isMounted && pet) {
-                    setPetDetails(pet);
-                }
-            } catch (error) {
-                if (isMounted) {
-                    console.error("Failed to fetch pet details:", error);
-                    setErrorMessage('Failed to fetch pet details. Please try again.');
-                }
-            }
-        };
-        fetchPetDetails();
-    
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+        actions.fetchPetById(petId);
+    }, [petId]);
 
-    const handleChange = e => {
+    useEffect(() => {
+        if (store.currentPet) {
+            setPetDetails(store.currentPet);
+        }
+    }, [store.currentPet]);
+
+    const handleChange = (e) => {
         const { name, value } = e.target;
         setPetDetails({
             ...petDetails,
@@ -46,45 +33,69 @@ export const OnePet = () => {
         });
     };
 
-    const handleFileChange = e => {
-        setFile(e.target.files[0]);
+    const handleCheckboxChange = (e) => {
+        const { name, checked } = e.target;
+        setPetDetails({
+            ...petDetails,
+            [name]: checked
+        });
     };
 
-    const handleSubmit = async e => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        try {
-            await actions.updatePet(petId, petDetails);
-            if (file) {
-                await actions.uploadPetPhoto(petId, file);
-            }
-            setIsLoading(false);
-        } catch (error) {
-            setIsLoading(false);
-            setErrorMessage('Failed to update pet or upload photo. Please try again.');
-        }
+        actions.updatePet(petId, petDetails);
+        setIsEditing(false);
     };
+
+    const pet = store.currentPet;
 
     return (
-        <div>
-            <h2>Editar Mascota</h2>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            <form onSubmit={handleSubmit}>
-                <input type="text" name="name" value={petDetails.name} onChange={handleChange} placeholder="Nombre" />
-                <input type="number" name="age" value={petDetails.age} onChange={handleChange} placeholder="Edad" />
-                <select name="sex" value={petDetails.sex} onChange={handleChange}>
-                    <option value="Male">Macho</option>
-                    <option value="Female">Hembra</option>
-                </select>
-                <label>
-                    Pedigree:
-                    <input type="checkbox" name="pedigree" checked={petDetails.pedigree} onChange={handleChange} />
-                </label>
-                <input type="file" onChange={handleFileChange} />
-                <button type="submit">Actualizar Mascota</button>
-            </form>
-            {isLoading && <div>Cargando...</div>}
-            {store.petProfilePictureUrl && <img src={store.petProfilePictureUrl} alt="Mascota" />}
+        <div className="container">
+            {pet ? (
+                <>
+                    {isEditing ? (
+                        <form onSubmit={handleSubmit}>
+                            <div>
+                                <label>Name:</label>
+                                <input type="text" name="name" value={petDetails.name} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <label>Breed:</label>
+                                <input type="text" name="breed" value={petDetails.breed} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <label>Sex:</label>
+                                <input type="text" name="sex" value={petDetails.sex} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <label>Age:</label>
+                                <input type="text" name="age" value={petDetails.age} onChange={handleChange} />
+                            </div>
+                            <div>
+                                <label>Pedigree:</label>
+                                <input type="checkbox" name="pedigree" checked={petDetails.pedigree} onChange={handleCheckboxChange} />
+                            </div>
+                            <div>
+                                <label>Photo URL:</label>
+                                <input type="text" name="photo" value={petDetails.photo} onChange={handleChange} />
+                            </div>
+                            <button type="submit">Save</button>
+                        </form>
+                    ) : (
+                        <>
+                            <h1>{pet.name}</h1>
+                            <p>Breed: {pet.breed}</p>
+                            <p>Sex: {pet.sex}</p>
+                            <p>Age: {pet.age}</p>
+                            <p>Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
+                            {pet.photo && <img src={pet.photo} alt={pet.name} />}
+                            <button onClick={() => setIsEditing(true)}>Edit</button>
+                        </>
+                    )}
+                </>
+            ) : (
+                <p>Loading...</p>
+            )}
         </div>
     );
 };
