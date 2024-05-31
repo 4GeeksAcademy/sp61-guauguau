@@ -17,8 +17,10 @@ export const PetSignUp = () => {
 
     useEffect(() => {
         actions.fetchOwners();
+
         actions.getBreed();
     }, []);
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;

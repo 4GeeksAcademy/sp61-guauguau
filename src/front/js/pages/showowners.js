@@ -1,9 +1,11 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+import MapComponent from "./MapComponent";
 
 export const ShowOwners = () => {
     const { store, actions } = useContext(Context);
+    const [selectedOwner, setSelectedOwner] = useState(null);
 
     useEffect(() => {
         actions.fetchOwners();
@@ -15,6 +17,10 @@ export const ShowOwners = () => {
 
     const handleDeleteOwner = async ownerId => {
         await actions.deleteOwner(ownerId);
+    };
+
+    const handleOwnerSelect = (owner) => {
+        setSelectedOwner(owner);
     };
 
     return (
@@ -33,7 +39,7 @@ export const ShowOwners = () => {
                 </thead>
                 <tbody>
                     {store.owners.map(owner => (
-                        <tr key={owner.id}>
+                        <tr key={owner.id} onClick={() => handleOwnerSelect(owner)}>
                             <td>{owner.name}</td>
                             <td>{owner.email}</td>
                             <td>{owner.address}</td>
@@ -51,6 +57,12 @@ export const ShowOwners = () => {
                     ))}
                 </tbody>
             </table>
+            {selectedOwner && (
+                <div>
+                    <h3>Owner Location</h3>
+                    <MapComponent lat={selectedOwner.latitude} lng={selectedOwner.longitude} />
+                </div>
+            )}
             <Link to="/">
                 <button className="btn btn-primary">Back home</button>
             </Link>

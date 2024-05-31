@@ -5,7 +5,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 			email: null,
 			owners: [],
 			profilePictureUrl: null,
-			petProfilePictureUrl: null,
 			city:[],
 			pets: [],
 			currentPet: null,
@@ -112,28 +111,28 @@ const getState = ({ getStore, getActions, setStore }) => {
                 setStore({ auth: false, email: null, profilePictureUrl: null });
             },
 
-			signUp: async (name, email, password) => {
+			signUp: async (name, email, password, address, latitude, longitude) => {
 				try {
 					const requestOptions = {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ name, email, password })
+						body: JSON.stringify({ name, email, password, address, latitude, longitude })
 					};
 					const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ auth: true, email: email });
 						localStorage.setItem('token', data.access_token);
-						return data; 
-					} else if (response.status === 409) {  // el codigo 409 lo toma del endpoint add_owner donde lo he definido
+						return data;
+					} else if (response.status === 409) {
 						throw new Error('Email already exists!');
 					} else {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'An error occurred');
+						const errorData = await response.text();
+						throw new Error(errorData || 'An error occurred');
 					}
 				} catch (error) {
 					console.error('There was an error!', error);
-					throw error; 
+					throw error;
 				}
 			},
 			
@@ -157,36 +156,56 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			fetchPetById: async (id) => {
                 try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/pets/${id}`);
+                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                     const data = await response.json();
                     setStore({ currentPet: data });
+					console.log(`Fetching pet with ID: ${id}`);
                 } catch (error) {
-                    console.error("Error fetching pet:", error);
+                    console.error("Error fetching pet by ID:", error);
                 }
             },
-			getPetDetails: async (petId) => {
+			updatePet: async (id, petDetails) => {
                 try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
-                    const pet = await response.json();
-                    setStore({ currentPet: pet });
-                    return pet;
-                } catch (error) {
-                    console.error("Error fetching pet details:", error);
-                }
-            },
-			updatePet: async (petId, petDetails) => {
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
+                    console.log(`Updating pet with ID: ${id}`);
+                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
                         body: JSON.stringify(petDetails)
                     });
-                    if (!response.ok) throw new Error("HTTP error! status: " + response.status);
-                    console.log("Pet updated successfully");
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log("Updated pet data:", data);
+                    setStore({ currentPet: data });
                 } catch (error) {
-                    console.error("Error updating pet:", error);
+                    console.error("Error updating pet by ID:", error);
                 }
             },
+			addPet: async (pet) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(pet)
+                    });
+                    if (response.ok) {
+                        getActions().fetchPets(); // Refresh the list
+                    } else {
+                        console.error("Failed to add pet");
+                    }
+                } catch (error) {
+                    console.error("Error adding pet:", error);
+                }
+            },
+
 			addPet: async (pet) => {
                 try {
                     const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
@@ -207,8 +226,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			
+
 			fetchDeletePet: (id) => {
-				fetch(process.env.BACKEND_URL + `/api/pets/${id}`, {
+				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
 					
 					method: 'DELETE',
 					headers: {
@@ -249,6 +269,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.catch(error => console.error("Error deleting owner:", error));
 			},
+			
 			getCity: () => {
 				fetch(process.env.BACKEND_URL + "/api/city")
 					.then(response => response.json())
@@ -305,16 +326,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			
 
-			getBreed: () => {
-				fetch(process.env.BACKEND_URL + "/api/breeds")
-					.then(response => {
-						if (!response.ok) {
-							throw new Error('Network response was not ok');
-						}
-						return response.json();
-					})
-					.then(data => setStore({ breed: data }))
-					.catch(error => console.error("Error fetching breed:", error.message));
+			getBreed:() =>{
+				fetch(process.env.BACKEND_URL + "/api/breed")
+				.then(response => response.json())
+				.then(data => setStore({breed:data}))
+				.catch(error => console.error("Error fetching breed:", error));
+
+
 			},
 			signUpBreed: (name, type ) => {
                 const requestOptions = {
@@ -416,23 +434,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error uploading profile picture:", error);
                 }
             },
-
-			uploadPetPhoto: async (petId, file) => {
-                const formData = new FormData();
-                formData.append("file", file);
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    if (!response.ok) throw new Error("HTTP error! status: " + response.status);
-                    const result = await response.json();
-                    setStore({ petProfilePictureUrl: result.photo_url });
-                } catch (error) {
-                    console.error("Error uploading pet photo:", error);
-                }
-            },
-
 				
 			getPhoto:() =>{
 				fetch(process.env.BACKEND_URL + "/api/photo")
@@ -479,14 +480,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					.catch(error => console.error("Error deleting photo:", error));
 			},
-
-
 		}
 	}
-
-	
 };
 
-
-export default getState;
-
+export default getState
