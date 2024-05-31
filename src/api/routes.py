@@ -353,7 +353,3 @@ def upload_profile_picture():
 
     return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
 
-
-
-
-    
