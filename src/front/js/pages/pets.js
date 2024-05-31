@@ -11,7 +11,7 @@ export const Pets = () => {
             await actions.fetchPets();
             setIsLoading(false);
         };
-    
+
         fetchData();
     }, []);
 
