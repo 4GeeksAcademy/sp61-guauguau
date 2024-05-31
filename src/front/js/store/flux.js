@@ -195,8 +195,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                         body: JSON.stringify(pet)
                     });
                     if (response.ok) {
-                        getActions().fetchPets(); // Refresh the list
-						
+                        const newPet = await response.json();
+                        return newPet;
                     } else {
                         console.error("Failed to add pet");
                     }
