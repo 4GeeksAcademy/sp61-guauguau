@@ -247,6 +247,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.catch(error => console.error("Error deleting owner:", error));
 			},
+			
 			getCity: () => {
 				fetch(process.env.BACKEND_URL + "/api/city")
 					.then(response => response.json())
@@ -457,12 +458,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					.catch(error => console.error("Error deleting photo:", error));
 			},
-
 		}
 	}
-
-	
 };
 
-
-export default getState;
+export default getState

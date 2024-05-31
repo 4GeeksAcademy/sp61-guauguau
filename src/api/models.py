@@ -79,6 +79,13 @@ class City(db.Model):
     def __repr__(self):
         return f'<City {self.name}>'
 
+    def serialize(self): 
+        return {
+        "id": self.id,
+        "name": self.name,
+        "pet_friendly_id": self.pet_friendly_id,
+        }
+
 class Breed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)

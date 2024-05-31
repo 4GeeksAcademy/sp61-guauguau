@@ -211,7 +211,6 @@ def delete_pet(id):
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully!'}), 200
 
-
 @api.route('/city', methods=['GET'])
 def get_city():
     city = City.query.all()
@@ -219,7 +218,6 @@ def get_city():
         'id': city.id,
         'name': city.name,
         'pet_friendly': city.pet_friendly,
-
     } for city in city])
 
 @api.route('/city', methods=['POST'])
