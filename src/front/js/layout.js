@@ -19,7 +19,9 @@ import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
-import { AdminSignUp } from "./pages/admin";
+import { AdminSignUp } from "./pages/adminsignup";
+import { EditAdmin } from "./pages/editadmin";
+import { ShowAdmins } from "./pages/showadmins";
 
 
 //create your first component
@@ -47,7 +49,9 @@ const Layout = () => {
                         <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
-                        <Route element={<AdminSignUp />} path="/admin" />
+                        <Route element={<AdminSignUp />} path="/adminsignup" />
+                        <Route element={<ShowAdmins />} path="/showadmins/" />
+                        <Route element={<EditAdmin />} path="/editadmin/:adminId" />
                         <Route element={<h1>Not found!</h1>} />
                     </Routes>
                     <Footer />

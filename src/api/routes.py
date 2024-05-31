@@ -6,11 +6,17 @@ from api.models import db, User, Pet, City, Owner, Breed, Adminn
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+from flask_mail import Mail, Message
+
 
 api = Blueprint('api', __name__)
 
 # Permitir solicitudes CORS a esta API
 CORS(api)
+
+# Configuración de correo electrónico
+mail = Mail()
+
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -253,8 +259,8 @@ def update_admin(admin_id):
     db.session.commit()
     return jsonify(admin.serialize()), 200
 
-@api.route('/login', methods=['POST'])
-def logins():
+@api.route('/admin_login', methods=['POST'])
+def login_admin():
     email = request.json.get("email")
     password = request.json.get("password")
     if not email or not password:
@@ -266,6 +272,12 @@ def logins():
     
     access_token = create_access_token(identity=email)
     return jsonify(access_token=access_token), 200
+
+@api.route("/admin_protected", methods=["GET"])
+@jwt_required()
+def protected_admin():
+    current_admin = get_jwt_identity()
+    return jsonify(logged_in_as=current_admin), 200
 
 @api.route("/protected", methods=["GET"])
 @jwt_required()

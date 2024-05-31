@@ -307,53 +307,54 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			signUpAdmin: (name, email, password) => {
-			const requestOptions = {
-				method: 'POST',
-				headers: { 'Content-Type': "application/json" },
-				body: JSON.stringify({ name, email, password })
-			};
-			fetch(process.env.BACKEND_URL + "/api/add_admin", requestOptions)
-				.then(response => {
-					if (response.ok) {
-						return response.json();
-					} else {
-						throw new Error("User already exists");
-					}
-				})
-				.then(data => {
-					setStore({ auth: true, email: email });
-					localStorage.setItem("token", data.access_token);
-				})
-				.catch(error => {
-					console.error("There was an error!", error);
-					setStore({ errorMessage: error.message });
-				});
-		},
-		fetchAdmins: () => {
-			fetch(process.env.BACKEND_URL + "/api/admin")
-				.then(response => response.json())
-				.then(data => setStore({ admins: data }))
-				.catch(error => console.error("Error fetching admins:", error));
-		},
-		deleteAdmin: adminId => {
-			const requestOptions = {
-				method: 'DELETE'
-			};
-			fetch(process.env.BACKEND_URL + `/api/admin/${adminId}`, requestOptions)
-				.then(response => {
-					if (response.ok) {
-						return response.json();
-					} else {
-						throw new Error("Failed to delete admin");
-					}
-				})
-				.then(data => {
-					const actions = getActions();
-					actions.fetchAdmins();
-				})
-				.catch(error => console.error("Error deleting admin:", error));
-		},
-	}
+				const requestOptions = {
+					method: 'POST',
+					headers: { 'Content-Type': "application/json" },
+					body: JSON.stringify({ name, email, password })
+				};
+				fetch(process.env.BACKEND_URL + "/api/add_admin", requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("User already exists");
+						}
+					})
+					.then(data => {
+						setStore({ auth: true, email: email });
+						localStorage.setItem("token", data.access_token);
+					})
+					.catch(error => {
+						console.error("There was an error!", error);
+						setStore({ errorMessage: error.message });
+					});
+			},
+			fetchAdmins: () => {
+				fetch(process.env.BACKEND_URL + "/api/admin")
+					.then(response => response.json())
+					.then(data => setStore({ admins: data }))
+					.catch(error => console.error("Error fetching admins:", error));
+			},
+			
+			deleteAdmin: adminId => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/admin/${adminId}`, requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Failed to delete admin");
+						}
+					})
+					.then(data => {
+						const actions = getActions();
+						actions.fetchAdmins();
+					})
+					.catch(error => console.error("Error deleting admin:", error));
+			},
+		}
 	};
 };
 
