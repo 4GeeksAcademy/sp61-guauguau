@@ -93,7 +93,7 @@ class Breed(db.Model):
 
     def __repr__(self):
         return f'<Breed {self.name}>'
-    
+
 
 
 class Photo(db.Model):
@@ -108,6 +108,8 @@ class Photo(db.Model):
             "id": self.id,
             "url": self.url,
             # do not serialize the password, its a security breach
+
         }
+
 
 

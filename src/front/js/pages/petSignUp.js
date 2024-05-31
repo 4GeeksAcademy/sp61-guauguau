@@ -13,11 +13,14 @@ export const PetSignUp = () => {
         photo: "",
         owner_id: ""
     });
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         actions.fetchOwners();
-        actions.getBreed();  // Asegúrate de que esta línea llama a la función correctamente
-    }, [actions]);
+
+        actions.getBreed();
+    }, []);
+
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -27,9 +30,34 @@ export const PetSignUp = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        actions.addPet(formData);
+
+        if (file) {
+            try {
+                const formData = new FormData();
+                formData.append("file", file);
+                const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    const updatedFormData = { ...formData, photo: result.photo_url };
+                    await actions.addPet(updatedFormData);
+                } else {
+                    console.error("Failed to upload photo", result.error);
+                }
+            } catch (error) {
+                console.error("Error uploading photo:", error);
+            }
+        } else {
+            await actions.addPet(formData);
+        }
     };
 
     return (
@@ -100,14 +128,13 @@ export const PetSignUp = () => {
                     <label htmlFor="pedigree" className="form-check-label">Pedigree</label>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="photo" className="form-label">Photo URL</label>
+                    <label htmlFor="photo" className="form-label">Photo</label>
                     <input 
-                        type="text" 
+                        type="file" 
                         className="form-control" 
                         id="photo" 
                         name="photo" 
-                        value={formData.photo} 
-                        onChange={handleChange} 
+                        onChange={handleFileChange} 
                     />
                 </div>
                 <div className="mb-3">
