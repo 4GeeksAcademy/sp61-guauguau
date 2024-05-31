@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const City = () => {
@@ -8,6 +8,7 @@ export const City = () => {
     const [petFriendly, setPetFriendly] = useState("No");
     const [showForm, setShowForm] = useState(false);
     const [editingCity, setEditingCity] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         actions.getCity();
@@ -42,10 +43,7 @@ export const City = () => {
     };
 
     const startEditing = (city) => {
-        setEditingCity(city);
-        setName(city.name);
-        setPetFriendly(city.pet_friendly);
-        setShowForm(true);
+        navigate(`/editcity/${city.id}`);
     };
 
     return (
