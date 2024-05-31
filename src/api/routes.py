@@ -309,3 +309,25 @@ def update_breed(breed_id):
     breed.type = data.get('type', breed.type)
     db.session.commit()
     return jsonify({'message': 'Breed updated!'}), 200
+
+# UPLOAD PHOTO
+    
+@api.route('/upload_profile_picture', methods=['POST'])
+@jwt_required()
+def upload_profile_picture():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    result = upload(file, public_id=f"owner_{owner.id}_profile_picture")
+    owner.profile_picture_url = result['secure_url']
+    db.session.commit()
+
+    return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
