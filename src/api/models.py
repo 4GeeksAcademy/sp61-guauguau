@@ -50,10 +50,9 @@ class Pet(db.Model):
     sex = db.Column(db.String(10), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     pedigree = db.Column(db.Boolean, nullable=False)
-    photo = db.Column(db.String(100), nullable=True)
+    photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
     breed = db.relationship('Breed', backref='pets')
-    photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
     photo = db.relationship('Photo', backref='pets')
 
     def __repr__(self):
@@ -67,9 +66,10 @@ class Pet(db.Model):
             "sex": self.sex,
             "age": self.age,
             "pedigree": self.pedigree,
-            "photo": self.photo,
+            "photo": self.photo.url if self.photo else None,
             "owner_id": self.owner_id
         }
+
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -51,9 +51,12 @@ export const Private = () => {
                     <button onClick={handleUpload}>Upload Profile Picture</button>
                 </div>
                 <div className="container d-flex flex-column justify-content-center align-items-center">
+                    <Link to="/petSignUp">
+                        <button className="btn btn-warning m-2">Add new pet</button>
+                    </Link>
                     <p className="signup pe-2">Do you want to exit?</p>
                     <Link to="/">
-                        <button className="btn btn-warning m-2" onClick={() => actions.logout()}>Log Out</button>
+                        <button className="btn btn-danger m-2" onClick={() => actions.logout()}>Log Out</button>
                     </Link>
                 </div>
             </div>

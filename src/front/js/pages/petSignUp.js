@@ -10,8 +10,8 @@ export const PetSignUp = () => {
         sex: "",
         age: "",
         pedigree: false,
-        photo: "",
-        owner_id: ""
+        photo: ""
+        
     });
     const [file, setFile] = useState(null);
 
@@ -36,27 +36,35 @@ export const PetSignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (file) {
-            try {
-                const formData = new FormData();
-                formData.append("file", file);
-                const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture`, {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    const updatedFormData = { ...formData, photo: result.photo_url };
-                    await actions.addPet(updatedFormData);
-                } else {
-                    console.error("Failed to upload photo", result.error);
+    
+        try {
+            const addedPet = await actions.addPet(formData);
+    
+            if (addedPet) {
+                const petId = addedPet.pet_id;
+    
+                if (file) {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+    
+                    const result = await response.json();
+    
+                    if (response.ok) {
+                        console.log("Photo uploaded successfully:", result);
+                    } else {
+                        console.error("Failed to upload photo:", result.error);
+                    }
                 }
-            } catch (error) {
-                console.error("Error uploading photo:", error);
+            } else {
+                console.error("Failed to add pet");
             }
-        } else {
-            await actions.addPet(formData);
+        } catch (error) {
+            console.error("Error:", error);
         }
     };
 
@@ -137,22 +145,7 @@ export const PetSignUp = () => {
                         onChange={handleFileChange} 
                     />
                 </div>
-                <div className="mb-3">
-                    <label htmlFor="owner_id" className="form-label">Owner</label>
-                    <select 
-                        className="form-select" 
-                        id="owner_id" 
-                        name="owner_id" 
-                        value={formData.owner_id} 
-                        onChange={handleChange} 
-                        required
-                    >
-                        <option value="">Select Owner</option>
-                        {store.owners && store.owners.map(owner => (
-                            <option key={owner.id} value={owner.id}>{owner.name}</option>
-                        ))}
-                    </select>
-                </div>
+                
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
         </div>

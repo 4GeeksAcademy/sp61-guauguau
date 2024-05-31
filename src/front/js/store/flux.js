@@ -188,43 +188,31 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			addPet: async (pet) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(pet)
-                    });
-                    if (response.ok) {
-                        getActions().fetchPets(); // Refresh the list
-                    } else {
-                        console.error("Failed to add pet");
-                    }
-                } catch (error) {
-                    console.error("Error adding pet:", error);
-                }
-            },
-
-			addPet: async (pet) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(pet)
-                    });
-                    if (response.ok) {
-                        const newPet = await response.json();
-                        return newPet;
-                    } else {
-                        console.error("Failed to add pet");
-                    }
-                } catch (error) {
-                    console.error("Error adding pet:", error);
-                }
-            },
+				try {
+					const token = localStorage.getItem("token");
+					const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${token}`
+						},
+						body: JSON.stringify(pet)
+					});
+					if (response.ok) {
+						const newPet = await response.json();
+						const store = getStore();
+						setStore({ pets: [...store.pets, newPet] });
+						return newPet;
+					} else {
+						const errorData = await response.json();
+						console.error("Failed to add pet:", errorData);
+						throw new Error(errorData.message);
+					}
+				} catch (error) {
+					console.error("Error adding pet:", error);
+					throw error;
+				}
+			},
 			
 
 			fetchDeletePet: (id) => {
@@ -340,7 +328,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     headers: { 'Content-Type': "application/json" },
                     body: JSON.stringify({ name, type })
                 };
-                fetch(process.env.BACKEND_URL + "/api/breeds", requestOptions)
+                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
                     .then(response => {
                         if (response.ok) {
                             return response.json();
@@ -432,6 +420,22 @@ const getState = ({ getStore, getActions, setStore }) => {
                     }
                 } catch (error) {
                     console.error("Error uploading profile picture:", error);
+                }
+            },
+
+			uploadPetPhoto: async (petId, file) => {
+                const formData = new FormData();
+                formData.append("file", file);
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!response.ok) throw new Error("HTTP error! status: " + response.status);
+                    const result = await response.json();
+                    setStore({ petProfilePictureUrl: result.photo_url });
+                } catch (error) {
+                    console.error("Error uploading pet photo:", error);
                 }
             },
 				
