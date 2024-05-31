@@ -4,29 +4,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
+			profilePictureUrl: null,
 			city:[],
 			pets: [],
 			currentPet: null,
 			message: null,
+			breed: [],
+			currentBreed:null,
+			photo: [],
 			demo: [
 				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
+				title: "FIRST",
+				background: "white",
+				initial: "white"
 				},
 				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
+				title: "SECOND",
+				background: "white",
+				initial: "white"
 				}
 			]
+			
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
+			// Aquí van las acciones
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
 			},
-
 			getMessage: async () => {
 				try{
 					// fetching data from the backend
@@ -53,29 +57,41 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
-			login: (email, password) => {
-				const requestOptions = {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password })
-				};
-				return fetch(process.env.BACKEND_URL + "/api/login", requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Email or password wrong");
-						}
-					})
-					.then(data => {
-						localStorage.setItem("token", data.access_token);
-						setStore({ auth: true, email });
-					})
-					.catch(error => {
-						setStore({ auth: false, email: null });
-						throw error;
-					});
-			},
+			login: async (email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                };
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/login", requestOptions);
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem("token", data.access_token);
+                        setStore({ auth: true, email });
+
+                        // Obtener datos del propietario autenticado
+                        const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${data.access_token}`
+                            }
+                        });
+                        if (ownerResponse.ok) {
+                            const ownerData = await ownerResponse.json();
+                            setStore({
+                                profilePictureUrl: ownerData.owner.profile_picture_url,
+                                email: ownerData.owner.email
+                            });
+                        }
+                    } else {
+                        throw new Error("Email or password wrong");
+                    }
+                } catch (error) {
+                    setStore({ auth: false, email: null });
+                    throw error;
+                }
+            },
 
 			verifyToken: async () => {
                 try {
@@ -91,10 +107,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
 			logout: () => {
-				console.log("log out desde flux")
-				localStorage.removeItem("token");
-				setStore({auth: false})
-			},
+                localStorage.removeItem("token");
+                setStore({ auth: false, email: null, profilePictureUrl: null });
+            },
 
 			signUp: async (name, email, password) => {
 				try {
@@ -234,80 +249,216 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			
 			getCity: () => {
-                fetch(process.env.BACKEND_URL + "/api/city")
-                    .then(response => response.json())
-                    .then(data => setStore({ city: data }))
-                    .catch(error => console.error("Error fetching city:", error));
-            },
+				fetch(process.env.BACKEND_URL + "/api/city")
+					.then(response => response.json())
+					.then(data => setStore({ city: data }))
+					.catch(error => console.error("Error loading cities:", error));
+			},
 
-            addCity: (newCity) => {
+			addCity: (newCity) => {
+				const requestOptions = {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(newCity)
+				};
+				fetch(process.env.BACKEND_URL + "/api/city", requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({ city: [...store.city, data] });
+					})
+					.catch(error => console.error("Error adding city:", error));
+			},
+
+			editCity: (updatedCity) => {
+				const requestOptions = {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(updatedCity)
+				};
+				fetch(process.env.BACKEND_URL + `/api/city/${updatedCity.id}`, requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({
+							city: store.city.map(city =>
+								city.id === updatedCity.id ? updatedCity : city
+							)
+						});
+					})
+					.catch(error => console.error("Error editing city:", error));
+			},
+
+			deleteCity: (id) => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/city/${id}`, requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({ city: store.city.filter(city => city.id !== id) });
+					})
+
+					.catch(error => console.error("Error deleting owner:", error));
+			},
+			
+
+			getBreed:() =>{
+				fetch(process.env.BACKEND_URL + "/api/breed")
+				.then(response => response.json())
+				.then(data => setStore({breed:data}))
+				.catch(error => console.error("Error fetching breed:", error));
+
+
+			},
+			signUpBreed: (name, type ) => {
                 const requestOptions = {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newCity)
+                    headers: { 'Content-Type': "application/json" },
+                    body: JSON.stringify({ name, type })
                 };
-                fetch(process.env.BACKEND_URL + "/api/city", requestOptions)
+                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
                     .then(response => {
                         if (response.ok) {
                             return response.json();
                         } else {
-                            throw new Error("Error adding city");
+                            throw new Error("User already exists");
                         }
                     })
                     .then(data => {
-                        const store = getStore();
-                        setStore({ city: [...store.city, data] });
+                        setStore({ auth: true, name: name });
                     })
-                    .catch(error => console.error("Error adding city:", error));
-        },
-            editCity: (updatedCity) => {
-                const requestOptions = {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedCity)
-                };
-                fetch(process.env.BACKEND_URL + `/api/city/${updatedCity.id}`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        const store = getStore();
-                        setStore({
-                            city: store.city.map(city =>
-                                city.id === updatedCity.id ? updatedCity : city
-                            )
-                        });
-                    })
-                    .catch(error => console.error("Error editing city:", error));
+                    .catch(error => {
+                        console.error("There was an error!", error);
+                        setStore({ errorMessage: error.message });
+                    });
             },
-
-            deleteCity: (id) => {
+            deleteBreed: breedId => {
                 const requestOptions = {
                     method: 'DELETE'
                 };
-                fetch(process.env.BACKEND_URL + `/api/city/${id}`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        const store = getStore();
-                        setStore({ city: store.city.filter(city => city.id !== id) });
+                fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("Failed to delete breed");
+                        }
                     })
-                    .catch(error => console.error("Error deleting city:", error));
-			      updateOwner: async owner => {
+                    .then(() => {
+                        const store = getStore();
+                        setStore({ breed: store.breed.filter(b => b.id !== breedId) });
+                    })
+                    .catch(error => console.error("Error deleting breed:", error));
+            },
+            editBreed: async (breedId, updatedBreed) => {
                 try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
                         method: 'PUT',
-                        headers: { 'Content-Type': "application/json" },
-                        body: JSON.stringify(owner)
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedBreed)
                     });
-                    if (!response.ok) throw new Error("Failed to update owner");
-                    const updatedOwner = await response.json();
-                    const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
-                    setStore({ owners: updatedOwners });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
+                        setStore({ breed: updatedBreeds });
+                    } else {
+                        console.error('Error al actualizar la raza');
+                    }
                 } catch (error) {
-                    console.error("Error updating owner:", error);
+                    console.error("Error editing breed:", error);
                 }
+            },
 
-            }
+			updateOwner: async (owner) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
+						method: 'PUT',
+						headers: { 'Content-Type': "application/json" },
+						body: JSON.stringify(owner)
+					});
+					if (!response.ok) throw new Error("Failed to update owner");
+					const updatedOwner = await response.json();
+					const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
+					setStore({ owners: updatedOwners });
+				} catch (error) {
+					console.error("Error updating owner:", error);
+				}
+			},
+			uploadProfilePicture: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + '/api/upload_profile_picture', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ profilePictureUrl: data.profile_picture_url });
+                    } else {
+                        throw new Error("Failed to upload image");
+                    }
+                } catch (error) {
+                    console.error("Error uploading profile picture:", error);
+                }
+            },
+				
+			getPhoto:() =>{
+				fetch(process.env.BACKEND_URL + "/api/photo")
+				.then(response => response.json())
+				.then(data => setStore({photo:data}))
+				.catch(error => console.error("Error fetching photo:", error));
+
+
+			},
+			uploadPhoto: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('URL_DEL_ENDPOINT', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const newPhoto = await response.json();
+                        const store = getStore();
+                        setStore({ photo: [...store.photo, newPhoto] });
+                    } else {
+                        console.error('Error al subir el archivo');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            
+            },
+			deletePhoto: photoId => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/photo/${photoId}`, requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Failed to delete photo");
+						}
+					})
+					
+					.catch(error => console.error("Error deleting photo:", error));
+			},
 		}
-	}
 	}
 };
 

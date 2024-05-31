@@ -23,7 +23,10 @@ class Owner(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-
+    address = db.Column(db.String(250), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    
     pets = db.relationship('Pet', backref='owner', lazy=True)
 
     def __repr__(self):
@@ -34,7 +37,10 @@ class Owner(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "password": self.password
+            "password": self.password,
+            "address": self.address,
+            "latitude": self.latitude,
+            "longitude": self.longitude
         }
 
 class Pet(db.Model):
@@ -46,8 +52,9 @@ class Pet(db.Model):
     pedigree = db.Column(db.Boolean, nullable=False)
     photo = db.Column(db.String(100), nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
-
     breed = db.relationship('Breed', backref='pets')
+    photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
+    photo = db.relationship('Photo', backref='pets')
 
     def __repr__(self):
         return f'<Pet {self.name}>'
@@ -86,3 +93,21 @@ class Breed(db.Model):
 
     def __repr__(self):
         return f'<Breed {self.name}>'
+    
+
+
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(100), nullable=True)
+    
+
+    def __repr__(self):
+        return f'<Photo {self.url}>'
+    def serialize(self):
+        return {
+            "id": self.id,
+            "url": self.url,
+            # do not serialize the password, its a security breach
+        }
+
+
