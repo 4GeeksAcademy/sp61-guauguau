@@ -16,7 +16,7 @@ export const PetSignUp = () => {
 
     useEffect(() => {
         actions.fetchOwners();
-        actions.fetchBreeds();  // Asegúrate de que esta línea llama a la función correctamente
+        actions.getBreed();  // Asegúrate de que esta línea llama a la función correctamente
     }, [actions]);
 
     const handleChange = (e) => {
@@ -59,7 +59,7 @@ export const PetSignUp = () => {
                         required
                     >
                         <option value="">Select Breed</option>
-                        {store.breeds && store.breeds.map(breed => (
+                        {store.breed && store.breed.map(breed => (
                             <option key={breed.id} value={breed.id}>{breed.name}</option>
                         ))}
                     </select>
