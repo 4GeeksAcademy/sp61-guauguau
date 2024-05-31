@@ -167,6 +167,20 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching pet by ID:", error);
                 }
             },
+			getPetDetails: async (petId) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const pet = await response.json();
+					setStore({ currentPet: pet });
+					return pet;
+				} catch (error) {
+					console.error("Error fetching pet details:", error);
+					throw error;
+				}
+			},
 			updatePet: async (id, petDetails) => {
                 try {
                     console.log(`Updating pet with ID: ${id}`);
@@ -214,6 +228,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			
+			
 
 			fetchDeletePet: (id) => {
 				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
@@ -256,6 +271,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 						actions.fetchOwners();
 					})
 					.catch(error => console.error("Error deleting owner:", error));
+			},
+			fetchOwnerPets: async () => {
+				try {
+					const token = localStorage.getItem("token");
+					const response = await fetch(`${process.env.BACKEND_URL}/api/owner_pets`, {
+						method: 'GET',
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${token}`
+						}
+					});
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const pets = await response.json();
+					setStore({ ownerPets: pets });
+				} catch (error) {
+					console.error("Error fetching owner's pets:", error);
+				}
 			},
 			
 			getCity: () => {

@@ -36,7 +36,7 @@ export const OnePet = () => {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [petId]);
 
     const handleChange = e => {
         const { name, value } = e.target;

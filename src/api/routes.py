@@ -128,7 +128,7 @@ def get_pets():
         'owner_name': pet.owner.name if pet.owner else None
     } for pet in pets]), 200
 
-@api.route('/pets/<int:pet_id>', methods=['GET'])
+@api.route('/pet/<int:pet_id>', methods=['GET'])
 def get_pet(pet_id):
     pet = Pet.query.get(pet_id)
     if pet:
@@ -366,3 +366,28 @@ def upload_pet_profile_picture(pet_id):
         return jsonify({'message': 'Pet profile picture updated!', 'photo_url': photo.url}), 200
     except Exception as e:
         return jsonify({'error': 'Failed to upload pet photo', 'details': str(e)}), 500
+    
+    # OBTENER OWNER PETS
+
+@api.route('/owner_pets', methods=['GET'])
+@jwt_required()
+def get_owner_pets():
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    pets = Pet.query.filter_by(owner_id=owner.id).all()
+    return jsonify([{
+        'id': pet.id,
+        'name': pet.name,
+        'breed': pet.breed.name if pet.breed else None,
+        'sex': pet.sex,
+        'age': pet.age,
+        'pedigree': pet.pedigree,
+        'photo': pet.photo.url if pet.photo else None,
+        'owner_id': pet.owner_id,
+        'owner_name': pet.owner.name if pet.owner else None
+    } for pet in pets]), 200
+
+    

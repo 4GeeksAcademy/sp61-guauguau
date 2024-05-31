@@ -11,16 +11,14 @@ export const PetSignUp = () => {
         age: "",
         pedigree: false,
         photo: ""
-        
     });
     const [file, setFile] = useState(null);
+    const [successMessage, setSuccessMessage] = useState("");
 
     useEffect(() => {
         actions.fetchOwners();
-
         actions.getBreed();
     }, []);
-
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -39,10 +37,10 @@ export const PetSignUp = () => {
     
         try {
             const addedPet = await actions.addPet(formData);
-    
+
             if (addedPet) {
                 const petId = addedPet.pet_id;
-    
+
                 if (file) {
                     const formData = new FormData();
                     formData.append("file", file);
@@ -51,15 +49,17 @@ export const PetSignUp = () => {
                         method: 'POST',
                         body: formData
                     });
-    
+
                     const result = await response.json();
-    
+
                     if (response.ok) {
                         console.log("Photo uploaded successfully:", result);
                     } else {
                         console.error("Failed to upload photo:", result.error);
                     }
                 }
+
+                setSuccessMessage("Pet created successfully!");
             } else {
                 console.error("Failed to add pet");
             }
@@ -71,6 +71,7 @@ export const PetSignUp = () => {
     return (
         <div className="container">
             <h2>Add New Pet</h2>
+            {successMessage && <div className="alert alert-success" role="alert">{successMessage}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name</label>
@@ -148,6 +149,7 @@ export const PetSignUp = () => {
                 
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+            <Link to="/private" className="btn btn-secondary mt-3">Back to Private</Link>
         </div>
     );
 };

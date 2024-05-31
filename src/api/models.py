@@ -23,6 +23,7 @@ class Owner(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
+    profile_picture_url = db.Column(db.String(255))
     address = db.Column(db.String(250), nullable=True)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
@@ -38,6 +39,7 @@ class Owner(db.Model):
             "name": self.name,
             "email": self.email,
             "password": self.password,
+            "profile_picture_url": self.profile_picture_url,
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude

@@ -12,6 +12,7 @@ export const Private = () => {
         const token = localStorage.getItem("token");
         if (token) {
             actions.verifyToken();
+            actions.fetchOwnerPets();  // Fetch owner's pets when component mounts
         }
         setLoading(false);
     }, []);
@@ -58,6 +59,32 @@ export const Private = () => {
                     <Link to="/">
                         <button className="btn btn-danger m-2" onClick={() => actions.logout()}>Log Out</button>
                     </Link>
+                </div>
+                <div className="container mt-4">
+                    <h3>Your Pets</h3>
+                    {store.ownerPets && store.ownerPets.length > 0 ? (
+                        <div className="row">
+                            {store.ownerPets.map(pet => (
+                                <div key={pet.id} className="col-md-4">
+                                    <div className="card mb-4">
+                                        {pet.photo && (
+                                            <img src={pet.photo} alt={pet.name} className="card-img-top" />
+                                        )}
+                                        <div className="card-body">
+                                            <h5 className="card-title">{pet.name}</h5>
+                                            <p className="card-text">Breed: {pet.breed}</p>
+                                            <p className="card-text">Age: {pet.age}</p>
+                                            <p className="card-text">Sex: {pet.sex}</p>
+                                            <p className="card-text">Pedigree: {pet.pedigree ? 'Yes' : 'No'}</p>
+                                            <Link to={`/pet/${pet.id}`} className="btn btn-primary">View Details</Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p>You have no pets.</p>
+                    )}
                 </div>
             </div>
             <Link to="/">
