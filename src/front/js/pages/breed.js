@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import { ApiBreed } from "./apiBreed";
-
+import { Autocomplete } from "./autocompletbreed";
+import { AutocompleteType } from "./autocomplettype";
 export const Breed = () => {
 	const { store, actions } = useContext(Context);
     const [name, setName] = useState("");
@@ -13,7 +14,12 @@ export const Breed = () => {
 
 
    
-      
+    const handleSelectBreed = (raza) => {
+        setName(raza.name);
+    };
+    const handleSelectType = (raza) => {
+        setType(raza.breed_group);
+    };
     
 
     const handleSubmit = (e) => {
@@ -38,6 +44,7 @@ export const Breed = () => {
     const handleDeleteBreed = breedId => {
         actions.deleteBreed(breedId); 
     };
+    
 
     const handleEditClick = (breed) => {
         setEditMode(true);
@@ -47,12 +54,12 @@ export const Breed = () => {
     };
 
     return (
-        <div className="container">
+        <div className="container" >
             
-            <h1>Raza desde Flux</h1>
-				<div className="row flex-row flex-nowrap overflow-auto">
+           
+				<div className="row flex-row flex-nowrap overflow-auto" id="ocultar">
 					
-				<ApiBreed/>
+				<ApiBreed />
 
 				</div>
         
@@ -87,28 +94,30 @@ export const Breed = () => {
             </table>
 
             <div className="container bg-dark p-3">
-                <form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
+            <form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
                     <h1 className="text-center p-3">{editMode ? "Editar Raza" : "Registrar Raza"}</h1>
                     <div className="col-12">
                         <label htmlFor="inputName" className="form-label">Name</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            id="inputName" 
-                            placeholder="your name" 
+                        <Autocomplete onSelect={handleSelectBreed} />
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="inputName"
+                            placeholder="Otros"
                             value={editMode ? editName : name}
-                            onChange={(e) => editMode ? setEditName(e.target.value) : setName(e.target.value)}
+                            onChange={(e) => (editMode ? setEditName(e.target.value) : setName(e.target.value))}
                         />
                     </div>
                     <div className="col-12">
                         <label htmlFor="inputType" className="form-label">Type</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            id="inputType" 
-                            placeholder="your type"
+                        <AutocompleteType onSelect={handleSelectType} />
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="inputType"
+                            placeholder="Otros"
                             value={editMode ? editType : type}
-                            onChange={(e) => editMode ? setEditType(e.target.value) : setType(e.target.value)}
+                            onChange={(e) => (editMode ? setEditType(e.target.value) : setType(e.target.value))}
                         />
                     </div>
                     <div className="col-12">

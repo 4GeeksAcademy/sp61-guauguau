@@ -30,17 +30,20 @@ export const ApiBreed = () => {
         <table>
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Origen</th>
+                    <th>Raza</th>
+                    <th>Tipo</th>
                     <th>Esperanza de vida</th>
+                    <th>Imagen</th>
                 </tr>
             </thead>
             <tbody>
                 {store.raza.map((raza) => (
                     <tr key={raza.id}>
+                        <td>{raza.breed_group}</td>
                         <td>{raza.name}</td>
-                        <td>{raza.origin}</td>
                         <td>{raza.life_span}</td>
+                        <td>{raza.reference_image_id}</td>
+
                     </tr>
                 ))}
             </tbody>
