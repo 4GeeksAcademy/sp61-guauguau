@@ -145,7 +145,7 @@ def get_pet(pet_id):
             'owner_id': pet.owner_id,
             'owner_name': pet.owner.name if pet.owner else None,
             'photos': photos,
-            'description': pet.description
+            'description': pet.description,
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
@@ -193,11 +193,12 @@ def update_pet(pet_id):
         pet.sex = data.get('sex', pet.sex)
         pet.age = data.get('age', pet.age)
         pet.pedigree = data.get('pedigree', pet.pedigree)
-        pet.description = data.get('description', pet.description)  # Guardar la descripción
+        pet.description = data.get('description', pet.description or '')  # Guardar la descripción
         db.session.commit()
         return jsonify(pet.serialize()), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
+
 
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
@@ -296,12 +297,14 @@ def create_photo():
     db.session.commit()
     return jsonify({'message': 'New photo added!'}), 201
 
+
 @api.route('/photo/<int:id>', methods=['DELETE'])
 def delete_photo(id):
     photo = Photo.query.get_or_404(id)
     db.session.delete(photo)
     db.session.commit()
-    return jsonify({'message': 'Photo deleted successfully!'})
+    return jsonify({'message': 'Photo deleted successfully!'}), 200
+
 
 @api.route('/photo/<int:id>', methods=['PUT'])
 def update_photo(id):
@@ -387,6 +390,7 @@ def upload_pet_additional_photos(pet_id):
         return jsonify({'message': 'Pet additional pictures updated!', 'photo_urls': uploaded_urls}), 200
     except Exception as e:
         return jsonify({'error': 'Failed to upload pet photos', 'details': str(e)}), 500
+
     
 @api.route('/api/update_photo_order', methods=['POST'])
 def update_photo_order():

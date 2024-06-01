@@ -187,14 +187,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getPetDetails: async (petId) => {
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
-					const pet = await response.json();
-					if (response.ok) {
-						pet.photos.sort((a, b) => a.order - b.order);  // Ordena las fotos por el campo order
-						setStore({ currentPet: pet });
+					if (!response.ok) {
+						throw new Error('Error fetching pet details');
 					}
+					const pet = await response.json();
+					pet.photos = pet.photos || [];  // Asegúrate de que photos no sea null
+					pet.description = pet.description || '';  // Asegúrate de que description no sea null
+					setStore({ currentPet: pet });
 					return pet;
 				} catch (error) {
-					console.error("Error fetching pet details:", error);
+					console.error('Error fetching pet details:', error);
 				}
 			},
 			
@@ -212,12 +214,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 						throw new Error('Error updating pet');
 					}
 					const data = await response.json();
-					console.log('Updated pet data:', data);
+					const store = getStore();
+					const updatedPets = store.pets.map(pet => pet.id === petId ? data : pet);
+					setStore({ pets: updatedPets, currentPet: data });
 					return data;
 				} catch (error) {
 					console.error('Error updating pet:', error);
 				}
 			},
+			
 			
 			addPet: async (pet) => {
 				try {
@@ -477,35 +482,38 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
 			uploadPetPhoto: async (petId, file) => {
-                const formData = new FormData();
-                formData.append("file", file);
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    if (!response.ok) throw new Error("HTTP error! status: " + response.status);
-                    const result = await response.json();
-                    setStore({ petProfilePictureUrl: result.photo_url });
-                } catch (error) {
-                    console.error("Error uploading pet photo:", error);
-                }
-            },
-			uploadPetAdditionalPhotos: async (petId, file) => {
 				const formData = new FormData();
-				formData.append("file", file);
+				formData.append('file', file);
 			
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
+						method: 'POST',
+						body: formData
+					});
+			
+					if (!response.ok) throw new Error("HTTP error! status: " + response.status);
+					const result = await response.json();
+					return result; // Asegúrate de que el resultado contiene `photo_url`
+				} catch (error) {
+					console.error("Error uploading pet photo:", error);
+				}
+			},
+			uploadPetAdditionalPhotos: async (petId, files) => {
+				const formData = new FormData();
+				for (const file of files) {
+					formData.append("file", file);
+				}
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_additional_photos/${petId}`, {
 						method: 'POST',
 						body: formData
 					});
-			
-					if (!response.ok) throw new Error("Failed to upload additional photo");
+					if (!response.ok) throw new Error("Failed to upload additional photos");
 					const result = await response.json();
 					return result;
 				} catch (error) {
-					console.error("Error uploading additional photo:", error);
+					console.error("Error uploading additional photos:", error);
+					throw error;
 				}
 			},
 			updatePhotoOrder: async (photoOrders) => {
@@ -522,6 +530,13 @@ const getState = ({ getStore, getActions, setStore }) => {
 					}
 					const data = await response.json();
 					console.log('Photo order updated successfully:', data);
+					// Opcional: Puedes actualizar el store si es necesario
+					const store = getStore();
+					const updatedPhotos = store.currentPet.photos.map(photo => {
+						const updatedPhoto = photoOrders.find(p => p.id === photo.id);
+						return updatedPhoto ? { ...photo, order: updatedPhoto.order } : photo;
+					}).sort((a, b) => a.order - b.order);
+					setStore({ currentPet: { ...store.currentPet, photos: updatedPhotos } });
 				} catch (error) {
 					console.error('Error updating photo order:', error);
 				}
@@ -556,21 +571,23 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             
             },
-			deletePhoto: photoId => {
-				const requestOptions = {
-					method: 'DELETE'
-				};
-				fetch(process.env.BACKEND_URL + `/api/photo/${photoId}`, requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Failed to delete photo");
-						}
-					})
-					
-					.catch(error => console.error("Error deleting photo:", error));
-			},
+			deletePhoto: async (photoId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/photo/${photoId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) throw new Error('Failed to delete photo');
+                    
+                    const store = getStore();
+                    const updatedPhotos = store.currentPet.photos.filter(photo => photo.id !== photoId);
+                    setStore({ currentPet: { ...store.currentPet, photos: updatedPhotos } });
+                } catch (error) {
+                    console.error('Error deleting photo:', error);
+                }
+            },
 		}
 	}
 };
