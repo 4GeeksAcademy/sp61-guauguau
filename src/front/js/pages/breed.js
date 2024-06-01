@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
+import { ApiBreed } from "./apiBreed";
 
 export const Breed = () => {
 	const { store, actions } = useContext(Context);
@@ -9,6 +10,11 @@ export const Breed = () => {
     const [editBreedId, setEditBreedId] = useState(null);
     const [editName, setEditName] = useState("");
     const [editType, setEditType] = useState("");
+
+
+   
+      
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -42,6 +48,15 @@ export const Breed = () => {
 
     return (
         <div className="container">
+            
+            <h1>Raza desde Flux</h1>
+				<div className="row flex-row flex-nowrap overflow-auto">
+					
+				<ApiBreed/>
+
+				</div>
+        
+        
            <h1>Listar Razas</h1>
             <table className="table">
                 <thead>

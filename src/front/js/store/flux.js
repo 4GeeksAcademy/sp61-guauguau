@@ -1,3 +1,4 @@
+import axios from 'axios';
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -10,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			currentPet: null,
 			message: null,
 			breed: [],
+			raza: [],
 			currentBreed:null,
 			photo: [],
 			demo: [
@@ -457,6 +459,31 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					.catch(error => console.error("Error deleting photo:", error));
 			},
+			BreedApi: () => {
+			
+				const getDogBreeds = async () => {
+					const options = {
+						method: 'GET',
+						url: 'https://api.thedogapi.com/v1/breeds',
+						headers: {
+							'x-api-key': 'live_VTqPRCE1vpTptJOvyVn0xaz737ys72O39rFV61XYKXxwzjlA6yDJfsdlMRKl79Ax'
+						}
+					};
+				
+					try {
+						const response = await axios(options);
+						console.log(response.data);
+						setStore({ raza: response.data });
+					} catch (error) {
+						console.error(error);
+					}
+				};
+				
+				// Llama a la función para obtener las razas
+				getDogBreeds();
+				console.log('se cargo desde flux');
+				
+							},
 
 		}
 	}
