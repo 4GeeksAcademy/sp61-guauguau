@@ -133,6 +133,7 @@ def get_pets():
 def get_pet(pet_id):
     pet = Pet.query.get(pet_id)
     if pet:
+        photos = sorted([photo.serialize() for photo in pet.photos], key=lambda x: x['order'])  # Ordena las fotos por el campo order
         return jsonify({
             'id': pet.id,
             'name': pet.name,
@@ -140,14 +141,15 @@ def get_pet(pet_id):
             'sex': pet.sex,
             'age': pet.age,
             'pedigree': pet.pedigree,
-            'description': pet.description,
             'photo': pet.photo.url if pet.photo else None,
             'owner_id': pet.owner_id,
             'owner_name': pet.owner.name if pet.owner else None,
-            'photos': [photo.url for photo in pet.photos]
+            'photos': photos,
+            'description': pet.description
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
+
 
 @api.route('/pets', methods=['POST'])
 @jwt_required()
@@ -181,19 +183,17 @@ def add_pet():
     
     return jsonify({'message': 'New pet added!', 'pet_id': new_pet.id}), 201
 
-@api.route('/pets/<int:pet_id>', methods=['PUT'])
+@api.route('/pet/<int:pet_id>', methods=['PUT'])
 def update_pet(pet_id):
+    data = request.get_json()
     pet = Pet.query.get(pet_id)
     if pet:
-        data = request.json
         pet.name = data.get('name', pet.name)
         pet.breed_id = data.get('breed_id', pet.breed_id)
         pet.sex = data.get('sex', pet.sex)
         pet.age = data.get('age', pet.age)
         pet.pedigree = data.get('pedigree', pet.pedigree)
-        pet.photo_id = data.get('photo_id', pet.photo_id)
-        pet.owner_id = data.get('owner_id', pet.owner_id)
-        pet.description = data.get('description', pet.description)  # Actualizar la descripción
+        pet.description = data.get('description', pet.description)  # Guardar la descripción
         db.session.commit()
         return jsonify(pet.serialize()), 200
     else:
@@ -387,6 +387,22 @@ def upload_pet_additional_photos(pet_id):
         return jsonify({'message': 'Pet additional pictures updated!', 'photo_urls': uploaded_urls}), 200
     except Exception as e:
         return jsonify({'error': 'Failed to upload pet photos', 'details': str(e)}), 500
+    
+@api.route('/api/update_photo_order', methods=['POST'])
+def update_photo_order():
+    data = request.get_json()
+    try:
+        for photo in data:
+            photo_id = photo['id']
+            new_order = photo['order']
+            photo_to_update = Photo.query.get(photo_id)
+            if photo_to_update:
+                photo_to_update.order = new_order
+        db.session.commit()
+        return jsonify({"message": "Photo order updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # OBTENER OWNER PETS
 

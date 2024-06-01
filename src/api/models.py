@@ -54,7 +54,7 @@ class Pet(db.Model):
     pedigree = db.Column(db.Boolean, nullable=False)
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
-    description = db.Column(db.String(500), nullable=True)  # Campo de descripción añadido
+    description = db.Column(db.String(500), nullable=True)
     breed = db.relationship('Breed', backref='pets')
     photo = db.relationship('Photo', backref='pet_photo', foreign_keys=[photo_id])
     photos = db.relationship('Photo', backref='pet', lazy=True, foreign_keys='Photo.pet_id')
@@ -73,8 +73,9 @@ class Pet(db.Model):
             "photo": self.photo.url if self.photo else None,
             "owner_id": self.owner_id,
             "photos": [photo.url for photo in self.photos],
-            "description": self.description  # Incluir la descripción en la serialización
+            "description": self.description
         }
+
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -103,6 +104,7 @@ class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(100), nullable=True)
     pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=True)
+    order = db.Column(db.Integer, nullable=False, default=0)  # Agregar columna con valor por defecto
 
     def __repr__(self):
         return f'<Photo {self.url}>'
@@ -111,4 +113,5 @@ class Photo(db.Model):
         return {
             "id": self.id,
             "url": self.url,
+            "order": self.order
         }

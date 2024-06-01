@@ -187,11 +187,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getPetDetails: async (petId) => {
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
-					if (!response.ok) {
-						throw new Error("Failed to fetch pet details");
-					}
 					const pet = await response.json();
-					setStore({ currentPet: pet });
+					if (response.ok) {
+						pet.photos.sort((a, b) => a.order - b.order);  // Ordena las fotos por el campo order
+						setStore({ currentPet: pet });
+					}
 					return pet;
 				} catch (error) {
 					console.error("Error fetching pet details:", error);
@@ -199,26 +199,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			
 
-			updatePet: async (id, petDetails) => {
-                try {
-                    console.log(`Updating pet with ID: ${id}`);
-                    const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(petDetails)
-                    });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    console.log("Updated pet data:", data);
-                    setStore({ currentPet: data });
-                } catch (error) {
-                    console.error("Error updating pet by ID:", error);
-                }
-            },
+			updatePet: async (petId, petDetails) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(petDetails)
+					});
+					if (!response.ok) {
+						throw new Error('Error updating pet');
+					}
+					const data = await response.json();
+					console.log('Updated pet data:', data);
+					return data;
+				} catch (error) {
+					console.error('Error updating pet:', error);
+				}
+			},
+			
 			addPet: async (pet) => {
 				try {
 					const token = localStorage.getItem("token");
@@ -508,7 +508,24 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error uploading additional photo:", error);
 				}
 			},
-				
+			updatePhotoOrder: async (photoOrders) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/update_photo_order`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(photoOrders)
+					});
+					if (!response.ok) {
+						throw new Error('Error updating photo order');
+					}
+					const data = await response.json();
+					console.log('Photo order updated successfully:', data);
+				} catch (error) {
+					console.error('Error updating photo order:', error);
+				}
+			},
 			getPhoto:() =>{
 				fetch(process.env.BACKEND_URL + "/api/photo")
 				.then(response => response.json())

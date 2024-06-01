@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import { useParams, Link } from 'react-router-dom';
-
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 export const OnePet = () => {
     const { petId } = useParams();
@@ -36,7 +36,7 @@ export const OnePet = () => {
             }
         };
         fetchPetDetails();
-    }, [petId]);
+    }, [petId, actions]);
 
     const handleChange = e => {
         const { name, value, type, checked } = e.target;
@@ -79,6 +79,25 @@ export const OnePet = () => {
         }
     };
 
+    const handleOnDragEnd = async (result) => {
+        if (!result.destination) return;
+        const items = Array.from(petDetails.photos);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+        setPetDetails({ ...petDetails, photos: items });
+    
+        // Enviar la nueva orden al servidor
+        const photoOrders = items.map((photo, index) => ({
+            id: photo.id,
+            order: index
+        }));
+        try {
+            await actions.updatePhotoOrder(photoOrders);
+        } catch (error) {
+            console.error("Error updating photo order:", error);
+        }
+    };
+
     return (
         <div className="container">
             <h2>Detalles de la Mascota</h2>
@@ -104,8 +123,7 @@ export const OnePet = () => {
                         ) : (
                             <span className="me-2">{petDetails.name}</span>
                         )}
-                        <i className="fa-solid fa-pen-to-square cursor-pointer" onClick={() => handleEditClick('name')} ></i>
-                        
+                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('name')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
                         <label className="me-2">Edad:</label>
@@ -120,7 +138,7 @@ export const OnePet = () => {
                         ) : (
                             <span className="me-2">{petDetails.age}</span>
                         )}
-                        <i className="fa-solid fa-pen-to-square cursor-pointer" onClick={() => handleEditClick('age')} ></i>
+                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('age')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
                         <label className="me-2">Sexo:</label>
@@ -137,7 +155,7 @@ export const OnePet = () => {
                         ) : (
                             <span className="me-2">{petDetails.sex}</span>
                         )}
-                        <i className="fa-solid fa-pen-to-square cursor-pointer" onClick={() => handleEditClick('sex')} ></i>
+                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('sex')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
                         <label className="me-2">Pedigree:</label>
@@ -152,7 +170,7 @@ export const OnePet = () => {
                         ) : (
                             <span className="me-2">{petDetails.pedigree ? 'Sí' : 'No'}</span>
                         )}
-                        <i className="fa-solid fa-pen-to-square cursor-pointer" onClick={() => handleEditClick('pedigree')} ></i>
+                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('pedigree')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
                         <label className="me-2">Descripción:</label>
@@ -166,23 +184,39 @@ export const OnePet = () => {
                         ) : (
                             <span className="me-2">{petDetails.description}</span>
                         )}
-                        <i className="fa-solid fa-pen-to-square cursor-pointer" onClick={() => handleEditClick('description')} ></i>
+                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('description')}></i>
                     </div>
                     <button type="submit" className="btn btn-primary mt-2">
-                         Guardar Cambios
+                        <i className="fas fa-save"></i> Guardar Cambios
                     </button>
                 </div>
             </form>
-            {isLoading && <div className="mt-3">Cargando...</div>}
-            <div className="row mt-3">
-                {petDetails.photos.map((photo, index) => (
-                    <div key={index} className="col-6 col-md-3 mb-3">
-                        <img src={photo} alt={`Pet photo ${index}`} className="img-thumbnail w-100" />
-                    </div>
-                ))}
-            </div>
+            <h3>Fotos Adicionales</h3>
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+                <Droppable droppableId="photos" direction="horizontal">
+                    {(provided) => (
+                        <div className="row" {...provided.droppableProps} ref={provided.innerRef}>
+                            {petDetails.photos.map((photo, index) => (
+                                <Draggable key={photo.id} draggableId={photo.id.toString()} index={index}>
+                                    {(provided) => (
+                                        <div
+                                            className="col-md-3 mb-3"
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                        >
+                                            <img src={photo.url} alt={`Pet ${index}`} className="img-fluid" />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
             <Link to="/private" className="btn btn-secondary mt-3">
-                 Volver a Private
+                <i className="fas fa-arrow-left"></i> Volver a Private
             </Link>
         </div>
     );
