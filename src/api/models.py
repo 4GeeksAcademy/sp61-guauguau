@@ -54,8 +54,10 @@ class Pet(db.Model):
     pedigree = db.Column(db.Boolean, nullable=False)
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
+    description = db.Column(db.String(500), nullable=True)  # Campo de descripción añadido
     breed = db.relationship('Breed', backref='pets')
-    photo = db.relationship('Photo', backref='pets')
+    photo = db.relationship('Photo', backref='pet_photo', foreign_keys=[photo_id])
+    photos = db.relationship('Photo', backref='pet', lazy=True, foreign_keys='Photo.pet_id')
 
     def __repr__(self):
         return f'<Pet {self.name}>'
@@ -69,9 +71,10 @@ class Pet(db.Model):
             "age": self.age,
             "pedigree": self.pedigree,
             "photo": self.photo.url if self.photo else None,
-            "owner_id": self.owner_id
+            "owner_id": self.owner_id,
+            "photos": [photo.url for photo in self.photos],
+            "description": self.description  # Incluir la descripción en la serialización
         }
-
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,22 +99,16 @@ class Breed(db.Model):
     def __repr__(self):
         return f'<Breed {self.name}>'
 
-
-
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(100), nullable=True)
-    
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=True)
 
     def __repr__(self):
         return f'<Photo {self.url}>'
+    
     def serialize(self):
         return {
             "id": self.id,
             "url": self.url,
-            # do not serialize the password, its a security breach
-
         }
-
-
-

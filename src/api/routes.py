@@ -123,6 +123,7 @@ def get_pets():
         'sex': pet.sex,
         'age': pet.age,
         'pedigree': pet.pedigree,
+        'description': pet.description,
         'photo': pet.photo.url if pet.photo else None,
         'owner_id': pet.owner_id,
         'owner_name': pet.owner.name if pet.owner else None
@@ -139,9 +140,11 @@ def get_pet(pet_id):
             'sex': pet.sex,
             'age': pet.age,
             'pedigree': pet.pedigree,
+            'description': pet.description,
             'photo': pet.photo.url if pet.photo else None,
             'owner_id': pet.owner_id,
-            'owner_name': pet.owner.name if pet.owner else None
+            'owner_name': pet.owner.name if pet.owner else None,
+            'photos': [photo.url for photo in pet.photos]
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
@@ -166,13 +169,7 @@ def add_pet():
         pedigree=data['pedigree'],
         owner_id=owner.id
     )
-    
-    db.session.add(new_pet)
-    db.session.commit()
 
-    return jsonify({'message': 'New pet added!', 'pet_id': new_pet.id}), 201
-
-    
     if 'photo' in data and data['photo']:
         photo = Photo(url=data['photo'])
         db.session.add(photo)
@@ -181,6 +178,7 @@ def add_pet():
 
     db.session.add(new_pet)
     db.session.commit()
+    
     return jsonify({'message': 'New pet added!', 'pet_id': new_pet.id}), 201
 
 @api.route('/pets/<int:pet_id>', methods=['PUT'])
@@ -195,18 +193,9 @@ def update_pet(pet_id):
         pet.pedigree = data.get('pedigree', pet.pedigree)
         pet.photo_id = data.get('photo_id', pet.photo_id)
         pet.owner_id = data.get('owner_id', pet.owner_id)
+        pet.description = data.get('description', pet.description)  # Actualizar la descripción
         db.session.commit()
-        return jsonify({
-            'id': pet.id,
-            'name': pet.name,
-            'breed': pet.breed.name if pet.breed else None,
-            'sex': pet.sex,
-            'age': pet.age,
-            'pedigree': pet.pedigree,
-            'photo': pet.photo.url if pet.photo else None,
-            'owner_id': pet.owner_id,
-            'owner_name': pet.owner.name if pet.owner else None
-        }), 200
+        return jsonify(pet.serialize()), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
@@ -348,6 +337,7 @@ def upload_profile_picture():
 def upload_pet_profile_picture(pet_id):
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
+    
     file = request.files['file']
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
@@ -366,8 +356,39 @@ def upload_pet_profile_picture(pet_id):
         return jsonify({'message': 'Pet profile picture updated!', 'photo_url': photo.url}), 200
     except Exception as e:
         return jsonify({'error': 'Failed to upload pet photo', 'details': str(e)}), 500
+
+# MULTIPLES FOTOS
+
+@api.route('/upload_pet_additional_photos/<int:pet_id>', methods=['POST'])
+def upload_pet_additional_photos(pet_id):
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
     
-    # OBTENER OWNER PETS
+    files = request.files.getlist('file')
+    if len(files) > 4:
+        return jsonify({"error": "You can upload up to 4 photos only"}), 400
+
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({'error': 'Pet not found'}), 404
+
+    uploaded_urls = []
+    try:
+        for file in files:
+            if file.filename == '':
+                return jsonify({"error": "No selected file"}), 400
+            
+            upload_result = cloudinary.uploader.upload(file)
+            photo = Photo(url=upload_result['secure_url'], pet_id=pet_id)
+            db.session.add(photo)
+            uploaded_urls.append(photo.url)
+        
+        db.session.commit()
+        return jsonify({'message': 'Pet additional pictures updated!', 'photo_urls': uploaded_urls}), 200
+    except Exception as e:
+        return jsonify({'error': 'Failed to upload pet photos', 'details': str(e)}), 500
+
+# OBTENER OWNER PETS
 
 @api.route('/owner_pets', methods=['GET'])
 @jwt_required()
@@ -389,5 +410,3 @@ def get_owner_pets():
         'owner_id': pet.owner_id,
         'owner_name': pet.owner.name if pet.owner else None
     } for pet in pets]), 200
-
-    

@@ -9,12 +9,16 @@ export const Private = () => {
     const [file, setFile] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            actions.verifyToken();
-            actions.fetchOwnerPets();  // Fetch owner's pets when component mounts
-        }
-        setLoading(false);
+        const fetchData = async () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                await actions.verifyToken();
+                await actions.fetchOwnerPets();  // Fetch owner's pets when component mounts
+            }
+            setLoading(false);
+        };
+
+        fetchData();
     }, []);
 
     const handleFileChange = (e) => {
@@ -41,11 +45,16 @@ export const Private = () => {
             <div className="form-container">
                 <p><span style={{ fontWeight: "bolder" }}>Welcome</span> {store.email}</p>
                 <p className="title">This is your private area</p>
-                <p className="title">Profile</p>
-                <div>
-                    {store.profilePictureUrl && (
-                        <img src={store.profilePictureUrl} alt="Profile" className="img-thumbnail" />
-                    )}
+                <div className="row align-items-center mb-4">
+                    <div className="col-md-3 text-center">
+                        {store.profilePictureUrl && (
+                            <img src={store.profilePictureUrl} alt="Profile" className="img-thumbnail profile-picture" />
+                        )}
+                    </div>
+                    <div className="col-md-9">
+                        <h3>About Me</h3>
+                        <p>This is your personal space where you can manage your pets and update your profile information.</p>
+                    </div>
                 </div>
                 <div>
                     <input type="file" onChange={handleFileChange} />
@@ -76,7 +85,10 @@ export const Private = () => {
                                             <p className="card-text">Age: {pet.age}</p>
                                             <p className="card-text">Sex: {pet.sex}</p>
                                             <p className="card-text">Pedigree: {pet.pedigree ? 'Yes' : 'No'}</p>
-                                            <Link to={`/pet/${pet.id}`} className="btn btn-primary">View Details</Link>
+                                            <div className="d-flex justify-content-between">
+                                                <Link to={`/pet/${pet.id}`} className="btn btn-primary">View Details</Link>
+                                                <button className="btn btn-danger" onClick={() => actions.fetchDeletePet(pet.id)}>Delete</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
