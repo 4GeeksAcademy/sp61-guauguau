@@ -12,11 +12,16 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
+from openai import OpenAI, Configuration
 
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+# Configuración de la API de OpenAI
+configuration = Configuration(api_key="YOUR_OPENAI_API_KEY")
+openai = OpenAI(configuration)
 
 
 @api.route('/hello', methods=['POST', 'GET'])
@@ -352,4 +357,31 @@ def upload_profile_picture():
     db.session.commit()
 
     return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
+
+# Nuevas Rutas para Cuidados y Compatibilidad usando OpenAI
+@api.route('/cuidados/<string:raza>', methods=['GET'])
+def get_cuidados(raza):
+    prompt = f"Cuidados necesarios para {raza}:\n1. Alimentación:\n- \n2. Ejercicio:\n- \n3. Higiene:\n- \n4. Salud:\n- \n5. Entorno:\n-"
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=150
+        )
+        return jsonify({"text": response.choices[0].text.strip()}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@api.route('/compatibilidad/<string:raza>', methods=['GET'])
+def get_compatibilidad(raza):
+    prompt = f"Compatibilidad de {raza} con otras razas:\n1. Compatibilidad Alta:\n- \n2. Compatibilidad Moderada:\n- \n3. Compatibilidad Baja:\n-"
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=150
+        )
+        return jsonify({"text": response.choices[0].text.strip()}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 

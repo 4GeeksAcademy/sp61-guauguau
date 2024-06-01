@@ -14,6 +14,8 @@ export const OnePet = () => {
         pedigree: false,
         photo: ''
     });
+    const [careInfo, setCareInfo] = useState("");
+    const [compatibilityInfo, setCompatibilityInfo] = useState("");
 
     useEffect(() => {
         actions.fetchPetById(petId);
@@ -45,6 +47,18 @@ export const OnePet = () => {
         e.preventDefault();
         actions.updatePet(petId, petDetails);
         setIsEditing(false);
+    };
+
+    const fetchCareInfo = async () => {
+        const response = await fetch(`/api/cuidados/${petDetails.breed}`);
+        const data = await response.json();
+        setCareInfo(data.text);
+    };
+
+    const fetchCompatibilityInfo = async () => {
+        const response = await fetch(`/api/compatibilidad/${petDetails.breed}`);
+        const data = await response.json();
+        setCompatibilityInfo(data.text);
     };
 
     const pet = store.currentPet;
@@ -90,6 +104,20 @@ export const OnePet = () => {
                             <p>Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
                             {pet.photo && <img src={pet.photo} alt={pet.name} />}
                             <button onClick={() => setIsEditing(true)}>Edit</button>
+                            <button onClick={fetchCareInfo}>Cuidados</button>
+                            <button onClick={fetchCompatibilityInfo}>Compatibilidad</button>
+                            {careInfo && (
+                                <div>
+                                    <h3>Cuidados</h3>
+                                    <p>{careInfo}</p>
+                                </div>
+                            )}
+                            {compatibilityInfo && (
+                                <div>
+                                    <h3>Compatibilidad</h3>
+                                    <p>{compatibilityInfo}</p>
+                                </div>
+                            )}
                         </>
                     )}
                 </>
