@@ -18,6 +18,8 @@ import { Pets } from "./pages/pets";
 import { Breed } from "./pages/breed";
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+import { SinglePet } from "./pages/singlePet";
+import { SingleOwner } from "./pages/singleOwner";
 import { EditCity } from "./pages/editcity";
 import { Photo } from "./pages/photo";
 
@@ -36,7 +38,8 @@ const Layout = () => {
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Breed/>} path="/breed" />
                         <Route element={<Photo/>} path="/photo" />
-                        
+                        <Route element={<SinglePet/>} path="/singlepet/:petId" />
+                        <Route element={<SingleOwner/>} path="/singleowner/:ownerId" />
                         <Route element={<OnePet/>} path="/pet/:petId" />
                         <Route element={<PetSignUp/>} path="/petSignUp" />
                         <Route element={<OwnerSignUp />} path="/ownersignup" />
