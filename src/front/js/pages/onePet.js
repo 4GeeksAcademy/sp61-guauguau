@@ -52,6 +52,7 @@ export const OnePet = () => {
     const fetchCareInfo = async () => {
         try {
             const response = await fetch(`${process.env.BACKEND_URL}/api/cuidados/${encodeURIComponent(petDetails.breed)}`);
+            console.log('Fetching care info from:', `${process.env.BACKEND_URL}/api/cuidados/${encodeURIComponent(petDetails.breed)}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -61,10 +62,11 @@ export const OnePet = () => {
             console.error("Error fetching care info:", error);
         }
     };
-    
+
     const fetchCompatibilityInfo = async () => {
         try {
             const response = await fetch(`${process.env.BACKEND_URL}/api/compatibilidad/${encodeURIComponent(petDetails.breed)}`);
+            console.log('Fetching compatibility info from:', `${process.env.BACKEND_URL}/api/compatibilidad/${encodeURIComponent(petDetails.breed)}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -120,18 +122,20 @@ export const OnePet = () => {
                             <button onClick={() => setIsEditing(true)}>Edit</button>
                             <button onClick={fetchCareInfo}>Cuidados</button>
                             <button onClick={fetchCompatibilityInfo}>Compatibilidad</button>
-                            {careInfo && (
-                                <div>
-                                    <h3>Cuidados</h3>
-                                    <p>{careInfo}</p>
-                                </div>
-                            )}
-                            {compatibilityInfo && (
-                                <div>
-                                    <h3>Compatibilidad</h3>
-                                    <p>{compatibilityInfo}</p>
-                                </div>
-                            )}
+                            <div>
+                                {careInfo && (
+                                    <div>
+                                        <h3>Cuidados</h3>
+                                        <p>{careInfo}</p>
+                                    </div>
+                                )}
+                                {compatibilityInfo && (
+                                    <div>
+                                        <h3>Compatibilidad</h3>
+                                        <p>{compatibilityInfo}</p>
+                                    </div>
+                                )}
+                            </div>
                         </>
                     )}
                 </>

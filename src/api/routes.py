@@ -386,13 +386,16 @@ def get_compatibilidad(raza):
     prompt = f"Compatibilidad de {raza} con otras razas:\n1. Compatibilidad Alta:\n- \n2. Compatibilidad Moderada:\n- \n3. Compatibilidad Baja:\n-"
     try:
         current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            max_tokens=150
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ]
         )
         current_app.logger.info(f"Respuesta de OpenAI: {response}")
-        return jsonify({"text": response.choices[0].text.strip()}), 200
+        return jsonify({"text": response.choices[0].message['content'].strip()}), 200
     except Exception as e:
         current_app.logger.error(f"Error al obtener compatibilidad: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
