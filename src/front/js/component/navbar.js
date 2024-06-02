@@ -30,10 +30,20 @@ export const Navbar = () => {
 					<Link to="/petSignUp">
 						<button className="btn btn-warning m-2">Pet SignUp</button>
 					</Link>
-					<Link to="/admin">
+					<Link to="/adminlogin">
+                        <button className="btn btn-warning m-2">Admin Login</button>
+                    </Link>
+					<Link to="/adminsignup">
 						<button className="btn btn-warning m-2">Admin SignUp</button>
 					</Link>
+					<Link to="/breed">
+						<button className="btn btn-warning m-2">Agrega Raza</button>
+					</Link>
+					<Link to="/photo">
+						<button className="btn btn-warning m-2">Agrega Fotos</button>
+					</Link>
 				</div>
+				
 			</div>
 		</nav>
 	);

@@ -4,30 +4,35 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
+			profilePictureUrl: null,		
 			admins:[],
+            adminAuth: false,
+            adminEmail: null,
 			city:[],
 			pets: [],
 			currentPet: null,
 			message: null,
+			breed: [],
+			currentBreed:null,
+			photo: [],
 			demo: [
 				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
+				title: "FIRST",
+				background: "white",
+				initial: "white"
 				},
 				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
+				title: "SECOND",
+				background: "white",
+				initial: "white"
 				}
-			]
+			],
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
+			// Aquí van las acciones
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
 			},
-
 			getMessage: async () => {
 				try{
 					// fetching data from the backend
@@ -54,29 +59,41 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
-			login: (email, password) => {
-				const requestOptions = {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password })
-				};
-				return fetch(process.env.BACKEND_URL + "/api/login", requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Email or password wrong");
-						}
-					})
-					.then(data => {
-						localStorage.setItem("token", data.access_token);
-						setStore({ auth: true, email });
-					})
-					.catch(error => {
-						setStore({ auth: false, email: null });
-						throw error;
-					});
-			},
+			login: async (email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                };
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/login", requestOptions);
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem("token", data.access_token);
+                        setStore({ auth: true, email });
+
+                        // Obtener datos del propietario autenticado
+                        const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${data.access_token}`
+                            }
+                        });
+                        if (ownerResponse.ok) {
+                            const ownerData = await ownerResponse.json();
+                            setStore({
+                                profilePictureUrl: ownerData.owner.profile_picture_url,
+                                email: ownerData.owner.email
+                            });
+                        }
+                    } else {
+                        throw new Error("Email or password wrong");
+                    }
+                } catch (error) {
+                    setStore({ auth: false, email: null });
+                    throw error;
+                }
+            },
 
 			verifyToken: async () => {
                 try {
@@ -92,33 +109,32 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
 			logout: () => {
-				console.log("log out desde flux")
-				localStorage.removeItem("token");
-				setStore({auth: false})
-			},
+                localStorage.removeItem("token");
+                setStore({ auth: false, email: null, profilePictureUrl: null });
+            },
 
-			signUp: async (name, email, password) => {
+			signUp: async (name, email, password, address, latitude, longitude) => {
 				try {
 					const requestOptions = {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ name, email, password })
+						body: JSON.stringify({ name, email, password, address, latitude, longitude })
 					};
 					const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
 					if (response.ok) {
 						const data = await response.json();
 						setStore({ auth: true, email: email });
 						localStorage.setItem('token', data.access_token);
-						return data; 
-					} else if (response.status === 409) {  // el codigo 409 lo toma del endpoint add_owner donde lo he definido
+						return data;
+					} else if (response.status === 409) {
 						throw new Error('Email already exists!');
 					} else {
-						const errorData = await response.json();
-						throw new Error(errorData.message || 'An error occurred');
+						const errorData = await response.text();
+						throw new Error(errorData || 'An error occurred');
 					}
 				} catch (error) {
 					console.error('There was an error!', error);
-					throw error; 
+					throw error;
 				}
 			},
 			
@@ -233,51 +249,47 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.catch(error => console.error("Error deleting owner:", error));
 			},
+			
 			getCity: () => {
-                fetch(process.env.BACKEND_URL + "/api/city")
-                    .then(response => response.json())
-                    .then(data => setStore({ city: data }))
-                    .catch(error => console.error("Error fetching city:", error));
-            },
+				fetch(process.env.BACKEND_URL + "/api/city")
+					.then(response => response.json())
+					.then(data => setStore({ city: data }))
+					.catch(error => console.error("Error loading cities:", error));
+			},
 
-            addCity: (newCity) => {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newCity)
-                };
-                fetch(process.env.BACKEND_URL + "/api/city", requestOptions)
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error("Error adding city");
-                        }
-                    })
-                    .then(data => {
-                        const store = getStore();
-                        setStore({ city: [...store.city, data] });
-                    })
-                    .catch(error => console.error("Error adding city:", error));
-        },
-            editCity: (updatedCity) => {
-                const requestOptions = {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedCity)
-                };
-                fetch(process.env.BACKEND_URL + `/api/city/${updatedCity.id}`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        const store = getStore();
-                        setStore({
-                            city: store.city.map(city =>
-                                city.id === updatedCity.id ? updatedCity : city
-                            )
-                        });
-                    })
-                    .catch(error => console.error("Error editing city:", error));
-            },
+			addCity: (newCity) => {
+				const requestOptions = {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(newCity)
+				};
+				fetch(process.env.BACKEND_URL + "/api/city", requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({ city: [...store.city, data] });
+					})
+					.catch(error => console.error("Error adding city:", error));
+			},
+
+			editCity: (updatedCity) => {
+				const requestOptions = {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(updatedCity)
+				};
+				fetch(process.env.BACKEND_URL + `/api/city/${updatedCity.id}`, requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({
+							city: store.city.map(city =>
+								city.id === updatedCity.id ? updatedCity : city
+							)
+						});
+					})
+					.catch(error => console.error("Error editing city:", error));
+			},
 
             deleteCity: (id) => {
                 const requestOptions = {
@@ -291,72 +303,243 @@ const getState = ({ getStore, getActions, setStore }) => {
                     })
                     .catch(error => console.error("Error deleting city:", error));
 				},
-			updatedCity: async city => {
-				try {
-					const response = await fetch(process.env.BACKEND_URL + `/api/city/${city.id}`, {
-						method: 'PUT',
-						headers: { 'Content-Type': "application/json" },
-						body: JSON.stringify(city)
-					});
-					if (!response.ok) throw new Error("Failed to update city");
-					const updatedCity = await response.json();
-					const updatedCities = getStore().city.map(o => o.id === city.id ? updatedCity : o);
-					setStore({ city: updatedCities });
-				} catch (error) {
-					console.error("Error updating City:", error);
-				}
+			updateOwner: async owner => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': "application/json" },
+                        body: JSON.stringify(owner)
+                    });
+                    if (!response.ok) throw new Error("Failed to update owner");
+                    const updatedOwner = await response.json();
+                    const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
+                    setStore({ owners: updatedOwners });
+                } catch (error) {
+                    console.error("Error updating owner:", error);
+                }
+            },
+
+			getBreed:() =>{
+				fetch(process.env.BACKEND_URL + "/api/breed")
+				.then(response => response.json())
+				.then(data => setStore({breed:data}))
+				.catch(error => console.error("Error fetching breed:", error));
+
+
 			},
-			signUpAdmin: (name, email, password) => {
-				const requestOptions = {
-					method: 'POST',
-					headers: { 'Content-Type': "application/json" },
-					body: JSON.stringify({ name, email, password })
-				};
-				fetch(process.env.BACKEND_URL + "/api/add_admin", requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("User already exists");
-						}
-					})
-					.then(data => {
-						setStore({ auth: true, email: email });
-						localStorage.setItem("token", data.access_token);
-					})
-					.catch(error => {
-						console.error("There was an error!", error);
-						setStore({ errorMessage: error.message });
-					});
+			signUpBreed: (name, type ) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': "application/json" },
+                    body: JSON.stringify({ name, type })
+                };
+                fetch(process.env.BACKEND_URL + "/api/breeds", requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("Breed already exists");
+                        }
+                    })
+                    .then(data => {
+                        setStore({ auth: true, name: name });
+                    })
+                    .catch(error => {
+                        console.error("There was an error!", error);
+                        setStore({ errorMessage: error.message });
+                    });
+            },
+            deleteBreed: breedId => {
+                const requestOptions = {
+                    method: 'DELETE'
+                };
+                fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, requestOptions)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error("Failed to delete breed");
+                        }
+                    })
+                    .then(() => {
+                        const store = getStore();
+                        setStore({ breed: store.breed.filter(b => b.id !== breedId) });
+                    })
+                    .catch(error => console.error("Error deleting breed:", error));
+            },
+            editBreed: async (breedId, updatedBreed) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/breed/${breedId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updatedBreed)
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const updatedBreeds = getStore().breed.map(breed => breed.id === breedId ? data : breed);
+                        setStore({ breed: updatedBreeds });
+                    } else {
+                        console.error('Error al actualizar la raza');
+                    }
+                } catch (error) {
+                    console.error("Error editing breed:", error);
+                }
+            },
+
+			uploadProfilePicture: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const token = localStorage.getItem("token");
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + '/api/upload_profile_picture', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setStore({ profilePictureUrl: data.profile_picture_url });
+                    } else {
+                        throw new Error("Failed to upload image");
+                    }
+                } catch (error) {
+                    console.error("Error uploading profile picture:", error);
+                }
+            },
+				
+			getPhoto:() =>{
+				fetch(process.env.BACKEND_URL + "/api/photo")
+				.then(response => response.json())
+				.then(data => setStore({photo:data}))
+				.catch(error => console.error("Error fetching photo:", error));
+
+
 			},
-			fetchAdmins: () => {
-				fetch(process.env.BACKEND_URL + "/api/admin")
-					.then(response => response.json())
-					.then(data => setStore({ admins: data }))
-					.catch(error => console.error("Error fetching admins:", error));
-			},
-			
-			deleteAdmin: adminId => {
+			uploadPhoto: async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('URL_DEL_ENDPOINT', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const newPhoto = await response.json();
+                        const store = getStore();
+                        setStore({ photo: [...store.photo, newPhoto] });
+                    } else {
+                        console.error('Error al subir el archivo');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            
+            },
+			deletePhoto: photoId => {
 				const requestOptions = {
 					method: 'DELETE'
 				};
-				fetch(process.env.BACKEND_URL + `/api/admin/${adminId}`, requestOptions)
+				fetch(process.env.BACKEND_URL + `/api/photo/${photoId}`, requestOptions)
 					.then(response => {
 						if (response.ok) {
 							return response.json();
 						} else {
-							throw new Error("Failed to delete admin");
+							throw new Error("Failed to delete photo");
 						}
 					})
-					.then(data => {
-						const actions = getActions();
-						actions.fetchAdmins();
-					})
-					.catch(error => console.error("Error deleting admin:", error));
+					
+					.catch(error => console.error("Error deleting photo:", error));
 			},
+            createAdmin: async (name, email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                };
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/add_admin", requestOptions);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || "Failed to create admin");
+                    }
+                    const data = await response.json();
+                    setStore({ adminAuth: true, adminEmail: email });
+                } catch (error) {
+                    throw error;
+                }
+            },
+            fetchAdmins: async () => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/admin");
+                    if (!response.ok) throw new Error("Failed to fetch admins");
+                    const data = await response.json();
+                    setStore({ admins: data });
+                } catch (error) {
+                    console.error("Error fetching admins:", error);
+                }
+            },
+            deleteAdmin: async (adminId, currentAdminEmail) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/admin/${adminId}`, {
+                        method: "DELETE"
+                    });
+                    if (!response.ok) throw new Error("Failed to delete admin");
+                    
+                    const store = getStore();
+                    if (store.adminEmail === currentAdminEmail) {
+                        localStorage.removeItem("adminToken");
+                        setStore({ adminAuth: false, adminEmail: null });
+                    }
+
+                    getActions().fetchAdmins();
+                } catch (error) {
+                    console.error("Error deleting admin:", error);
+                }
+            },
+            updateAdmin: async (updatedAdmin) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/admin/${updatedAdmin.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': "application/json" },
+                        body: JSON.stringify(updatedAdmin)
+                    });
+                    if (!response.ok) throw new Error("Failed to update admin");
+                    const updatedAdmins = getStore().admins.map(admin => admin.id === updatedAdmin.id ? updatedAdmin : admin);
+                    setStore({ admins: updatedAdmins });
+                } catch (error) {
+                    console.error("Error updating admin:", error);
+                }
+            },
+            adminLogin: async (email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                };
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/adminlogin", requestOptions);
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem("adminToken", data.access_token);
+                        setStore({ adminAuth: true, adminEmail: email });
+                    } else {
+                        throw new Error("Email or password wrong");
+                    }
+                } catch (error) {
+                    setStore({ adminAuth: false, adminEmail: null });
+                    throw error;
+                }
+            },
 		}
-	};
+	}
 };
 
-
-export default getState;
+export default getState

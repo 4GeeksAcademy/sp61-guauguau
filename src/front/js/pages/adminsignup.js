@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
+// adminsignup.js
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 
@@ -10,22 +11,20 @@ export const AdminSignUp = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage(""); 
+        setErrorMessage("");
         setSuccessMessage("");
 
-        actions.signUp(name, email, password)
-        .then(data => {
+        try {
+            await actions.createAdmin(name, email, password);
             setName("");
             setEmail("");
             setPassword("");
             setSuccessMessage("Admin created!");
-    })
-    .catch(error => {
-        setErrorMessage(error.message || "An error occurred while signing up. Please try again later.");
-    });
+        } catch (error) {
+            setErrorMessage(error.message || "An error occurred while signing up. Please try again later.");
+        }
     };
 
     return (
