@@ -51,6 +51,7 @@ class Owner(db.Model):
     address = db.Column(db.String(250), nullable=True)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
+    description = db.Column(db.String(500), nullable=True)  # Añade este campo
 
     pets = db.relationship('Pet', backref='owner', lazy=True)
 
@@ -62,10 +63,12 @@ class Owner(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
+            "password": self.password,
             "profile_picture_url": self.profile_picture_url,
             "address": self.address,
             "latitude": self.latitude,
-            "longitude": self.longitude
+            "longitude": self.longitude,
+            "description": self.description  # Incluye este campo
         }
 
 class Pet(db.Model):

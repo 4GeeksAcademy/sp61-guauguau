@@ -58,8 +58,9 @@ def get_owner(owner_id):
     owner = Owner.query.get(owner_id)
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
-    
+
     owner_data = owner.serialize()
+    owner_data["pets"] = [pet.serialize() for pet in owner.pets]
     return jsonify(owner_data), 200
 
 @api.route("/owner/<int:owner_id>", methods=["DELETE"])
@@ -87,6 +88,21 @@ def update_owner(owner_id):
         owner.name = data["name"]
 
     db.session.commit()
+    return jsonify(owner.serialize()), 200
+
+
+@api.route("/update_owner_description", methods=["PUT"])
+@jwt_required()
+def update_owner_description():
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
+    if not owner:
+        return jsonify({"error": "Owner not found"}), 404
+
+    data = request.get_json()
+    owner.description = data.get("description", owner.description)
+    db.session.commit()
+
     return jsonify(owner.serialize()), 200
 
 @api.route('/login', methods=['POST'])
@@ -143,6 +159,7 @@ def get_pet(pet_id):
             'pedigree': pet.pedigree,
             'owner_id': pet.owner_id,
             'owner_name': pet.owner.name if pet.owner else None,
+            'owner_photo_url': pet.owner.profile_picture_url if pet.owner else None,  # Añadir esta línea
             'photos': photos,
             'description': pet.description,
             'profile_photo_url': pet.profile_photo_url

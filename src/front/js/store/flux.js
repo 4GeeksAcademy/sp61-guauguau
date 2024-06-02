@@ -159,6 +159,41 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .then(data => setStore({ owners: data }))
                     .catch(error => console.error("Error fetching owners:", error));
             },
+			getOwnerDetails: async (ownerId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/owner/${ownerId}`);
+                    if (!response.ok) {
+                        throw new Error('Error fetching owner details');
+                    }
+                    const owner = await response.json();
+                    owner.pets = owner.pets || [];
+                    return owner;
+                } catch (error) {
+                    console.error('Error fetching owner details:', error);
+                }
+            },
+			updateOwnerDescription: async (description) => {
+				try {
+					const token = localStorage.getItem("token");
+					const response = await fetch(`${process.env.BACKEND_URL}/api/update_owner_description`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${token}`
+						},
+						body: JSON.stringify({ description })
+					});
+			
+					if (!response.ok) {
+						throw new Error('Error updating description');
+					}
+			
+					const data = await response.json();
+					setStore({ ownerDescription: data.description });
+				} catch (error) {
+					console.error('Error updating description:', error);
+				}
+			},
             fetchPets: () => {
 				fetch(process.env.BACKEND_URL + "/api/pets")
 					.then(response => {

@@ -7,19 +7,22 @@ export const Private = () => {
     const { store, actions } = useContext(Context);
     const [loading, setLoading] = useState(true);
     const [file, setFile] = useState(null);
+    const [description, setDescription] = useState(store.ownerDescription || '');
+    const [isEditingDescription, setIsEditingDescription] = useState(false); // Estado para controlar la edición de la descripción
 
     useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem("token");
             if (token) {
                 await actions.verifyToken();
-                await actions.fetchOwnerPets();  // Fetch owner's pets when component mounts
+                await actions.fetchOwnerPets();
+                setDescription(store.ownerDescription || ''); // Inicializar la descripción desde el estado global
             }
             setLoading(false);
         };
 
         fetchData();
-    }, []);
+    }, [store.ownerDescription]);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -30,6 +33,19 @@ export const Private = () => {
             await actions.uploadProfilePicture(file);
             setFile(null);  // Reset file input after upload
         }
+    };
+
+    const handleDescriptionChange = (e) => {
+        setDescription(e.target.value);
+    };
+
+    const handleSaveDescription = async () => {
+        await actions.updateOwnerDescription(description);
+        setIsEditingDescription(false); // Desactivar el modo de edición después de guardar
+    };
+
+    const handleEditDescriptionClick = () => {
+        setIsEditingDescription(true); // Activar el modo de edición
     };
 
     if (loading) {
@@ -54,6 +70,22 @@ export const Private = () => {
                     <div className="col-md-9">
                         <h3>About Me</h3>
                         <p>This is your personal space where you can manage your pets and update your profile information.</p>
+                        {isEditingDescription ? (
+                            <>
+                                <textarea 
+                                    value={description}
+                                    onChange={handleDescriptionChange}
+                                    className="form-control mb-2"
+                                    placeholder="Add a description about yourself"
+                                />
+                                <button onClick={handleSaveDescription} className="btn btn-primary">Save Description</button>
+                            </>
+                        ) : (
+                            <div className="d-flex align-items-center">
+                                <span className="me-2">{description || "No description available"}</span>
+                                <i className="fas fa-edit cursor-pointer" onClick={handleEditDescriptionClick}></i>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div>
