@@ -10,14 +10,16 @@ export const PetSignUp = () => {
         sex: "",
         age: "",
         pedigree: false,
-        photo: "",
-        owner_id: ""
+        photo: null,
+        additional_photos: []
     });
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showBackButton, setShowBackButton] = useState(false);
 
     useEffect(() => {
         actions.fetchOwners();
-        actions.getBreed();  // Asegúrate de que esta línea llama a la función correctamente
-    }, [actions]);
+        actions.getBreed();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -27,14 +29,82 @@ export const PetSignUp = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleFileChange = (e) => {
+        setFormData({
+            ...formData,
+            photo: e.target.files[0]
+        });
+    };
+
+    const handleAdditionalFilesChange = (e) => {
+        const files = Array.from(e.target.files);
+        setFormData({
+            ...formData,
+            additional_photos: files
+        });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        actions.addPet(formData);
+    
+        try {
+            const addedPet = await actions.addPet({
+                ...formData,
+                photo: null,
+                additional_photos: []
+            });
+
+            if (addedPet) {
+                const petId = addedPet.pet_id;
+
+                // Upload profile photo
+                if (formData.photo) {
+                    const photoFormData = new FormData();
+                    photoFormData.append("file", formData.photo);
+                    
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
+                        method: 'POST',
+                        body: photoFormData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        console.error("Failed to upload profile photo:", result.error);
+                    }
+                }
+
+                // Upload additional photos
+                for (let photo of formData.additional_photos) {
+                    const additionalPhotoFormData = new FormData();
+                    additionalPhotoFormData.append("file", photo);
+                    
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_additional_photos/${petId}`, {
+                        method: 'POST',
+                        body: additionalPhotoFormData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        console.error("Failed to upload additional photo:", result.error);
+                    }
+                }
+
+                setSuccessMessage("Pet created successfully!");
+                setShowBackButton(true); // Show the back button
+            } else {
+                console.error("Failed to add pet");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     return (
         <div className="container">
             <h2>Add New Pet</h2>
+            {successMessage && <div className="alert alert-success" role="alert">{successMessage}</div>}
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name</label>
@@ -100,34 +170,33 @@ export const PetSignUp = () => {
                     <label htmlFor="pedigree" className="form-check-label">Pedigree</label>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="photo" className="form-label">Photo URL</label>
+                    <label htmlFor="photo" className="form-label">Profile Photo</label>
                     <input 
-                        type="text" 
+                        type="file" 
                         className="form-control" 
                         id="photo" 
                         name="photo" 
-                        value={formData.photo} 
-                        onChange={handleChange} 
+                        onChange={handleFileChange} 
+                        accept="image/*"
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="owner_id" className="form-label">Owner</label>
-                    <select 
-                        className="form-select" 
-                        id="owner_id" 
-                        name="owner_id" 
-                        value={formData.owner_id} 
-                        onChange={handleChange} 
-                        required
-                    >
-                        <option value="">Select Owner</option>
-                        {store.owners && store.owners.map(owner => (
-                            <option key={owner.id} value={owner.id}>{owner.name}</option>
-                        ))}
-                    </select>
+                    <label htmlFor="additional_photos" className="form-label">Additional Photos (up to 4)</label>
+                    <input 
+                        type="file" 
+                        className="form-control" 
+                        id="additional_photos" 
+                        name="additional_photos" 
+                        onChange={handleAdditionalFilesChange} 
+                        multiple 
+                        accept="image/*"
+                    />
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+            {showBackButton && (
+                <Link to="/private" className="btn btn-secondary mt-3">Back to Private</Link>
+            )}
         </div>
     );
 };
