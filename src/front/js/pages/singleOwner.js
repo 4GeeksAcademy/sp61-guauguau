@@ -76,8 +76,8 @@ export const SingleOwner = () => {
                     </div>
                 </div>
             </div>
-            <Link to="/owners" className="btn btn-secondary mt-3">
-                <i className="fas fa-arrow-left"></i> Back to the list of owners
+            <Link to="/pets" className="btn btn-secondary mt-3">
+                <i className="fas fa-arrow-left"></i> Back to the list of pets
             </Link>
         </div>
     );
