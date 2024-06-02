@@ -9,7 +9,11 @@ export const ShowOwners = () => {
 
     useEffect(() => {
         actions.fetchOwners();
-    }, [actions]);
+    }, []);
+
+
+    
+    
 
     const handleDeleteOwner = async ownerId => {
         await actions.deleteOwner(ownerId);
