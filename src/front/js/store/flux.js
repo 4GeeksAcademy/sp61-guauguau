@@ -4,10 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			auth: false,
 			email: null,
 			owners: [],
-			profilePictureUrl: null,		
-			admins:[],
-      adminAuth: false,
-      adminEmail: null,
+			profilePictureUrl: null,
 			city:[],
 			pets: [],
 			currentPet: null,
@@ -26,7 +23,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				background: "white",
 				initial: "white"
 				}
-			],
+			]
+			
 		},
 		actions: {
 			// Aquí van las acciones
@@ -202,6 +200,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			
+
 			updatePet: async (petId, petDetails) => {
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`, {
@@ -223,6 +222,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error updating pet:', error);
 				}
 			},
+			
 			
 			addPet: async (pet) => {
 				try {
@@ -250,6 +250,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+			
+			
 
 			fetchDeletePet: (id) => {
 				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
@@ -355,39 +357,28 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.catch(error => console.error("Error editing city:", error));
 			},
 
-      deleteCity: (id) => {
-                const requestOptions = {
-                    method: 'DELETE'
-                };
-                fetch(process.env.BACKEND_URL + `/api/city/${id}`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        const store = getStore();
-                        setStore({ city: store.city.filter(city => city.id !== id) });
-                    })
-                    .catch(error => console.error("Error deleting city:", error));
-				},
-			updateOwner: async owner => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': "application/json" },
-                        body: JSON.stringify(owner)
-                    });
-                    if (!response.ok) throw new Error("Failed to update owner");
-                    const updatedOwner = await response.json();
-                    const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
-                    setStore({ owners: updatedOwners });
-                } catch (error) {
-                    console.error("Error updating owner:", error);
-                }
-            },
+			deleteCity: (id) => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/city/${id}`, requestOptions)
+					.then(response => response.json())
+					.then(data => {
+						const store = getStore();
+						setStore({ city: store.city.filter(city => city.id !== id) });
+					})
+
+					.catch(error => console.error("Error deleting owner:", error));
+			},
+			
 
 			getBreed:() =>{
 				fetch(process.env.BACKEND_URL + "/api/breed")
 				.then(response => response.json())
 				.then(data => setStore({breed:data}))
 				.catch(error => console.error("Error fetching breed:", error));
+
+
 			},
 			signUpBreed: (name, type ) => {
                 const requestOptions = {
@@ -395,7 +386,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     headers: { 'Content-Type': "application/json" },
                     body: JSON.stringify({ name, type })
                 };
-                fetch(process.env.BACKEND_URL + "/api/breeds", requestOptions)
+                fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
                     .then(response => {
                         if (response.ok) {
                             return response.json();
@@ -450,7 +441,22 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-			      uploadProfilePicture: async (file) => {
+			updateOwner: async (owner) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + `/api/owner/${owner.id}`, {
+						method: 'PUT',
+						headers: { 'Content-Type': "application/json" },
+						body: JSON.stringify(owner)
+					});
+					if (!response.ok) throw new Error("Failed to update owner");
+					const updatedOwner = await response.json();
+					const updatedOwners = getStore().owners.map(o => o.id === owner.id ? updatedOwner : o);
+					setStore({ owners: updatedOwners });
+				} catch (error) {
+					console.error("Error updating owner:", error);
+				}
+			},
+			uploadProfilePicture: async (file) => {
                 const formData = new FormData();
                 formData.append('file', file);
 
@@ -540,6 +546,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				.then(response => response.json())
 				.then(data => setStore({photo:data}))
 				.catch(error => console.error("Error fetching photo:", error));
+
+
 			},
 			uploadPhoto: async (file) => {
                 const formData = new FormData();
@@ -563,100 +571,21 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             
             },
-
-			deletePhoto: photoId => {
-				const requestOptions = {
-					method: 'DELETE'
-				};
-				fetch(process.env.BACKEND_URL + `/api/photo/${photoId}`, requestOptions)
-					.then(response => {
-						if (response.ok) {
-							return response.json();
-						} else {
-							throw new Error("Failed to delete photo");
-						}
-					})
-					
-					.catch(error => console.error("Error deleting photo:", error));
-			},
-            createAdmin: async (name, email, password) => {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
-                };
+			deletePhoto: async (photoId) => {
                 try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/add_admin", requestOptions);
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || "Failed to create admin");
-                    }
-                    const data = await response.json();
-                    setStore({ adminAuth: true, adminEmail: email });
-                } catch (error) {
-                    throw error;
-                }
-            },
-            fetchAdmins: async () => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/admin");
-                    if (!response.ok) throw new Error("Failed to fetch admins");
-                    const data = await response.json();
-                    setStore({ admins: data });
-                } catch (error) {
-                    console.error("Error fetching admins:", error);
-                }
-            },
-            deleteAdmin: async (adminId, currentAdminEmail) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/admin/${adminId}`, {
-                        method: "DELETE"
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/photo/${photoId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     });
-                    if (!response.ok) throw new Error("Failed to delete admin");
+                    if (!response.ok) throw new Error('Failed to delete photo');
                     
                     const store = getStore();
-                    if (store.adminEmail === currentAdminEmail) {
-                        localStorage.removeItem("adminToken");
-                        setStore({ adminAuth: false, adminEmail: null });
-                    }
-
-                    getActions().fetchAdmins();
+                    const updatedPhotos = store.currentPet.photos.filter(photo => photo.id !== photoId);
+                    setStore({ currentPet: { ...store.currentPet, photos: updatedPhotos } });
                 } catch (error) {
-                    console.error("Error deleting admin:", error);
-                }
-            },
-            updateAdmin: async (updatedAdmin) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/admin/${updatedAdmin.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': "application/json" },
-                        body: JSON.stringify(updatedAdmin)
-                    });
-                    if (!response.ok) throw new Error("Failed to update admin");
-                    const updatedAdmins = getStore().admins.map(admin => admin.id === updatedAdmin.id ? updatedAdmin : admin);
-                    setStore({ admins: updatedAdmins });
-                } catch (error) {
-                    console.error("Error updating admin:", error);
-                }
-            },
-            adminLogin: async (email, password) => {
-                const requestOptions = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                };
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/adminlogin", requestOptions);
-                    if (response.ok) {
-                        const data = await response.json();
-                        localStorage.setItem("adminToken", data.access_token);
-                        setStore({ adminAuth: true, adminEmail: email });
-                    } else {
-                        throw new Error("Email or password wrong");
-                    }
-                } catch (error) {
-                    setStore({ adminAuth: false, adminEmail: null });
-                    throw error;
+                    console.error('Error deleting photo:', error);
                 }
             },
 		}
