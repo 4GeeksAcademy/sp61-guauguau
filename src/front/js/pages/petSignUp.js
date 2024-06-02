@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 export const PetSignUp = () => {
@@ -17,10 +16,8 @@ export const PetSignUp = () => {
 
     useEffect(() => {
         actions.fetchOwners();
-
         actions.getBreed();
     }, []);
-
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -37,6 +34,8 @@ export const PetSignUp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        let updatedFormData = { ...formData };
+
         if (file) {
             try {
                 const formData = new FormData();
@@ -47,17 +46,16 @@ export const PetSignUp = () => {
                 });
                 const result = await response.json();
                 if (response.ok) {
-                    const updatedFormData = { ...formData, photo: result.photo_url };
-                    await actions.addPet(updatedFormData);
+                    updatedFormData = { ...updatedFormData, photo: result.photo_url };
                 } else {
                     console.error("Failed to upload photo", result.error);
                 }
             } catch (error) {
                 console.error("Error uploading photo:", error);
             }
-        } else {
-            await actions.addPet(formData);
         }
+
+        await actions.addPet(updatedFormData);
     };
 
     return (

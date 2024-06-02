@@ -50,15 +50,29 @@ export const OnePet = () => {
     };
 
     const fetchCareInfo = async () => {
-        const response = await fetch(`/api/cuidados/${petDetails.breed}`);
-        const data = await response.json();
-        setCareInfo(data.text);
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/cuidados/${encodeURIComponent(petDetails.breed)}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setCareInfo(data.text);
+        } catch (error) {
+            console.error("Error fetching care info:", error);
+        }
     };
-
+    
     const fetchCompatibilityInfo = async () => {
-        const response = await fetch(`/api/compatibilidad/${petDetails.breed}`);
-        const data = await response.json();
-        setCompatibilityInfo(data.text);
+        try {
+            const response = await fetch(`${process.env.BACKEND_URL}/api/compatibilidad/${encodeURIComponent(petDetails.breed)}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setCompatibilityInfo(data.text);
+        } catch (error) {
+            console.error("Error fetching compatibility info:", error);
+        }
     };
 
     const pet = store.currentPet;

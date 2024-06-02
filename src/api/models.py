@@ -27,7 +27,7 @@ class Owner(db.Model):
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     
-    pets = db.relationship('Pet', backref='owner', lazy=True)
+    pets = db.relationship('Pet', back_populates='owner', lazy=True)  # Usar back_populates
 
     def __repr__(self):
         return f'<Owner {self.email}>'
@@ -50,11 +50,13 @@ class Pet(db.Model):
     sex = db.Column(db.String(10), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     pedigree = db.Column(db.Boolean, nullable=False)
-    photo = db.Column(db.String(100), nullable=True)
+    photo_url = db.Column(db.String(100), nullable=True)  # Renamed field
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
+    
     breed = db.relationship('Breed', backref='pets')
+    owner = db.relationship('Owner', back_populates='pets')  # Cambiado a back_populates
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
-    photo = db.relationship('Photo', backref='pets')
+    photo = db.relationship('Photo', backref='pets', foreign_keys='Pet.photo_id')
 
     def __repr__(self):
         return f'<Pet {self.name}>'
@@ -67,9 +69,10 @@ class Pet(db.Model):
             "sex": self.sex,
             "age": self.age,
             "pedigree": self.pedigree,
-            "photo": self.photo,
+            "photo_url": self.photo_url,
             "owner_id": self.owner_id
         }
+
 
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
