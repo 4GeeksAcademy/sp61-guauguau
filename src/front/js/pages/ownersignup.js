@@ -24,6 +24,8 @@ export const OwnerSignUp = () => {
         longitude: center.lng
     });
 
+    const [successMessage, setSuccessMessage] = useState(null);
+
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
@@ -90,9 +92,22 @@ export const OwnerSignUp = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        actions.signUp(formData.name, formData.email, formData.password, formData.address, formData.latitude, formData.longitude);
+        try {
+            await actions.signUp(formData.name, formData.email, formData.password, formData.address, formData.latitude, formData.longitude);
+            setSuccessMessage("Owner created successfully!");
+            setFormData({
+                name: "",
+                email: "",
+                password: "",
+                address: "",
+                latitude: center.lat,
+                longitude: center.lng
+            });
+        } catch (error) {
+            console.error("Error signing up:", error);
+        }
     };
 
     if (!isLoaded) return <div>Loading...</div>;
@@ -100,6 +115,11 @@ export const OwnerSignUp = () => {
     return (
         <div className="container">
             <h2>Owner Sign Up</h2>
+            {successMessage && (
+                <div className="alert alert-success" role="alert">
+                    {successMessage}
+                </div>
+            )}
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name</label>
