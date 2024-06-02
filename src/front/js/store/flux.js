@@ -160,17 +160,16 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .catch(error => console.error("Error fetching owners:", error));
             },
             fetchPets: () => {
-                console.log(process.env.BACKEND_URL + "/api/pets")
-                fetch(process.env.BACKEND_URL + "/api/pets")
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Network response was not ok " + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => setStore({ pets: data }))
-                    .catch(error => console.error("Error fetching pets:", error));
-            },
+				fetch(process.env.BACKEND_URL + "/api/pets")
+					.then(response => {
+						if (!response.ok) {
+							throw new Error("Network response was not ok " + response.statusText);
+						}
+						return response.json();
+					})
+					.then(data => setStore({ pets: data }))
+					.catch(error => console.error("Error fetching pets:", error));
+			},
             fetchPetById: async (id) => {
                 try {
                     const response = await fetch(process.env.BACKEND_URL + `/api/pet/${id}`);

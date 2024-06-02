@@ -17,31 +17,32 @@ export const Pets = () => {
 
     return (
         <div className="container">
-            <h1>List of Pets</h1>
+            <h1 className="my-4">List of Pets</h1>
             {isLoading ? (
                 <p>Loading...</p>
             ) : (
-                <ul>
+                <div className="row">
                     {store.pets && store.pets.length > 0 ? (
                         store.pets.map(pet => (
-                            <li key={pet.id}>
-                                <div>
-                                    <h2>
-                                        <Link to={`/pet/${pet.id}`}>{pet.name}</Link>
-                                    </h2>
-                                    <p>Breed: {pet.breed}</p>
-                                    <p>Sex: {pet.sex}</p>
-                                    <p>Age: {pet.age}</p>
-                                    <p>Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
-                                    {pet.profile_photo_url && <img src={pet.profile_photo_url} alt={pet.name} style={{ maxWidth: "200px", height: "auto" }} />}
-                                    <button onClick={() => actions.fetchDeletePet(pet.id)}>Delete</button>
+                            <div key={pet.id} className="col-md-4 mb-4">
+                                <div className="card h-100">
+                                    {pet.profile_photo_url && <img src={pet.profile_photo_url} className="card-img-top" alt={pet.name} />}
+                                    <div className="card-body">
+                                        <h2 className="card-title">
+                                            <Link to={`/singlepet/${pet.id}`}>{pet.name}</Link>
+                                        </h2>
+                                        <p className="card-text">Breed: {pet.breed}</p>
+                                        <p className="card-text">Sex: {pet.sex}</p>
+                                        <p className="card-text">Age: {pet.age}</p>
+                                        <p className="card-text">Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
+                                    </div>
                                 </div>
-                            </li>
+                            </div>
                         ))
                     ) : (
-                        <li>No pets available</li>
+                        <p>No pets available</p>
                     )}
-                </ul>
+                </div>
             )}
         </div>
     );

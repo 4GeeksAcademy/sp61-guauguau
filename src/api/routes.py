@@ -124,7 +124,7 @@ def get_pets():
         'age': pet.age,
         'pedigree': pet.pedigree,
         'description': pet.description,
-        'photo': pet.profile_photo_url,
+        'profile_photo_url': pet.profile_photo_url,  # Asegúrate de que esta propiedad está incluida
         'owner_id': pet.owner_id,
         'owner_name': pet.owner.name if pet.owner else None
     } for pet in pets]), 200
