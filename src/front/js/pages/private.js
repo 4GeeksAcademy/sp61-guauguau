@@ -9,13 +9,6 @@ export const Private = () => {
     const [file, setFile] = useState(null);
 
     useEffect(() => {
-<<<<<<< HEAD
-        const token = localStorage.getItem("token");
-        if (token) {
-            actions.verifyToken();
-        }
-        setLoading(false);
-=======
         const fetchData = async () => {
             const token = localStorage.getItem("token");
             if (token) {
@@ -26,7 +19,6 @@ export const Private = () => {
         };
 
         fetchData();
->>>>>>> 7f1bf8b38c3a535d7ba37c7785f1516f67b57715
     }, []);
 
     const handleFileChange = (e) => {
@@ -53,13 +45,6 @@ export const Private = () => {
             <div className="form-container">
                 <p><span style={{ fontWeight: "bolder" }}>Welcome</span> {store.email}</p>
                 <p className="title">This is your private area</p>
-<<<<<<< HEAD
-                <p className="title">Profile</p>
-                <div>
-                    {store.profilePictureUrl && (
-                        <img src={store.profilePictureUrl} alt="Profile" className="img-thumbnail" />
-                    )}
-=======
                 <div className="row align-items-center mb-4">
                     <div className="col-md-3 text-center">
                         {store.profilePictureUrl && (
@@ -70,20 +55,12 @@ export const Private = () => {
                         <h3>About Me</h3>
                         <p>This is your personal space where you can manage your pets and update your profile information.</p>
                     </div>
->>>>>>> 7f1bf8b38c3a535d7ba37c7785f1516f67b57715
                 </div>
                 <div>
                     <input type="file" onChange={handleFileChange} />
                     <button onClick={handleUpload}>Upload Profile Picture</button>
                 </div>
                 <div className="container d-flex flex-column justify-content-center align-items-center">
-<<<<<<< HEAD
-                    <p className="signup pe-2">Do you want to exit?</p>
-                    <Link to="/">
-                        <button className="btn btn-warning m-2" onClick={() => actions.logout()}>Log Out</button>
-                    </Link>
-                </div>
-=======
                     <Link to="/petSignUp">
                         <button className="btn btn-warning m-2">Add new pet</button>
                     </Link>
@@ -121,7 +98,6 @@ export const Private = () => {
                         <p>You have no pets.</p>
                     )}
                 </div>
->>>>>>> 7f1bf8b38c3a535d7ba37c7785f1516f67b57715
             </div>
             <Link to="/">
                 <span className="btn btn-primary btn-lg" role="button">Back home</span>

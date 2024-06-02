@@ -33,7 +33,7 @@ export const Pets = () => {
                                     <p>Sex: {pet.sex}</p>
                                     <p>Age: {pet.age}</p>
                                     <p>Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
-                                    {pet.photo && <img src={pet.photo} alt={pet.name} style={{ maxWidth: "200px", height: "auto" }} />}
+                                    {pet.profile_photo_url && <img src={pet.profile_photo_url} alt={pet.name} style={{ maxWidth: "200px", height: "auto" }} />}
                                     <button onClick={() => actions.fetchDeletePet(pet.id)}>Delete</button>
                                 </div>
                             </li>
