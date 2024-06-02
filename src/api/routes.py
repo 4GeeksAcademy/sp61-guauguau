@@ -1,24 +1,27 @@
+"""
+Este módulo se encarga de iniciar el servidor API, cargar la base de datos y agregar los puntos finales.
+"""
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner, Breed, Photo
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+from flask_mail import Mail, Message
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
+# Permitir solicitudes CORS a esta API
 CORS(api)
+
+# Configuración de correo electrónico
+mail = Mail()
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
     response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
+        "message": "¡Hola! Soy un mensaje que vino del backend, revisa la pestaña de red en el inspector de Google y verás la solicitud GET"
     }
     return jsonify(response_body), 200
 
@@ -36,11 +39,10 @@ def create_owner():
     for field in required_fields:
         if field not in data:
             return jsonify({"error": "The '" + field + "' cannot be empty"}), 400
-
     existing_owner = Owner.query.filter_by(email=data['email']).first()
     if existing_owner:
-        return jsonify({"error": "Email already exists!"}), 409
-    
+        return jsonify({"error": "¡El correo electrónico ya existe!"}), 409
+
     new_owner = Owner(
         email=data['email'], 
         password=data['password'], 
@@ -51,6 +53,7 @@ def create_owner():
     )
     db.session.add(new_owner)
     db.session.commit()
+    
     return jsonify({"message": "Owner created!"}), 200
 
 @api.route("/owner/<int:owner_id>", methods=["GET"])
@@ -70,14 +73,11 @@ def delete_owner(owner_id):
 
     db.session.delete(owner)
     db.session.commit()
-    return jsonify({'message': 'Owner deleted'}), 200
+    return jsonify({'message': 'Propietario eliminado'}), 200
 
 @api.route("/owner/<int:owner_id>", methods=["PUT"])
 def update_owner(owner_id):
-    owner = Owner.query.get(owner_id)
-    if not owner:
-        return jsonify({"message": "Owner not found"}), 404
-    
+    owner = Owner.query.get_or_404(owner_id)
     data = request.json
     if "email" in data:
         owner.email = data["email"]
@@ -85,7 +85,6 @@ def update_owner(owner_id):
         owner.password = data["password"]
     if "name" in data:
         owner.name = data["name"]
-
     db.session.commit()
     return jsonify(owner.serialize()), 200
 
@@ -100,7 +99,7 @@ def login():
         return jsonify({"message": "Wrong password"}), 401
     
     access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    return jsonify(access_token=access_token), 200
 
 @api.route("/protected", methods=["GET"])
 @jwt_required()
@@ -112,7 +111,8 @@ def protected():
 
     return jsonify({"owner": owner.serialize()}), 200
 
-##### ROUTES PETS #########################################
+
+##### ROUTES PETS #######
 @api.route('/pets', methods=['GET'])
 def get_pets():
     pets = Pet.query.all()
@@ -149,7 +149,6 @@ def get_pet(pet_id):
         }), 200
     else:
         return jsonify({'error': 'Pet not found'}), 404
-
 
 @api.route('/pets', methods=['POST'])
 @jwt_required()
@@ -199,7 +198,6 @@ def update_pet(pet_id):
     else:
         return jsonify({'error': 'Pet not found'}), 404
 
-
 @api.route('/delete_pet/<int:id>', methods=['DELETE'])
 def delete_pet(id):
     pet = Pet.query.get_or_404(id)
@@ -221,10 +219,11 @@ def add_city():
     data = request.get_json()
     new_city = City(
         name=data['name'],
-        pet_friendly=data['pet_friendly'],
+        pet_friendly=data['pet_friendly']
     )
     db.session.add(new_city)
     db.session.commit()
+    
     return jsonify({'message': 'New city added!'}, new_city.serialize()), 201
 
 @api.route('/city/<int:id>', methods=['DELETE'])
@@ -232,7 +231,7 @@ def delete_city(id):
     city = City.query.get_or_404(id)
     db.session.delete(city)
     db.session.commit()
-    return jsonify({'message': 'City deleted successfully!'})
+    return jsonify({'message': 'Ciudad eliminada con éxito!'}), 200
 
 @api.route('/city/<int:id>', methods=['PUT'])
 def update_city(id):
@@ -241,6 +240,7 @@ def update_city(id):
     city.name = data.get('name', city.name)
     city.pet_friendly = data.get('pet_friendly', city.pet_friendly)
     db.session.commit()
+
     return jsonify({'message': 'City updated successfully!'})
 
 # Breed routes
@@ -258,18 +258,20 @@ def add_breed():
     data = request.get_json()
     new_breed = Breed(
         name=data['name'],
-        type=data['type'],
+        type=data['type']
     )
     db.session.add(new_breed)
     db.session.commit()
+
     return jsonify({'message': 'New breed added!'}), 201
+
 
 @api.route('/breed/<int:id>', methods=['DELETE'])
 def delete_breed(id):
     breed = Breed.query.get_or_404(id)
     db.session.delete(breed)
     db.session.commit()
-    return jsonify({'message': 'Breed deleted successfully!'})
+    return jsonify({'message': '¡Raza eliminada con éxito!'}), 200
 
 @api.route('/breed/<int:id>', methods=['PUT'])
 def update_breed(id):
@@ -277,8 +279,72 @@ def update_breed(id):
     breed = Breed.query.get_or_404(id)
     breed.name = data.get('name', breed.name)
     breed.type = data.get('type', breed.type)
+    
     db.session.commit()
     return jsonify({'message': 'Breed updated successfully!'})
+
+# ADMINISTRADOR
+@api.route('/admin', methods=['GET'])
+def get_admins():
+    all_admins = Adminn.query.all()
+    results = list(map(lambda admin: admin.serialize(), all_admins))
+    return jsonify(results), 200
+
+@api.route('/add_admin', methods=['POST'])
+def create_admin():
+    data = request.json
+    required_fields = ["email", "password", "name"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"El campo '{field}' no puede estar vacío"}), 400
+    
+    existing_admin = Adminn.query.filter_by(email=data['email']).first()
+    if existing_admin:
+        return jsonify({"error": "¡El correo electrónico ya existe!"}), 409
+    
+    new_admin = Adminn(email=data['email'], password=data['password'], name=data['name'])
+    db.session.add(new_admin)
+    db.session.commit()
+    return jsonify({"message": "¡Administrador creado!"}), 201
+
+@api.route("/admin/<int:admin_id>", methods=["GET"])
+def get_admin(admin_id):
+    admin = Adminn.query.get_or_404(admin_id)
+    return jsonify(admin.serialize()), 200
+
+@api.route("/admin/<int:admin_id>", methods=["DELETE"])
+def delete_admin(admin_id):
+    admin = Adminn.query.get_or_404(admin_id)
+    db.session.delete(admin)
+    db.session.commit()
+    return jsonify({'message': 'Administrador eliminado'}), 200
+
+@api.route("/admin/<int:admin_id>", methods=["PUT"])
+def update_admin(admin_id):
+    admin = Adminn.query.get_or_404(admin_id)
+    data = request.json
+    if "email" in data:
+        admin.email = data["email"]
+    if "password" in data:
+        admin.password = data["password"]
+    if "name" in data:
+        admin.name = data["name"]
+    db.session.commit()
+    return jsonify({'message': 'Breed updated successfully!'})
+
+@api.route('/adminlogin', methods=['POST'])
+def admin_login():
+    email = request.json.get("email")
+    password = request.json.get("password")
+    if not email or not password:
+        return jsonify({"message": "Correo electrónico y contraseña son obligatorios"}), 400
+
+    admin = Adminn.query.filter_by(email=email).first()
+    if admin is None or password != admin.password:
+        return jsonify({"message": "Correo electrónico o contraseña inválidos"}), 401
+
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token), 200
 
 # Photo routes
 @api.route('/photo', methods=['GET'])
@@ -332,7 +398,7 @@ def upload_profile_picture():
     result = upload(file, public_id=f"owner_{owner.id}_profile_picture")
     owner.profile_picture_url = result['secure_url']
     db.session.commit()
-
+    
     return jsonify({"message": "File uploaded successfully", "profile_picture_url": owner.profile_picture_url}), 200
 
 # Upload pet profile picture
@@ -361,7 +427,6 @@ def upload_pet_profile_picture(pet_id):
         return jsonify({'error': 'Failed to upload pet photo', 'details': str(e)}), 500
 
 # MULTIPLES FOTOS
-
 @api.route('/upload_pet_additional_photos/<int:pet_id>', methods=['POST'])
 def upload_pet_additional_photos(pet_id):
     if 'file' not in request.files:
@@ -391,7 +456,6 @@ def upload_pet_additional_photos(pet_id):
     except Exception as e:
         return jsonify({'error': 'Failed to upload pet photos', 'details': str(e)}), 500
 
-    
 @api.route('/api/update_photo_order', methods=['POST'])
 def update_photo_order():
     data = request.get_json()
@@ -407,9 +471,7 @@ def update_photo_order():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 # OBTENER OWNER PETS
-
 @api.route('/owner_pets', methods=['GET'])
 @jwt_required()
 def get_owner_pets():

@@ -15,7 +15,7 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, its a security breach
+            # No serializar la contraseña, es una brecha de seguridad
         }
 
 class Owner(db.Model):
@@ -99,12 +99,20 @@ class Breed(db.Model):
 
     def __repr__(self):
         return f'<Breed {self.name}>'
+ 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": self.type
+        }
 
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(100), nullable=True)
     pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=True)
-    order = db.Column(db.Integer, nullable=False, default=0)  # Agregar columna con valor por defecto
+    order = db.Column(db.Integer, nullable=False, default=0)  
+
 
     def __repr__(self):
         return f'<Photo {self.url}>'
@@ -114,4 +122,21 @@ class Photo(db.Model):
             "id": self.id,
             "url": self.url,
             "order": self.order
+        }
+
+class Adminn(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)   
+
+    def __repr__(self):
+        return f'<Adminn {self.email}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "password": self.password
         }

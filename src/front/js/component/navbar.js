@@ -23,12 +23,18 @@ export const Navbar = () => {
 					</Link>
 					<Link to="/city">
 						<button className="btn btn-warning m-2">View Cities</button>
-          </Link>
+          			</Link>
 					<Link to="/pets">
 						<button className="btn btn-warning m-2">View Pets</button>
 					</Link>
 					<Link to="/petSignUp">
 						<button className="btn btn-warning m-2">Pet SignUp</button>
+					</Link>
+					<Link to="/adminlogin">
+                        <button className="btn btn-warning m-2">Admin Login</button>
+                    </Link>
+					<Link to="/adminsignup">
+						<button className="btn btn-warning m-2">Admin SignUp</button>
 					</Link>
 					<Link to="/breed">
 						<button className="btn btn-warning m-2">Agrega Raza</button>
