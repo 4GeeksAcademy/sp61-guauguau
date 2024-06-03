@@ -23,7 +23,7 @@ export const Navbar = () => {
 					</Link>
 					<Link to="/city">
 						<button className="btn btn-warning m-2">View Cities</button>
-          </Link>
+         			</Link>
 					<Link to="/pets">
 						<button className="btn btn-warning m-2">View Pets</button>
 					</Link>
@@ -36,8 +36,13 @@ export const Navbar = () => {
 					<Link to="/photo">
 						<button className="btn btn-warning m-2">Agrega Fotos</button>
 					</Link>
+					<Link to="/adminlogin">
+						<button className="btn btn-warning m-2">Admin Login</button>
+					</Link>
+					<Link to="/adminsignup">
+						<button className="btn btn-warning m-2">Admin SignUp</button>
+					</Link>
 				</div>
-				
 			</div>
 		</nav>
 	);

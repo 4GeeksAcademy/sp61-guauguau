@@ -22,6 +22,10 @@ import { SinglePet } from "./pages/singlePet";
 import { SingleOwner } from "./pages/singleOwner";
 import { EditCity } from "./pages/editcity";
 import { Photo } from "./pages/photo";
+import AdminLogin from "./pages/adminlogin";
+import { AdminSignUp } from "./pages/adminsignup";
+import  AdminPrivate from "./pages/adminprivate"
+import { EditAdmin } from "./pages/editadmin";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -52,6 +56,10 @@ const Layout = () => {
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
                         <Route element={<Login />} path="/login" />
+                        <Route element={<AdminLogin />} path="/adminlogin" />
+                        <Route element={<AdminSignUp />} path="/adminsignup" />
+                        <Route element={<AdminPrivate />} path="/adminprivate" />
+                        <Route element={<EditAdmin />} path="/editadmin/:adminId" />
                         <Route element={<h1>Not found!</h1>} path="*" />
                     </Routes>
                     <Footer />

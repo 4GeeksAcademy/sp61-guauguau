@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify, url_for, Blueprint, current_app
-from api.models import db, User, Pet, City, Owner, Breed, Photo
+from flask import Flask, request, jsonify, url_for, Blueprint
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
@@ -18,6 +18,7 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
+
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
     response_body = {
@@ -26,6 +27,7 @@ def handle_hello():
     return jsonify(response_body), 200
 
 # OWNER
+
 @api.route('/owner', methods=['GET'])
 def get_owners():
     all_owners = Owner.query.all()
@@ -54,7 +56,9 @@ def create_owner():
     )
     db.session.add(new_owner)
     db.session.commit()
+
     return jsonify({"message": "Owner created!"}), 200
+
 
 @api.route("/owner/<int:owner_id>", methods=["GET"])
 def get_owner(owner_id):
@@ -130,6 +134,7 @@ def protected():
         return jsonify({"error": "Owner not found"}), 404
 
     return jsonify({"owner": owner.serialize()}), 200
+
 
 ##### ROUTES PETS #########################################
 @api.route('/pets', methods=['GET'])
@@ -294,7 +299,70 @@ def update_breed(id):
     breed.name = data.get('name', breed.name)
     breed.type = data.get('type', breed.type)
     db.session.commit()
-    return jsonify({'message': 'Breed updated successfully!'})
+    return jsonify({'message': '¡Raza actualizada con éxito!'}), 200
+
+# ADMINISTRADOR
+@api.route('/admin', methods=['GET'])
+def get_admins():
+    all_admins = Adminn.query.all()
+    results = list(map(lambda admin: admin.serialize(), all_admins))
+    return jsonify(results), 200
+
+@api.route('/add_admin', methods=['POST'])
+def create_admin():
+    data = request.json
+    required_fields = ["email", "password", "name"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"El campo '{field}' no puede estar vacío"}), 400
+    
+    existing_admin = Adminn.query.filter_by(email=data['email']).first()
+    if existing_admin:
+        return jsonify({"error": "¡El correo electrónico ya existe!"}), 409
+    
+    new_admin = Adminn(email=data['email'], password=data['password'], name=data['name'])
+    db.session.add(new_admin)
+    db.session.commit()
+    return jsonify({"message": "¡Administrador creado!"}), 201
+
+@api.route("/admin/<int:admin_id>", methods=["GET"])
+def get_admin(admin_id):
+    admin = Adminn.query.get_or_404(admin_id)
+    return jsonify(admin.serialize()), 200
+
+@api.route("/admin/<int:admin_id>", methods=["DELETE"])
+def delete_admin(admin_id):
+    admin = Adminn.query.get_or_404(admin_id)
+    db.session.delete(admin)
+    db.session.commit()
+    return jsonify({'message': 'Administrador eliminado'}), 200
+
+@api.route("/admin/<int:admin_id>", methods=["PUT"])
+def update_admin(admin_id):
+    admin = Adminn.query.get_or_404(admin_id)
+    data = request.json
+    if "email" in data:
+        admin.email = data["email"]
+    if "password" in data:
+        admin.password = data["password"]
+    if "name" in data:
+        admin.name = data["name"]
+    db.session.commit()
+    return jsonify({'message': 'Admin updated successfully!'})
+
+@api.route('/adminlogin', methods=['POST'])
+def admin_login():
+    email = request.json.get("email")
+    password = request.json.get("password")
+    if not email or not password:
+        return jsonify({"message": "Correo electrónico y contraseña son obligatorios"}), 400
+
+    admin = Adminn.query.filter_by(email=email).first()
+    if admin is None or password != admin.password:
+        return jsonify({"message": "Correo electrónico o contraseña inválidos"}), 401
+
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token), 200
 
 # Photo routes
 @api.route('/photo', methods=['GET'])

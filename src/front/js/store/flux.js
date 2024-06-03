@@ -11,6 +11,10 @@ const getState = ({ getStore, getActions, setStore }) => {
             message: null,
             breed: [],
             currentBreed: null,
+            admins: [],
+            adminAuth: false,
+            adminEmail: null,
+            adminErrorMessage: null,
             photo: [],
             demo: [
                 {
@@ -218,71 +222,70 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching pet by ID:", error);
                 }
             },
-            getPetDetails: async (petId) => {
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
-                    if (!response.ok) {
-                        throw new Error('Error fetching pet details');
-                    }
-                    const pet = await response.json();
-                    pet.photos = pet.photos || [];
-                    pet.description = pet.description || '';
-                    setStore({ currentPet: pet });
-                    return pet;
-                } catch (error) {
-                    console.error('Error fetching pet details:', error);
-                }
-            },
+			getPetDetails: async (petId) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
+					if (!response.ok) {
+						throw new Error('Error fetching pet details');
+					}
+					const pet = await response.json();
+					pet.photos = pet.photos || [];  // Asegúrate de que photos no sea null
+					pet.description = pet.description || '';  // Asegúrate de que description no sea null
+					setStore({ currentPet: pet });
+					return pet;
+				} catch (error) {
+					console.error('Error fetching pet details:', error);
+				}
+			},
 
-            updatePet: async (petId, petDetails) => {
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(petDetails)
-                    });
-                    if (!response.ok) {
-                        throw new Error('Error updating pet');
-                    }
-                    const data = await response.json();
-                    const store = getStore();
-                    const updatedPets = store.pets.map(pet => pet.id === petId ? data : pet);
-                    setStore({ pets: updatedPets, currentPet: data });
-                    return data;
-                } catch (error) {
-                    console.error('Error updating pet:', error);
-                }
-            },
-
-            addPet: async (pet) => {
-                try {
-                    const token = localStorage.getItem("token");
-                    const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                        body: JSON.stringify(pet)
-                    });
-                    if (response.ok) {
-                        const newPet = await response.json();
-                        const store = getStore();
-                        setStore({ pets: [...store.pets, newPet] });
-                        return newPet;
-                    } else {
-                        const errorData = await response.json();
-                        console.error("Failed to add pet:", errorData);
-                        throw new Error(errorData.message);
-                    }
-                } catch (error) {
-                    console.error("Error adding pet:", error);
-                    throw error;
-                }
-            },
-
+			updatePet: async (petId, petDetails) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(petDetails)
+					});
+					if (!response.ok) {
+						throw new Error('Error updating pet');
+					}
+					const data = await response.json();
+					const store = getStore();
+					const updatedPets = store.pets.map(pet => pet.id === petId ? data : pet);
+					setStore({ pets: updatedPets, currentPet: data });
+					return data;
+				} catch (error) {
+					console.error('Error updating pet:', error);
+				}
+			},
+			
+			addPet: async (pet) => {
+				try {
+					const token = localStorage.getItem("token");
+					const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${token}`
+						},
+						body: JSON.stringify(pet)
+					});
+					if (response.ok) {
+						const newPet = await response.json();
+						const store = getStore();
+						setStore({ pets: [...store.pets, newPet] });
+						return newPet;
+					} else {
+						const errorData = await response.json();
+						console.error("Failed to add pet:", errorData);
+						throw new Error(errorData.message);
+					}
+				} catch (error) {
+					console.error("Error adding pet:", error);
+					throw error;
+				}
+			},
             fetchDeletePet: (id) => {
                 fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
                     method: 'DELETE',
@@ -598,24 +601,107 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error:', error);
                 }
             },
-            deletePhoto: async (photoId) => {
+			deletePhoto: photoId => {
+				const requestOptions = {
+					method: 'DELETE'
+				};
+				fetch(process.env.BACKEND_URL + `/api/photo/${photoId}`, requestOptions)
+					.then(response => {
+						if (response.ok) {
+							return response.json();
+						} else {
+							throw new Error("Failed to delete photo");
+						}
+					})
+					
+					.catch(error => console.error("Error deleting photo:", error));
+			},
+            createAdmin: async (name, email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                };
                 try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/photo/${photoId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    if (!response.ok) throw new Error('Failed to delete photo');
-
-                    const store = getStore();
-                    const updatedPhotos = store.currentPet.photos.filter(photo => photo.id !== photoId);
-                    setStore({ currentPet: { ...store.currentPet, photos: updatedPhotos } });
+                    const response = await fetch(process.env.BACKEND_URL + "/api/add_admin", requestOptions);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || "Failed to create admin");
+                    }
+                    const data = await response.json();
+                    setStore({ adminAuth: true, adminEmail: email });
                 } catch (error) {
-                    console.error('Error deleting photo:', error);
+                    throw error;
                 }
             },
-            fetchCuidados: async (raza) => {
+            fetchAdmins: async () => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/admin");
+                    if (!response.ok) throw new Error("Failed to fetch admins");
+                    const data = await response.json();
+                    setStore({ admins: data });
+                } catch (error) {
+                    console.error("Error fetching admins:", error);
+                }
+            },
+            deleteAdmin: async (adminId, currentAdminEmail) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/admin/${adminId}`, {
+                        method: "DELETE"
+                    });
+                    if (!response.ok) throw new Error("Failed to delete admin");
+                    
+                    const store = getStore();
+                    if (store.adminEmail === currentAdminEmail) {
+                        localStorage.removeItem("adminToken");
+                        setStore({ adminAuth: false, adminEmail: null });
+                    }
+
+                    getActions().fetchAdmins();
+                } catch (error) {
+                    console.error("Error deleting admin:", error);
+                }
+            },
+            updateAdmin: async (updatedAdmin) => {
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + `/api/admin/${updatedAdmin.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': "application/json" },
+                        body: JSON.stringify(updatedAdmin)
+                    });
+                    if (!response.ok) throw new Error("Failed to update admin");
+                    const updatedAdmins = getStore().admins.map(admin => admin.id === updatedAdmin.id ? updatedAdmin : admin);
+                    setStore({ admins: updatedAdmins });
+                } catch (error) {
+                    console.error("Error updating admin:", error);
+                }
+            },
+            adminLogin: async (email, password) => {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                };
+                try {
+                    const response = await fetch(process.env.BACKEND_URL + "/api/adminlogin", requestOptions);
+                    if (response.ok) {
+                        const data = await response.json();
+                        localStorage.setItem("adminToken", data.access_token);
+                        setStore({ adminAuth: true, adminEmail: email, adminErrorMessage: null });
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "El mail o password no son correctos, inténtelo de nuevo");
+                    }
+                } catch (error) {
+                    setStore({ adminAuth: false, adminEmail: null, adminErrorMessage: error.message });
+                    throw error;
+                }
+            },
+            adminLogout: () => {
+                localStorage.removeItem("adminToken");
+                setStore({ adminAuth: false, adminEmail: null });
+            },
+          fetchCuidados: async (raza) => {
                 try {
                     const response = await fetch(process.env.BACKEND_URL + `/api/cuidados/${raza}`);
                     if (!response.ok) {
@@ -641,8 +727,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                     throw error;
                 }
             },
-        }
+	    }
     }
 };
+
 
 export default getState;
