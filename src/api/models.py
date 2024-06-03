@@ -111,3 +111,21 @@ class Photo(db.Model):
         }
 
 
+
+
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=True)
+    pets = db.relationship('Pet', backref='pet', lazy=True)
+    pets_2 = db.relationship('Pet', backref='pet', lazy=True)
+
+    def __repr__(self):
+        return f'<Pet {self.id}>'
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pets": self.pets,
+            "pets_2": self.pets_2,
+        }

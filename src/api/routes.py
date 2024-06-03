@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner, Breed, Photo
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Like
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
@@ -357,3 +357,10 @@ def upload_profile_picture():
 
 
     
+
+@api.route('/like', methods=['GET'])
+def get_likes():
+    all_like= Like.query.all()
+    results = list(map(lambda like: like.serialize(), all_like))
+    return jsonify(results), 200
+
