@@ -13,7 +13,8 @@ export const OnePet = () => {
         pedigree: false,
         description: '',
         photos: [],
-        profile_photo_url: ''
+        profile_photo_url: '',
+        breed: ''
     });
     const [isEditing, setIsEditing] = useState({
         name: false,
@@ -26,15 +27,17 @@ export const OnePet = () => {
     const [additionalFiles, setAdditionalFiles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isMounted, setIsMounted] = useState(true); // Nuevo estado para manejar el desmontaje del componente
+    const [isMounted, setIsMounted] = useState(true);
+    const [careInfo, setCareInfo] = useState("");
+    const [compatibilityInfo, setCompatibilityInfo] = useState("");
 
     useEffect(() => {
-        setIsMounted(true); // Montar el componente
+        setIsMounted(true);
 
         const fetchPetDetails = async () => {
             try {
                 const pet = await actions.getPetDetails(petId);
-                if (isMounted) { // Comprobar si el componente sigue montado
+                if (isMounted) {
                     setPetDetails({
                         name: pet.name || '',
                         age: pet.age || '',
@@ -42,12 +45,13 @@ export const OnePet = () => {
                         pedigree: pet.pedigree || false,
                         description: pet.description || '',
                         photos: pet.photos || [],
-                        profile_photo_url: pet.profile_photo_url || ''
+                        profile_photo_url: pet.profile_photo_url || '',
+                        breed: pet.breed || ''
                     });
                 }
             } catch (error) {
                 console.error("Failed to fetch pet details:", error);
-                if (isMounted) { // Comprobar si el componente sigue montado
+                if (isMounted) {
                     setErrorMessage('Failed to fetch pet details. Please try again.');
                 }
             }
@@ -55,7 +59,7 @@ export const OnePet = () => {
         fetchPetDetails();
 
         return () => {
-            setIsMounted(false); // Desmontar el componente
+            setIsMounted(false);
         };
     }, [petId]);
 
@@ -88,7 +92,7 @@ export const OnePet = () => {
         try {
             if (file) {
                 const photoResponse = await actions.uploadPetPhoto(petId, file);
-                if (photoResponse && photoResponse.photo_url && isMounted) { // Comprobar si photo_url existe y el componente sigue montado
+                if (photoResponse && photoResponse.photo_url && isMounted) {
                     setPetDetails(prevDetails => ({
                         ...prevDetails,
                         profile_photo_url: photoResponse.photo_url
@@ -98,7 +102,7 @@ export const OnePet = () => {
 
             if (additionalFiles.length > 0) {
                 const additionalPhotosResponse = await actions.uploadPetAdditionalPhotos(petId, additionalFiles);
-                if (additionalPhotosResponse && additionalPhotosResponse.photo_urls && isMounted) { // Comprobar si photo_urls existe y el componente sigue montado
+                if (additionalPhotosResponse && additionalPhotosResponse.photo_urls && isMounted) {
                     setPetDetails(prevDetails => ({
                         ...prevDetails,
                         photos: [...prevDetails.photos, ...additionalPhotosResponse.photo_urls.map((url, index) => ({ id: `${Date.now()}-${index}`, url }))]
@@ -107,7 +111,7 @@ export const OnePet = () => {
             }
 
             await actions.updatePet(petId, petDetails);
-            if (isMounted) { // Comprobar si el componente sigue montado
+            if (isMounted) {
                 setIsLoading(false);
                 setIsEditing({
                     name: false,
@@ -118,7 +122,7 @@ export const OnePet = () => {
                 });
             }
         } catch (error) {
-            if (isMounted) { // Comprobar si el componente sigue montado
+            if (isMounted) {
                 setIsLoading(false);
                 setErrorMessage('Failed to update pet or upload photo. Please try again.');
             }
@@ -155,6 +159,29 @@ export const OnePet = () => {
             setErrorMessage('Failed to delete photo. Please try again.');
         }
     };
+
+    const fetchCareInfo = async () => {
+        try {
+            const careInfo = await actions.fetchCuidados(petDetails.breed);
+            setCareInfo(careInfo);
+            console.log("Care Info:", careInfo); // Depuración
+        } catch (error) {
+            console.error("Error fetching care info:", error);
+        }
+    };
+
+    const fetchCompatibilityInfo = async () => {
+        try {
+            const compatibilityInfo = await actions.fetchCompatibilidad(petDetails.breed);
+            setCompatibilityInfo(compatibilityInfo);
+            console.log("Compatibility Info:", compatibilityInfo); // Depuración
+        } catch (error) {
+            console.error("Error fetching compatibility info:", error);
+        }
+    };
+
+    console.log("Care Info State:", careInfo); // Depuración
+    console.log("Compatibility Info State:", compatibilityInfo); // Depuración
 
     return (
         <div className="container">
@@ -280,8 +307,27 @@ export const OnePet = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-            <Link to="/private" className="btn btn-secondary mt-3">
-                <i className="fas fa-arrow-left"></i> Volver a Private
+            <button className="btn btn-secondary" onClick={fetchCareInfo}
+>
+                 Cuidados
+            </button>
+            {careInfo && (
+                <div>
+                    <h3>Cuidados</h3>
+                    <p>{careInfo}</p>
+                </div>
+            )}
+            <button className="btn btn-secondary " >
+                 Compatibilidad
+            </button>
+            {compatibilityInfo && (
+                <div>
+                    <h3>Compatibilidad</h3>
+                    <p>{compatibilityInfo}</p>
+                </div>
+            )}
+            <Link to="/private" className="btn btn-secondary " onClick={fetchCompatibilityInfo}>
+                 Volver a Private
             </Link>
         </div>
     );
