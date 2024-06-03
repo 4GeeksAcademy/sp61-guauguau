@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
-
 import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import Login from "./pages/login";
@@ -13,16 +12,13 @@ import { EditOwner } from "./pages/editowner";
 import { Single } from "./pages/single";
 import { City } from "./pages/city";
 import injectContext from "./store/appContext";
-
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 import { Pets } from "./pages/pets";
-
-
 import { Breed } from "./pages/breed";
-
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+import { EditCity } from "./pages/editcity";
 import { Photo } from "./pages/photo";
 
 const Layout = () => {
@@ -47,6 +43,7 @@ const Layout = () => {
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
                         <Route element={<City/>} path="/city" />
+                        <Route element={<EditCity/>} path="/editcity/:id" />
                         <Route element={<Pets/>} path="/pets" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />

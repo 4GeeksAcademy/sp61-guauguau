@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner, Breed, Photo
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Like
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
@@ -43,23 +43,26 @@ def create_owner():
     data = request.json
     required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
     for field in required_fields:
-        if field not in data: return "The '" + field + "' cannot be empty", 400
+        if field not in data:
+            return jsonify({"error": "The '" + field + "' cannot be empty"}), 400
+
     existing_owner = Owner.query.filter_by(email=data['email']).first()
     if existing_owner:
         return jsonify({"error": "Email already exists!"}), 409
     
     new_owner = Owner(
-        email = data['email'], 
-        password = data['password'], 
-        name = data['name'],
-        address = data['address'],
-        latitude = data['latitude'],
-        longitude = data['longitude']
+        email=data['email'], 
+        password=data['password'], 
+        name=data['name'],
+        address=data['address'],
+        latitude=data['latitude'],
+        longitude=data['longitude']
     )
     db.session.add(new_owner)
     db.session.commit()
 
     return jsonify({"message": "Owner created!"}), 200
+
 
 @api.route("/owner/<int:owner_id>", methods=["GET"])
 def get_owner(owner_id):
@@ -211,7 +214,6 @@ def delete_pet(id):
     db.session.commit()
     return jsonify({'message': 'Pet deleted successfully!'}), 200
 
-
 @api.route('/city', methods=['GET'])
 def get_city():
     city = City.query.all()
@@ -219,7 +221,6 @@ def get_city():
         'id': city.id,
         'name': city.name,
         'pet_friendly': city.pet_friendly,
-
     } for city in city])
 
 @api.route('/city', methods=['POST'])
@@ -356,3 +357,10 @@ def upload_profile_picture():
 
 
     
+
+@api.route('/like', methods=['GET'])
+def get_likes():
+    all_like= Like.query.all()
+    results = list(map(lambda like: like.serialize(), all_like))
+    return jsonify(results), 200
+
