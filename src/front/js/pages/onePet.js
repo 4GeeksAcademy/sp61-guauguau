@@ -13,7 +13,7 @@ export const OnePet = () => {
         pedigree: false,
         description: '',
         photos: [],
-        photo: ''
+        profile_photo_url: ''
     });
     const [isEditing, setIsEditing] = useState({
         name: false,
@@ -42,7 +42,7 @@ export const OnePet = () => {
                         pedigree: pet.pedigree || false,
                         description: pet.description || '',
                         photos: pet.photos || [],
-                        photo: pet.photo || ''
+                        profile_photo_url: pet.profile_photo_url || ''
                     });
                 }
             } catch (error) {
@@ -91,7 +91,7 @@ export const OnePet = () => {
                 if (photoResponse && photoResponse.photo_url && isMounted) { // Comprobar si photo_url existe y el componente sigue montado
                     setPetDetails(prevDetails => ({
                         ...prevDetails,
-                        photo: photoResponse.photo_url
+                        profile_photo_url: photoResponse.photo_url
                     }));
                 }
             }
@@ -162,8 +162,8 @@ export const OnePet = () => {
             {errorMessage && <p className="text-danger">{errorMessage}</p>}
             <form onSubmit={handleSubmit} className="row">
                 <div className="col-md-4">
-                    {petDetails.photo && (
-                        <img src={petDetails.photo} alt="Pet Profile" className="img-thumbnail w-100 mb-3" />
+                    {petDetails.profile_photo_url && (
+                        <img src={petDetails.profile_photo_url} alt="Pet Profile" className="img-thumbnail w-100 mb-3" />
                     )}
                     <input type="file" onChange={handleFileChange} className="form-control mb-2" />
                     <input type="file" onChange={handleAdditionalFilesChange} className="form-control" multiple />

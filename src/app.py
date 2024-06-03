@@ -19,7 +19,6 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
-from flask_mail import Mail
 
 # from models import Person
 
@@ -54,14 +53,6 @@ cloudinary.config(
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
 
-#Configuracion del Mail
-app.config['MAIL_SERVER'] = 'smtp.example.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your_email@example.com'
-app.config['MAIL_PASSWORD'] = 'your_password'
-mail = Mail(app)  
-
 # add the admin
 setup_admin(app)
 
@@ -73,7 +64,6 @@ app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
 
-mail = Mail(app) # Inicializa Mail con la aplicación
 
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):

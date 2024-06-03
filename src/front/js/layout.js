@@ -18,13 +18,10 @@ import { Pets } from "./pages/pets";
 import { Breed } from "./pages/breed";
 import { PetSignUp } from "./pages/petSignUp";
 import { OnePet } from "./pages/onePet";
+import { SinglePet } from "./pages/singlePet";
+import { SingleOwner } from "./pages/singleOwner";
 import { EditCity } from "./pages/editcity";
 import { Photo } from "./pages/photo";
-import { AdminSignUp } from "./pages/adminsignup";
-import { EditAdmin } from "./pages/editadmin";
-import { ShowAdmins } from "./pages/showadmins";
-import AdminLogin from "./pages/adminlogin.js";
-import AdminPrivate from "./pages/adminprivate.js";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -41,6 +38,8 @@ const Layout = () => {
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Breed/>} path="/breed" />
                         <Route element={<Photo/>} path="/photo" />
+                        <Route element={<SinglePet/>} path="/singlepet/:petId" />
+                        <Route element={<SingleOwner/>} path="/singleowner/:ownerId" />
                         <Route element={<OnePet/>} path="/pet/:petId" />
                         <Route element={<PetSignUp/>} path="/petSignUp" />
                         <Route element={<OwnerSignUp />} path="/ownersignup" />
@@ -53,11 +52,6 @@ const Layout = () => {
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
                         <Route element={<Login />} path="/login" />
-                        <Route element={<AdminSignUp />} path="/adminsignup" />
-                        <Route element={<ShowAdmins />} path="/showadmins/" />
-                        <Route element={<EditAdmin />} path="/editadmin/:adminId" />
-                        <Route element={<AdminLogin />} path="/adminlogin" />
-                        <Route element={<AdminPrivate />} path="/adminprivate" />
                         <Route element={<h1>Not found!</h1>} path="*" />
                     </Routes>
                     <Footer />

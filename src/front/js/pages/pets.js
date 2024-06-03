@@ -26,10 +26,10 @@ export const Pets = () => {
                         store.pets.map(pet => (
                             <div key={pet.id} className="col-md-4 mb-4">
                                 <div className="card h-100">
-                                    {pet.photo && <img src={pet.photo} className="card-img-top" alt={pet.name} />}
+                                    {pet.profile_photo_url && <img src={pet.profile_photo_url} className="card-img-top" alt={pet.name} />}
                                     <div className="card-body">
                                         <h2 className="card-title">
-                                            <Link to={`/pet/${pet.id}`}>{pet.name}</Link>
+                                            <Link to={`/singlepet/${pet.id}`}>{pet.name}</Link>
                                         </h2>
                                         <p className="card-text">Breed: {pet.breed}</p>
                                         <p className="card-text">Sex: {pet.sex}</p>
