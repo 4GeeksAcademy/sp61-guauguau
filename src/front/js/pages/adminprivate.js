@@ -21,10 +21,10 @@ const AdminPrivate = () => {
 
     const handleDeleteAdmin = async (adminId) => {
         const currentAdminEmail = store.admins.find(admin => admin.id === adminId)?.email;
-        await actions.deleteAdmin(adminId, store.adminEmail);
-
+        await actions.deleteAdmin(adminId);
+    
         if (currentAdminEmail === store.adminEmail) {
-            navigate("/adminlogin");
+            handleLogout();
         }
     };
 

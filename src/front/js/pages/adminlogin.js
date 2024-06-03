@@ -9,6 +9,12 @@ const AdminLogin = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (store.adminErrorMessage) {
+            setErrorMessage(store.adminErrorMessage);
+        }
+    }, [store.adminErrorMessage]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -18,11 +24,11 @@ const AdminLogin = () => {
             setErrorMessage(store.adminErrorMessage || "El mail o password no son correctos, inténtelo de nuevo");
         }
     };
-    useEffect(() => {
-        if (store.adminErrorMessage) {
-            setErrorMessage(store.adminErrorMessage);
-        }
-    }, [store.adminErrorMessage]);
+    
+    const handleInputChange = (setter) => (e) => {
+        setter(e.target.value);
+        setErrorMessage("");
+    };
 
     return (
         <div className="container">
@@ -38,7 +44,7 @@ const AdminLogin = () => {
                         type="email"
                         className="form-control"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={handleInputChange(setEmail)}
                     />
                 </div>
                 <div className="form-group">
@@ -47,7 +53,7 @@ const AdminLogin = () => {
                         type="password"
                         className="form-control"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={handleInputChange(setPassword)}
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Login</button>
