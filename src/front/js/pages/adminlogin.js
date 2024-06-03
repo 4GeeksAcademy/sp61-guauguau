@@ -1,11 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 const AdminLogin = () => {
-    const { actions } = useContext(Context);
+    const { store, actions } = useContext(Context);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -14,13 +15,23 @@ const AdminLogin = () => {
             await actions.adminLogin(email, password);
             navigate("/adminprivate");
         } catch (error) {
-            console.error("Error logging in:", error);
+            setErrorMessage(store.adminErrorMessage || "El mail o password no son correctos, inténtelo de nuevo");
         }
     };
+    useEffect(() => {
+        if (store.adminErrorMessage) {
+            setErrorMessage(store.adminErrorMessage);
+        }
+    }, [store.adminErrorMessage]);
 
     return (
         <div className="container">
             <form onSubmit={handleSubmit}>
+                {errorMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        {errorMessage}
+                    </div>
+                )}
                 <div className="form-group">
                     <label>Email</label>
                     <input

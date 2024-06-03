@@ -14,6 +14,11 @@ const AdminPrivate = () => {
         }
     }, [store.adminAuth, actions, navigate]);
 
+    const handleLogout = () => {
+        actions.adminLogout();
+        navigate("/adminlogin");
+    };
+
     const handleDeleteAdmin = async (adminId) => {
         const currentAdminEmail = store.admins.find(admin => admin.id === adminId)?.email;
         await actions.deleteAdmin(adminId, store.adminEmail);
@@ -26,6 +31,9 @@ const AdminPrivate = () => {
     return (
         <div className="container">
             <h2>Admin Zone</h2>
+            <button onClick={handleLogout} className="btn btn-danger float-right">
+                Logout
+            </button>
             <table className="table">
                 <thead>
                     <tr>

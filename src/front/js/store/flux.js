@@ -12,6 +12,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             breed: [],
             currentBreed: null,
             admins: [],
+            adminAuth: false,
+            adminEmail: null,
+            adminErrorMessage: null,
             photo: [],
             demo: [
                 {
@@ -283,71 +286,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
-            // getPetDetails: async (petId) => {
-            //     try {
-            //         const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
-            //         if (!response.ok) {
-            //             throw new Error('Error fetching pet details');
-            //         }
-            //         const pet = await response.json();
-            //         pet.photos = pet.photos || [];
-            //         pet.description = pet.description || '';
-            //         setStore({ currentPet: pet });
-            //         return pet;
-            //     } catch (error) {
-            //         console.error('Error fetching pet details:', error);
-            //     }
-            // },
-
-            // updatePet: async (petId, petDetails) => {
-            //     try {
-            //         const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`, {
-            //             method: 'PUT',
-            //             headers: {
-            //                 'Content-Type': 'application/json'
-            //             },
-            //             body: JSON.stringify(petDetails)
-            //         });
-            //         if (!response.ok) {
-            //             throw new Error('Error updating pet');
-            //         }
-            //         const data = await response.json();
-            //         const store = getStore();
-            //         const updatedPets = store.pets.map(pet => pet.id === petId ? data : pet);
-            //         setStore({ pets: updatedPets, currentPet: data });
-            //         return data;
-            //     } catch (error) {
-            //         console.error('Error updating pet:', error);
-            //     }
-            // },
-
-            // addPet: async (pet) => {
-            //     try {
-            //         const token = localStorage.getItem("token");
-            //         const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
-            //             method: "POST",
-            //             headers: {
-            //                 "Content-Type": "application/json",
-            //                 "Authorization": `Bearer ${token}`
-            //             },
-            //             body: JSON.stringify(pet)
-            //         });
-            //         if (response.ok) {
-            //             const newPet = await response.json();
-            //             const store = getStore();
-            //             setStore({ pets: [...store.pets, newPet] });
-            //             return newPet;
-            //         } else {
-            //             const errorData = await response.json();
-            //             console.error("Failed to add pet:", errorData);
-            //             throw new Error(errorData.message);
-            //         }
-            //     } catch (error) {
-            //         console.error("Error adding pet:", error);
-            //         throw error;
-            //     }
-            // },
-
             fetchDeletePet: (id) => {
                 fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
                     method: 'DELETE',
@@ -749,17 +687,22 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (response.ok) {
                         const data = await response.json();
                         localStorage.setItem("adminToken", data.access_token);
-                        setStore({ adminAuth: true, adminEmail: email });
+                        setStore({ adminAuth: true, adminEmail: email, adminErrorMessage: null });
                     } else {
-                        throw new Error("Email or password wrong");
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || "El mail o password no son correctos, inténtelo de nuevo");
                     }
                 } catch (error) {
-                    setStore({ adminAuth: false, adminEmail: null });
+                    setStore({ adminAuth: false, adminEmail: null, adminErrorMessage: error.message });
                     throw error;
                 }
             },
-		}
-	}
-};
+            adminLogout: () => {
+                localStorage.removeItem("adminToken");
+                setStore({ adminAuth: false, adminEmail: null });
+            },
+	    }
+}
+}
 
 export default getState;
