@@ -18,16 +18,42 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
 
+class Breed(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    type = db.Column(db.String(250), nullable=False)
+
+    def __repr__(self):
+        return f'<Breed {self.name}>'
+
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(100), nullable=True)
+    order = db.Column(db.Integer, nullable=False, default=0)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Photo {self.url}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "url": self.url,
+            "order": self.order
+        }
+
 class Owner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
+    profile_picture_url = db.Column(db.String(255))
     address = db.Column(db.String(250), nullable=True)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
-    
-    pets = db.relationship('Pet', back_populates='owner', lazy=True)  # Usar back_populates
+    description = db.Column(db.String(500), nullable=True)  # Añade este campo
+
+    pets = db.relationship('Pet', backref='owner', lazy=True)
 
     def __repr__(self):
         return f'<Owner {self.email}>'
@@ -38,9 +64,11 @@ class Owner(db.Model):
             "name": self.name,
             "email": self.email,
             "password": self.password,
+            "profile_picture_url": self.profile_picture_url,
             "address": self.address,
             "latitude": self.latitude,
-            "longitude": self.longitude
+            "longitude": self.longitude,
+            "description": self.description  # Incluye este campo
         }
 
 class Pet(db.Model):
@@ -50,17 +78,16 @@ class Pet(db.Model):
     sex = db.Column(db.String(10), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     pedigree = db.Column(db.Boolean, nullable=False)
-    photo_url = db.Column(db.String(100), nullable=True)  # Renamed field
     owner_id = db.Column(db.Integer, db.ForeignKey('owner.id'), nullable=False)
-    
+    description = db.Column(db.String(500), nullable=True)
+    profile_photo_url = db.Column(db.String(255), nullable=True)
+
     breed = db.relationship('Breed', backref='pets')
-    owner = db.relationship('Owner', back_populates='pets')  # Cambiado a back_populates
-    photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'), nullable=True)
-    photo = db.relationship('Photo', backref='pets', foreign_keys='Pet.photo_id')
+    photos = db.relationship('Photo', backref='pet', lazy=True)
 
     def __repr__(self):
         return f'<Pet {self.name}>'
-    
+
     def serialize(self):
         return {
             "id": self.id,
@@ -69,8 +96,10 @@ class Pet(db.Model):
             "sex": self.sex,
             "age": self.age,
             "pedigree": self.pedigree,
-            "photo_url": self.photo_url,
-            "owner_id": self.owner_id
+            "profile_photo_url": self.profile_photo_url,
+            "owner_id": self.owner_id,
+            "photos": [photo.serialize() for photo in self.photos],
+            "description": self.description
         }
 
 
@@ -82,37 +111,9 @@ class City(db.Model):
     def __repr__(self):
         return f'<City {self.name}>'
 
-    def serialize(self): 
-        return {
-        "id": self.id,
-        "name": self.name,
-        "pet_friendly_id": self.pet_friendly_id,
-        }
-
-class Breed(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    type = db.Column(db.String(250), nullable=False)
-
-    def __repr__(self):
-        return f'<Breed {self.name}>'
-
-
-
-class Photo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(100), nullable=True)
-    
-
-    def __repr__(self):
-        return f'<Photo {self.url}>'
     def serialize(self):
         return {
             "id": self.id,
-            "url": self.url,
-            # do not serialize the password, its a security breach
-
+            "name": self.name,
+            "pet_friendly": self.pet_friendly,
         }
-
-
-
