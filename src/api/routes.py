@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner, Breed, Photo
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
@@ -15,10 +15,6 @@ api = Blueprint('api', __name__)
 # Allow CORS requests to this API
 CORS(api)
 
-
-
-# Configuración de correo electrónico
-mail = Mail()
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -349,7 +345,7 @@ def update_admin(admin_id):
     if "name" in data:
         admin.name = data["name"]
     db.session.commit()
-    return jsonify({'message': 'Breed updated successfully!'})
+    return jsonify({'message': 'Admin updated successfully!'})
 
 @api.route('/adminlogin', methods=['POST'])
 def admin_login():
@@ -364,9 +360,6 @@ def admin_login():
 
     access_token = create_access_token(identity=email)
     return jsonify(access_token=access_token), 200
-
-
-    return jsonify({'message': 'Breed updated successfully!'})
 
 # Photo routes
 @api.route('/photo', methods=['GET'])

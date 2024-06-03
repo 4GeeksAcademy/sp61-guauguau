@@ -11,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             message: null,
             breed: [],
             currentBreed: null,
+            admins: [],
             photo: [],
             demo: [
                 {

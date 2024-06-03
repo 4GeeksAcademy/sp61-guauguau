@@ -117,37 +117,6 @@ class City(db.Model):
         "pet_friendly_id": self.pet_friendly_id,
         }
 
-class Breed(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    type = db.Column(db.String(250), nullable=False)
-
-    def __repr__(self):
-        return f'<Breed {self.name}>'
-    
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "pet_friendly": self.pet_friendly,
-        }
-
-class Photo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(100), nullable=True)
-    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=True)
-    order = db.Column(db.Integer, nullable=False, default=0)  # Agregar columna con valor por defecto
-
-    def __repr__(self):
-        return f'<Photo {self.url}>'
-    
-    def serialize(self):
-        return {
-            "id": self.id,
-            "url": self.url,
-            "order": self.order
-        }
-
 class Adminn(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
