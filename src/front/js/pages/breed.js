@@ -8,18 +8,20 @@ export const Breed = () => {
 	const { store, actions } = useContext(Context);
 	const [name, setName] = useState("");
 	const [type, setType] = useState("");
+	const [life_span, setLifeSpan] = useState("");
 	const [editMode, setEditMode] = useState(false);
 	const [editBreedId, setEditBreedId] = useState(null);
 	const [editName, setEditName] = useState("");
 	const [editType, setEditType] = useState("");
+	const [editLife, setEditLife] = useState("");
 
 	const handleSelectBreed = (raza) => {
 		setName(raza.name);
+		setType(raza.breed_group);
+		setLifeSpan(raza.life_span);
 	};
 
-	const handleSelectType = (raza) => {
-		setType(raza.breed_group);
-	};
+
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -29,15 +31,17 @@ export const Breed = () => {
 		}
 
 		if (editMode) {
-			actions.editBreed(editBreedId, { name: editName, type: editType });
+			actions.editBreed(editBreedId, { name: editName, type: editType ,life_span: editLife});
 			setEditMode(false);
 			setEditBreedId(null);
 			setEditName("");
 			setEditType("");
+			setEditLife("");
 		} else {
-			actions.signUpBreed(name, type);
+			actions.signUpBreed(name, type,life_span);
 			setName("");
 			setType("");
+			setLifeSpan("");
 		}
 	};
 
@@ -54,6 +58,7 @@ export const Breed = () => {
 		setEditBreedId(breed.id);
 		setEditName(breed.name);
 		setEditType(breed.type);
+		setEditLife(breed.life_span);
 	};
 
 	const handleKeyPress = (e) => {
@@ -75,6 +80,7 @@ export const Breed = () => {
 					<tr>
 						<th>Nombre</th>
 						<th>Tipo</th>
+						<th>Esperanzade vida</th>
 						<th>Acciones</th>
 					</tr>
 				</thead>
@@ -86,6 +92,9 @@ export const Breed = () => {
 							</td>
 							<td>
 								<p>{breed.type}</p>
+							</td>
+							<td>
+								<p>{breed.life_span}</p>
 							</td>
 							<td>
 								<button onClick={() => handleDeleteBreed(breed.id)} className="btn btn-danger">
@@ -106,31 +115,46 @@ export const Breed = () => {
 				<form className="row g-3 p-3 bg-light rounded m-3" onSubmit={handleSubmit}>
 					<h1 className="text-center p-3">{editMode ? "Editar Raza" : "Registrar Raza"}</h1>
 					<div className="col-12">
-						<label htmlFor="inputName" className="form-label">Nombre</label>
+						<label htmlFor="inputName" className="form-label"></label>
 						<Autocomplete onSelect={handleSelectBreed} />
 						<input
 							type="text"
 							className="form-control"
 							id="inputName"
-							placeholder="Otros"
+							placeholder="Nombre"
 							value={editMode ? editName : name}
 							onChange={(e) => (editMode ? setEditName(e.target.value) : setName(e.target.value))}
 							onKeyPress={handleKeyPress}
 						/>
 					</div>
 					<div className="col-12">
-						<label htmlFor="inputType" className="form-label">Tipo</label>
-						<AutocompleteType onSelect={handleSelectType} />
+						<label htmlFor="inputType" className="form-label"></label>
+						
 						<input
 							type="text"
 							className="form-control"
 							id="inputType"
-							placeholder="Otros"
+							placeholder="Tipo"
 							value={editMode ? editType : type}
 							onChange={(e) => (editMode ? setEditType(e.target.value) : setType(e.target.value))}
 							onKeyPress={handleKeyPress}
 						/>
 					</div>
+					<div className="col-12">
+						<label htmlFor="inputLife" className="form-label"></label>
+					
+						<input
+							type="text"
+							className="form-control"
+							id="inputLife"
+							placeholder="Esperanza de Vida"
+							value={editMode ? editLife : life_span}
+							onChange={(e) => (editMode ? setEditLife(e.target.value) : setLifeSpan(e.target.value))}
+							onKeyPress={handleKeyPress}
+							
+						/>
+					</div>
+					
 					<div className="col-12">
 						<button type="submit" className="btn btn-primary">
 							{editMode ? "Guardar Cambios" : "Registrar"}

@@ -30,8 +30,8 @@ export const ApiBreed = () => {
         <table>
             <thead>
                 <tr>
-                    <th>Raza</th>
                     <th>Tipo</th>
+                    <th>Raza</th>
                     <th>Esperanza de vida</th>
                     <th>Imagen</th>
                 </tr>

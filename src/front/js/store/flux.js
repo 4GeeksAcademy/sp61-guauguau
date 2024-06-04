@@ -11,6 +11,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			currentPet: null,
 			message: null,
 			breed: [],
+			life_span:[],
 			raza: [],
 			currentBreed:null,
 			photo: [],
@@ -314,18 +315,24 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 
 			},
-			signUpBreed: (name, type ) => {
+			signUpBreed: (name, type, life_span) => {
+				console.log(name,type,life_span)
+				const raw = JSON.stringify({
+					"life_span": life_span,
+					"name": name,
+					"type": type,
+				  });
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': "application/json" },
-                    body: JSON.stringify({ name, type })
+                    body:raw 
                 };
                 fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
                     .then(response => {
                         if (response.ok) {
                             return response.json();
                         } else {
-                            throw new Error("User already exists");
+                            throw new Error("Breed already exists");
                         }
                     })
                     .then(data => {
