@@ -54,6 +54,20 @@ export const SinglePet = () => {
         };
     }, [petId]);
 
+    const handleLike = async () => {
+        try {
+            if (store.auth) {
+                await actions.likePet(petId);
+                alert("You liked this pet!");
+            } else {
+                alert("You need to be logged in to like a pet.");
+            }
+        } catch (error) {
+            console.error('Error liking the pet:', error);
+            alert('Failed to like the pet. Please try again.');
+        }
+    };
+
     return (
         <div className="container">
             <h2 className='p-5 ps-0'>{petDetails.name}, {petDetails.age} years</h2>
@@ -62,6 +76,11 @@ export const SinglePet = () => {
                 <div className="col-md-4">
                     {petDetails.profile_photo_url && (
                         <img src={petDetails.profile_photo_url} alt="Pet Profile" className="img-thumbnail w-100 mb-3" />
+                    )}
+                    {store.auth && (
+                        <button className="btn btn-primary mt-2" onClick={handleLike}>
+                            <i className="fas fa-heart"></i> Like
+                        </button>
                     )}
                 </div>
                 <div className="col-md-8">
