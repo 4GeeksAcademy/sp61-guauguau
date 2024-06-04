@@ -15,8 +15,9 @@ export const SinglePet = () => {
         profile_photo_url: '',
         owner: '',
         ownerPhoto: '',
-        ownerId: '' // Añadir ownerId para poder enlazarlo
+        ownerId: ''
     });
+    const [selectedPetId, setSelectedPetId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [isMounted, setIsMounted] = useState(true);
 
@@ -37,7 +38,7 @@ export const SinglePet = () => {
                         profile_photo_url: pet.profile_photo_url || '',
                         owner: pet.owner_name || '',
                         ownerPhoto: pet.owner_photo_url || '',
-                        ownerId: pet.owner_id || '' // Asignar ownerId aquí
+                        ownerId: pet.owner_id || ''
                     });
                 }
             } catch (error) {
@@ -57,8 +58,16 @@ export const SinglePet = () => {
     const handleLike = async () => {
         try {
             if (store.auth) {
-                await actions.likePet(petId);
-                alert("You liked this pet!");
+                if (!selectedPetId) {
+                    alert("You need to select one of your pets to like another pet.");
+                    return;
+                }
+                const result = await actions.likePet(selectedPetId, petId);
+                if (result.match) {
+                    alert("It's a match!");
+                } else {
+                    alert("You liked this pet!");
+                }
             } else {
                 alert("You need to be logged in to like a pet.");
             }
@@ -78,9 +87,21 @@ export const SinglePet = () => {
                         <img src={petDetails.profile_photo_url} alt="Pet Profile" className="img-thumbnail w-100 mb-3" />
                     )}
                     {store.auth && (
-                        <button className="btn btn-primary mt-2" onClick={handleLike}>
-                            <i className="fas fa-heart"></i> Like
-                        </button>
+                        <div>
+                            <select 
+                                className="form-select mb-3" 
+                                value={selectedPetId || ''} 
+                                onChange={(e) => setSelectedPetId(e.target.value)}
+                            >
+                                <option value="" disabled>Select your pet</option>
+                                {store.owner && store.owner.pets && store.owner.pets.map((pet) => (
+                                    <option key={pet.id} value={pet.id}>{pet.name}</option>
+                                ))}
+                            </select>
+                            <button className="btn btn-primary mt-2" onClick={handleLike}>
+                                <i className="fas fa-heart"></i> Like
+                            </button>
+                        </div>
                     )}
                 </div>
                 <div className="col-md-8">
@@ -98,7 +119,7 @@ export const SinglePet = () => {
                     </div>
                     <div className="mb-2 d-flex align-items-center">
                         <label className="me-2">Pedigree:</label>
-                        <span className="me-2">{petDetails.pedigree ? 'Sí' : 'No'}</span>
+                        <span className="me-2">{petDetails.pedigree ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
                         <label className="me-2">Description:</label>

@@ -4,6 +4,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             auth: false,
             email: null,
             owners: [],
+            owner: null,
+            selectedPetId: null, // Añadido para la mascota seleccionada
             profilePictureUrl: null,
             ownerDescription: null, // NUEVO CRIS
             city: [],
@@ -84,11 +86,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         });
                         if (ownerResponse.ok) {
                             const ownerData = await ownerResponse.json();
-                            setStore({
-                                profilePictureUrl: ownerData.owner.profile_picture_url,
-                                email: ownerData.owner.email,
-                                ownerDescription: ownerData.owner.description // NUEVO CRIS
-                            });
+                            setStore({ owner: ownerData.owner });
                         }
                     } else {
                         throw new Error("Email or password wrong");
@@ -112,11 +110,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         });
                         if (response.ok) {
                             const data = await response.json();
-                            setStore({
-                                profilePictureUrl: data.owner.profile_picture_url,
-                                email: data.owner.email,
-                                ownerDescription: data.owner.description // NUEVO CRIS
-                            });
+                            setStore({ owner: data.owner, email: data.owner.email, ownerDescription: data.owner.description, profilePictureUrl: data.owner.profile_picture_url });
                         } else {
                             setStore({ auth: false });
                             localStorage.removeItem("token");
@@ -129,7 +123,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     setStore({ auth: false });
                 }
             },
-
+            selectPet: (petId) => {
+                setStore({ selectedPetId: petId });
+            },
+            
             logout: () => {
                 localStorage.removeItem("token");
                 setStore({ auth: false, email: null, profilePictureUrl: null });
@@ -730,22 +727,21 @@ const getState = ({ getStore, getActions, setStore }) => {
                     throw error;
                 }
             },
-            likePet: async (petId) => { //NUEVO CRIS
+            likePet: async (likerPetId, likedPetId) => {
                 try {
                     const token = localStorage.getItem("token");
-                    if (!token) throw new Error("User not authenticated");
-
                     const response = await fetch(`${process.env.BACKEND_URL}/api/like_pet`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`
                         },
-                        body: JSON.stringify({ pet_id: petId })
+                        body: JSON.stringify({ liker_pet_id: likerPetId, liked_pet_id: likedPetId })
                     });
 
                     if (!response.ok) {
-                        throw new Error('Error liking the pet');
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Error liking the pet');
                     }
 
                     const data = await response.json();
@@ -754,7 +750,34 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error('Error liking the pet:', error);
                     throw error;
                 }
-            }
+            },
+            fetchPetLikes: async (petId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}/likes`);
+                    if (!response.ok) {
+                        throw new Error('Error fetching pet likes');
+                    }
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Error fetching pet likes:', error);
+                    throw error;
+                }
+            },
+            fetchPetMatches: async (petId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}/matches`);
+                    if (!response.ok) {
+                        throw new Error('Error fetching pet matches');
+                    }
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Error fetching pet matches:', error);
+                    throw error;
+                }
+            },
+            
 	    }
     }
 };
