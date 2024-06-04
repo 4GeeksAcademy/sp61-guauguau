@@ -5,6 +5,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             email: null,
             owners: [],
             profilePictureUrl: null,
+            ownerDescription: null, // NUEVO CRIS
             city: [],
             pets: [],
             currentPet: null,
@@ -85,7 +86,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                             const ownerData = await ownerResponse.json();
                             setStore({
                                 profilePictureUrl: ownerData.owner.profile_picture_url,
-                                email: ownerData.owner.email
+                                email: ownerData.owner.email,
+                                ownerDescription: ownerData.owner.description // NUEVO CRIS
                             });
                         }
                     } else {
@@ -112,7 +114,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                             const data = await response.json();
                             setStore({
                                 profilePictureUrl: data.owner.profile_picture_url,
-                                email: data.owner.email
+                                email: data.owner.email,
+                                ownerDescription: data.owner.description // NUEVO CRIS
                             });
                         } else {
                             setStore({ auth: false });
@@ -177,27 +180,27 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			updateOwnerDescription: async (description) => {
-				try {
-					const token = localStorage.getItem("token");
-					const response = await fetch(`${process.env.BACKEND_URL}/api/update_owner_description`, {
-						method: 'PUT',
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${token}`
-						},
-						body: JSON.stringify({ description })
-					});
-			
-					if (!response.ok) {
-						throw new Error('Error updating description');
-					}
-			
-					const data = await response.json();
-					setStore({ ownerDescription: data.description });
-				} catch (error) {
-					console.error('Error updating description:', error);
-				}
-			},
+                try {
+                    const token = localStorage.getItem("token");
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/update_owner_description`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ description })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error updating description');
+                    }
+
+                    const data = await response.json();
+                    setStore({ ownerDescription: data.description });
+                } catch (error) {
+                    console.error('Error updating description:', error);
+                }
+            },
             fetchPets: () => {
 				fetch(process.env.BACKEND_URL + "/api/pets")
 					.then(response => {
@@ -727,6 +730,31 @@ const getState = ({ getStore, getActions, setStore }) => {
                     throw error;
                 }
             },
+            likePet: async (petId) => { //NUEVO CRIS
+                try {
+                    const token = localStorage.getItem("token");
+                    if (!token) throw new Error("User not authenticated");
+
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/like_pet`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ pet_id: petId })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Error liking the pet');
+                    }
+
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Error liking the pet:', error);
+                    throw error;
+                }
+            }
 	    }
     }
 };

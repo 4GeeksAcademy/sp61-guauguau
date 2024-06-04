@@ -307,7 +307,7 @@ export const OnePet = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-            <button className="btn btn-secondary" onClick={fetchCareInfo}
+            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}
 >
                  Cuidados
             </button>
@@ -317,7 +317,7 @@ export const OnePet = () => {
                     <p>{careInfo}</p>
                 </div>
             )}
-            <button className="btn btn-secondary " >
+            <button className="btn btn-secondary me-2" >
                  Compatibilidad
             </button>
             {compatibilityInfo && (
@@ -326,7 +326,7 @@ export const OnePet = () => {
                     <p>{compatibilityInfo}</p>
                 </div>
             )}
-            <Link to="/private" className="btn btn-secondary " onClick={fetchCompatibilityInfo}>
+            <Link to="/private" className="btn btn-primary " onClick={fetchCompatibilityInfo}>
                  Volver a Private
             </Link>
         </div>
