@@ -26,6 +26,7 @@ import AdminLogin from "./pages/adminlogin";
 import { AdminSignUp } from "./pages/adminsignup";
 import  AdminPrivate from "./pages/adminprivate"
 import { EditAdmin } from "./pages/editadmin";
+import { PetsFinder } from "./pages/finder";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -53,6 +54,7 @@ const Layout = () => {
                         <Route element={<City/>} path="/city" />
                         <Route element={<EditCity/>} path="/editcity/:id" />
                         <Route element={<Pets/>} path="/pets" />
+                        <Route element={<PetsFinder/>} path="/petsfinder" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
                         <Route element={<Login />} path="/login" />
