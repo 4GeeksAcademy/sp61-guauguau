@@ -14,7 +14,9 @@ export const OnePet = () => {
         description: '',
         photos: [],
         profile_photo_url: '',
-        breed: ''
+        breed: '',
+        likes: [], // Añadido para almacenar los likes
+        matches: [] // Añadido para almacenar los matches
     });
     const [isEditing, setIsEditing] = useState({
         name: false,
@@ -37,6 +39,8 @@ export const OnePet = () => {
         const fetchPetDetails = async () => {
             try {
                 const pet = await actions.getPetDetails(petId);
+                const likes = await actions.fetchPetLikes(petId);
+                const matches = await actions.fetchPetMatches(petId); // Obtener matches
                 if (isMounted) {
                     setPetDetails({
                         name: pet.name || '',
@@ -46,7 +50,9 @@ export const OnePet = () => {
                         description: pet.description || '',
                         photos: pet.photos || [],
                         profile_photo_url: pet.profile_photo_url || '',
-                        breed: pet.breed || ''
+                        breed: pet.breed || '',
+                        likes: likes || [], // Asignar los likes
+                        matches: matches || [] // Asignar los matches
                     });
                 }
             } catch (error) {
@@ -307,8 +313,7 @@ export const OnePet = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}
->
+            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
                  Cuidados
             </button>
             {careInfo && (
@@ -329,6 +334,42 @@ export const OnePet = () => {
             <Link to="/private" className="btn btn-primary " onClick={fetchCompatibilityInfo}>
                  Volver a Private
             </Link>
+            <h3>Likes Received</h3>
+            <ul>
+                {petDetails.likes.map((like, index) => (
+                    <li key={index}>
+                        <Link to={`/singlepet/${like.liker_pet_id}`}>
+                            {like.liker_pet_photo && (
+                                <img
+                                    src={like.liker_pet_photo}
+                                    alt={`${like.liker_pet_name} profile`}
+                                    className="rounded-circle me-2"
+                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                />
+                            )}
+                            {like.liker_pet_name} likes this pet
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+            <h3>Matches</h3>
+            <ul>
+                {petDetails.matches.map((match, index) => (
+                    <li key={index}>
+                        <Link to={`/singlepet/${match.match_pet_id}`}>
+                            {match.match_pet_photo && (
+                                <img
+                                    src={match.match_pet_photo}
+                                    alt={`${match.match_pet_name} profile`}
+                                    className="rounded-circle me-2"
+                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                />
+                            )}
+                            {match.match_pet_name}
+                        </Link>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
