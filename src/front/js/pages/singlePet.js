@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import { useParams, Link } from 'react-router-dom';
 
+
 export const SinglePet = () => {
     const { petId } = useParams();
     const { store, actions } = useContext(Context);
@@ -21,9 +22,13 @@ export const SinglePet = () => {
     const [selectedPetId, setSelectedPetId] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [isMounted, setIsMounted] = useState(true);
+    const [careInfo, setCareInfo] = useState("");
+    const [compatibilityInfo, setCompatibilityInfo] = useState("");
+
 
     useEffect(() => {
         setIsMounted(true);
+
 
         const fetchPetDetails = async () => {
             try {
@@ -52,10 +57,12 @@ export const SinglePet = () => {
         };
         fetchPetDetails();
 
+
         return () => {
             setIsMounted(false);
         };
     }, [petId]);
+
 
     const handleLike = async () => {
         try {
@@ -79,6 +86,27 @@ export const SinglePet = () => {
         }
     };
 
+
+    const fetchCareInfo = async () => {
+        try {
+            const careInfo = await actions.fetchCuidados(petDetails.breed);
+            setCareInfo(careInfo);
+        } catch (error) {
+            console.error("Error fetching care info:", error);
+        }
+    };
+
+
+    const fetchCompatibilityInfo = async () => {
+        try {
+            const compatibilityInfo = await actions.fetchCompatibilidad(petDetails.breed);
+            setCompatibilityInfo(compatibilityInfo);
+        } catch (error) {
+            console.error("Error fetching compatibility info:", error);
+        }
+    };
+
+
     return (
         <div className="container">
             <h2 className='p-5 ps-0'>{petDetails.name}, {petDetails.age} years</h2>
@@ -90,9 +118,9 @@ export const SinglePet = () => {
                     )}
                     {store.auth && (
                         <div>
-                            <select 
-                                className="form-select mb-3" 
-                                value={selectedPetId || ''} 
+                            <select
+                                className="form-select mb-3"
+                                value={selectedPetId || ''}
                                 onChange={(e) => setSelectedPetId(e.target.value)}
                             >
                                 <option value="" disabled>Select your pet</option>
@@ -157,6 +185,24 @@ export const SinglePet = () => {
                     </div>
                 ))}
             </div>
+            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
+                Cuidados
+            </button>
+            {careInfo && (
+                <div>
+                    <h3>Cuidados</h3>
+                    <p>{careInfo}</p>
+                </div>
+            )}
+            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>
+                Compatibilidad
+            </button>
+            {compatibilityInfo && (
+                <div>
+                    <h3>Compatibilidad</h3>
+                    <p>{compatibilityInfo}</p>
+                </div>
+            )}
             <Link to="/pets" className="btn btn-secondary mt-3">
                 <i className="fas fa-arrow-left"></i> Back to the list of pets
             </Link>
