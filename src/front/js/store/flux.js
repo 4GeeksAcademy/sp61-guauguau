@@ -1,4 +1,56 @@
+import axios from 'axios';
 const getState = ({ getStore, getActions, setStore }) => {
+
+	return {
+		store: {
+			auth: false,
+			email: null,
+			owners: [],
+			profilePictureUrl: null,
+			city:[],
+			pets: [],
+			currentPet: null,
+			message: null,
+			breed: [],
+			life_span:[],
+			raza: [],
+			currentBreed:null,
+			photo: [],
+			demo: [
+				{
+				title: "FIRST",
+				background: "white",
+				initial: "white"
+				},
+				{
+				title: "SECOND",
+				background: "white",
+				initial: "white"
+				}
+			]
+			
+		},
+		actions: {
+			// Aquí van las acciones
+			exampleFunction: () => {
+				getActions().changeColor(0, "green");
+			},
+			getMessage: async () => {
+				try{
+					// fetching data from the backend
+					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
+					const data = await resp.json()
+					setStore({ message: data.message })
+					// don't forget to return something, that is how the async resolves
+					return data;
+				}catch(error){
+					console.log("Error loading message from backend", error)
+				}
+			},
+			changeColor: (index, color) => {
+				//get the store
+				const store = getStore();
+
     return {
         store: {
             auth: false,
@@ -53,6 +105,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             changeColor: (index, color) => {
                 //get the store
                 const store = getStore();
+
 
                 //we have to loop the entire demo array to look for the respective index
                 //and change its color
@@ -409,6 +462,15 @@ const getState = ({ getStore, getActions, setStore }) => {
                     .catch(error => console.error("Error deleting owner:", error));
             },
 
+
+			},
+			signUpBreed: (name, type, life_span) => {
+				console.log(name,type,life_span)
+				const raw = JSON.stringify({
+					"life_span": life_span,
+					"name": name,
+					"type": type,
+				  });
             getBreed: () => {
                 fetch(process.env.BACKEND_URL + "/api/breed")
                     .then(response => response.json())
@@ -419,7 +481,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': "application/json" },
-                    body: JSON.stringify({ name, type })
+                    body:raw 
                 };
                 fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
                     .then(response => {
@@ -626,6 +688,36 @@ const getState = ({ getStore, getActions, setStore }) => {
 					
 					.catch(error => console.error("Error deleting photo:", error));
 			},
+
+			BreedApi: () => {
+			
+				const getDogBreeds = async () => {
+					const options = {
+						method: 'GET',
+						url: 'https://api.thedogapi.com/v1/breeds',
+						headers: {
+							'x-api-key': 'live_VTqPRCE1vpTptJOvyVn0xaz737ys72O39rFV61XYKXxwzjlA6yDJfsdlMRKl79Ax'
+						}
+					};
+				
+					try {
+						const response = await axios(options);
+						console.log(response.data);
+						setStore({ raza: response.data });
+					} catch (error) {
+						console.error(error);
+					}
+				};
+				
+				// Llama a la función para obtener las razas
+				getDogBreeds();
+				console.log('se cargo desde flux');
+				
+							},
+
+		}
+	}
+
             createAdmin: async (name, email, password) => {
                 const requestOptions = {
                     method: 'POST',
@@ -790,6 +882,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             
 	    }
     }
+
 };
 
 

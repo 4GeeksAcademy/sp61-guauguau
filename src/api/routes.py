@@ -275,7 +275,11 @@ def get_breed():
         'id': breed.id,
         'name': breed.name,
         'type': breed.type,
+        'life_span': breed.life_span,
+
+    } for breed in breed])
     } for breed in breed]), 200
+
 
 @api.route('/breed', methods=['POST'])
 def add_breed():
@@ -283,6 +287,8 @@ def add_breed():
     new_breed = Breed(
         name=data['name'],
         type=data['type'],
+        life_span=data['life_span'],
+    
     )
     db.session.add(new_breed)
     db.session.commit()
@@ -301,8 +307,10 @@ def update_breed(id):
     breed = Breed.query.get_or_404(id)
     breed.name = data.get('name', breed.name)
     breed.type = data.get('type', breed.type)
+    breed.type = data.get('life_span', breed.life_span)
     db.session.commit()
     return jsonify({'message': '¡Raza actualizada con éxito!'}), 200
+
 
 # ADMINISTRADOR
 @api.route('/admin', methods=['GET'])
