@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import { ApiBreed } from "./apiBreed";
 import { Autocomplete } from "./autocompletbreed";
-import { AutocompleteType } from "./autocomplettype";
 
 export const Breed = () => {
 	const { store, actions } = useContext(Context);

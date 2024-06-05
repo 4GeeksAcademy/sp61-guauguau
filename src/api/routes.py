@@ -276,10 +276,7 @@ def get_breed():
         'name': breed.name,
         'type': breed.type,
         'life_span': breed.life_span,
-
-    } for breed in breed])
     } for breed in breed]), 200
-
 
 @api.route('/breed', methods=['POST'])
 def add_breed():
