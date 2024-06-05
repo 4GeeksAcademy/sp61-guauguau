@@ -125,15 +125,10 @@ class City(db.Model):
     
 class Like(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
-    type = db.Column(db.String(250), nullable=False)
-    life_span = db.Column(db.String(250), nullable=False)
-
     liker_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
     liked_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
     liker_pet = db.relationship('Pet', foreign_keys=[liker_pet_id], backref='liked_by')
     liked_pet = db.relationship('Pet', foreign_keys=[liked_pet_id], backref='likes')
-
 
     def __repr__(self):
         return f'<Like {self.liker_pet_id} likes {self.liked_pet_id}>'
