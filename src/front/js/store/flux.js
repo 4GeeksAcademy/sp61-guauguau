@@ -14,6 +14,8 @@ const getState = ({ getStore, getActions, setStore }) => {
             currentPet: null,
             message: null,
             breed: [],
+			life_span:[],
+			raza: [],
             currentBreed: null,
             admins: [],
             adminAuth: false,
@@ -397,11 +399,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(data => setStore({ breed: data }))
 					.catch(error => console.error("Error fetching breed:", error));
 			},
-			signUpBreed: (name, type) => {
+			signUpBreed: (name, type, life_span) => {
 				const requestOptions = {
 					method: 'POST',
 					headers: { 'Content-Type': "application/json" },
-					body: JSON.stringify({ name, type })
+					body: JSON.stringify({ name, type, life_span })
 				};
 				fetch(process.env.BACKEND_URL + "/api/breed", requestOptions)
 					.then(response => {
@@ -651,6 +653,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     throw error;
                 }
             },
+
+			
             likePet: async (likerPetId, likedPetId) => {
 				try {
 					const token = localStorage.getItem("token");
@@ -675,8 +679,38 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+			BreedApi: () => {
+			
+				const getDogBreeds = async () => {
+					const options = {
+						method: 'GET',
+						url: 'https://api.thedogapi.com/v1/breeds',
+						headers: {
+							'x-api-key': 'live_VTqPRCE1vpTptJOvyVn0xaz737ys72O39rFV61XYKXxwzjlA6yDJfsdlMRKl79Ax'
+						}
+					};
+				
+					try {
+						const response = await axios(options);
+						console.log(response.data);
+						setStore({ raza: response.data });
+					} catch (error) {
+						console.error(error);
+					}
+				};
+				
+				// Llama a la función para obtener las razas
+				getDogBreeds();
+				console.log('se cargo desde flux');
+				
+							},
+
 		}
-	};
+	}
+
+          
+           
+
 };
 
 export default getState;
