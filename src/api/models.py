@@ -22,6 +22,7 @@ class Breed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     type = db.Column(db.String(250), nullable=False)
+    life_span = db.Column(db.String(250), nullable=False)
 
     def __repr__(self):
         return f'<Breed {self.name}>'
@@ -51,9 +52,11 @@ class Owner(db.Model):
     address = db.Column(db.String(250), nullable=True)
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
-    description = db.Column(db.String(500), nullable=True)  # Añade este campo
+    description = db.Column(db.String(500), nullable=True)
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=True)
 
     pets = db.relationship('Pet', backref='owner', lazy=True)
+    city = db.relationship('City', backref='owners')
 
     def __repr__(self):
         return f'<Owner {self.email}>'
@@ -68,7 +71,8 @@ class Owner(db.Model):
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "description": self.description  # Incluye este campo
+            "description": self.description,
+            "city": self.city.name if self.city else None
         }
 
 class Pet(db.Model):
@@ -98,6 +102,8 @@ class Pet(db.Model):
             "pedigree": self.pedigree,
             "profile_photo_url": self.profile_photo_url,
             "owner_id": self.owner_id,
+            "owner_name": self.owner.name if self.owner else None,
+            "owner_city": self.owner.city.name if self.owner and self.owner.city else None,  # Incluye el nombre de la ciudad del dueño
             "photos": [photo.serialize() for photo in self.photos],
             "description": self.description
         }
@@ -116,6 +122,23 @@ class City(db.Model):
         "name": self.name,
         "pet_friendly_id": self.pet_friendly_id,
         }
+    
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    liker_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    liked_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    liker_pet = db.relationship('Pet', foreign_keys=[liker_pet_id], backref='liked_by')
+    liked_pet = db.relationship('Pet', foreign_keys=[liked_pet_id], backref='likes')
+
+    def __repr__(self):
+        return f'<Like {self.liker_pet_id} likes {self.liked_pet_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "liker_pet_id": self.liker_pet_id,
+            "liked_pet_id": self.liked_pet_id
+        }
 
 class Adminn(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -133,3 +156,4 @@ class Adminn(db.Model):
             "email": self.email,
             "password": self.password
         }
+

@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
@@ -125,15 +125,18 @@ def login():
     access_token = create_access_token(identity=email)
     return jsonify(access_token=access_token)
 
-@api.route("/protected", methods=["GET"])
+@api.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
-    current_owner = get_jwt_identity()
-    owner = Owner.query.filter_by(email=current_owner).first()
+    current_owner_email = get_jwt_identity()
+    owner = Owner.query.filter_by(email=current_owner_email).first()
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
 
-    return jsonify({"owner": owner.serialize()}), 200
+    owner_data = owner.serialize()
+    owner_data["pets"] = [pet.serialize() for pet in owner.pets]
+
+    return jsonify({"owner": owner_data}), 200
 
 
 ##### ROUTES PETS #########################################
@@ -272,6 +275,7 @@ def get_breed():
         'id': breed.id,
         'name': breed.name,
         'type': breed.type,
+        'life_span': breed.life_span,
     } for breed in breed]), 200
 
 @api.route('/breed', methods=['POST'])
@@ -280,6 +284,8 @@ def add_breed():
     new_breed = Breed(
         name=data['name'],
         type=data['type'],
+        life_span=data['life_span'],
+    
     )
     db.session.add(new_breed)
     db.session.commit()
@@ -298,8 +304,10 @@ def update_breed(id):
     breed = Breed.query.get_or_404(id)
     breed.name = data.get('name', breed.name)
     breed.type = data.get('type', breed.type)
+    breed.type = data.get('life_span', breed.life_span)
     db.session.commit()
     return jsonify({'message': '¡Raza actualizada con éxito!'}), 200
+
 
 # ADMINISTRADOR
 @api.route('/admin', methods=['GET'])
@@ -548,3 +556,85 @@ def get_owner_pets():
         'owner_id': pet.owner_id,
         'owner_name': pet.owner.name if pet.owner else None
     } for pet in pets]), 200
+
+
+# LIKES Y MATCH
+
+@api.route('/like_pet', methods=['POST'])
+@jwt_required()
+def like_pet():
+    current_owner_email = get_jwt_identity()
+    data = request.json
+    liker_pet_id = data.get('liker_pet_id')
+    liked_pet_id = data.get('liked_pet_id')
+
+    if not liker_pet_id or not liked_pet_id:
+        return jsonify({"error": "Missing data"}), 400
+
+    liker_pet = Pet.query.get(liker_pet_id)
+    liked_pet = Pet.query.get(liked_pet_id)
+
+    if not liker_pet or not liked_pet:
+        return jsonify({"error": "Pet not found"}), 404
+
+    # Verifica si ya existe un "like" de esta mascota a la otra
+    existing_like = Like.query.filter_by(liker_pet_id=liker_pet_id, liked_pet_id=liked_pet_id).first()
+    if existing_like:
+        return jsonify({"error": "You have already liked this pet"}), 400
+
+    new_like = Like(liker_pet_id=liker_pet_id, liked_pet_id=liked_pet_id)
+    db.session.add(new_like)
+    db.session.commit()
+
+    # Verifica si hay un match
+    match = Like.query.filter_by(liker_pet_id=liked_pet_id, liked_pet_id=liker_pet_id).first()
+    if match:
+        return jsonify({"match": True}), 200
+
+    return jsonify({"match": False}), 200
+
+
+
+
+@api.route('/pet/<int:pet_id>/likes', methods=['GET'])
+def get_pet_likes(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"error": "Pet not found"}), 404
+
+    received_likes = Like.query.filter_by(liked_pet_id=pet_id).all()
+    likes = []
+
+    for like in received_likes:
+        liker_pet = Pet.query.get(like.liker_pet_id)
+        if liker_pet:
+            likes.append({
+                "liker_pet_id": liker_pet.id,
+                "liker_pet_name": liker_pet.name,
+                "liker_pet_photo": liker_pet.profile_photo_url
+            })
+
+    return jsonify(likes), 200
+
+
+@api.route('/pet/<int:pet_id>/matches', methods=['GET'])
+def get_pet_matches(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"error": "Pet not found"}), 404
+
+    given_likes = Like.query.filter_by(liker_pet_id=pet_id).all()
+    matches = []
+
+    for like in given_likes:
+        reciprocal_like = Like.query.filter_by(liker_pet_id=like.liked_pet_id, liked_pet_id=pet_id).first()
+        if reciprocal_like:
+            matched_pet = Pet.query.get(like.liked_pet_id)
+            if matched_pet:
+                matches.append({
+                    "match_pet_id": matched_pet.id,
+                    "match_pet_name": matched_pet.name,
+                    "match_pet_photo": matched_pet.profile_photo_url
+                })
+
+    return jsonify(matches), 200

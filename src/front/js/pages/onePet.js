@@ -14,7 +14,9 @@ export const OnePet = () => {
         description: '',
         photos: [],
         profile_photo_url: '',
-        breed: ''
+        breed: '',
+        likes: [], // Añadido para almacenar los likes
+        matches: [] // Añadido para almacenar los matches
     });
     const [isEditing, setIsEditing] = useState({
         name: false,
@@ -37,6 +39,8 @@ export const OnePet = () => {
         const fetchPetDetails = async () => {
             try {
                 const pet = await actions.getPetDetails(petId);
+                const likes = await actions.fetchPetLikes(petId);
+                const matches = await actions.fetchPetMatches(petId); // Obtener matches
                 if (isMounted) {
                     setPetDetails({
                         name: pet.name || '',
@@ -46,7 +50,9 @@ export const OnePet = () => {
                         description: pet.description || '',
                         photos: pet.photos || [],
                         profile_photo_url: pet.profile_photo_url || '',
-                        breed: pet.breed || ''
+                        breed: pet.breed || '',
+                        likes: likes || [], // Asignar los likes
+                        matches: matches || [] // Asignar los matches
                     });
                 }
             } catch (error) {
@@ -115,6 +121,7 @@ export const OnePet = () => {
                 setIsLoading(false);
                 setIsEditing({
                     name: false,
+                    breed: false,
                     age: false,
                     sex: false,
                     pedigree: false,
@@ -185,7 +192,7 @@ export const OnePet = () => {
 
     return (
         <div className="container">
-            <h2>Detalles de la Mascota</h2>
+            <h2>Pet Details</h2>
             {errorMessage && <p className="text-danger">{errorMessage}</p>}
             <form onSubmit={handleSubmit} className="row">
                 <div className="col-md-4">
@@ -197,7 +204,7 @@ export const OnePet = () => {
                 </div>
                 <div className="col-md-8">
                     <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Nombre:</label>
+                        <label className="me-2">Name:</label>
                         {isEditing.name ? (
                             <input
                                 type="text"
@@ -212,7 +219,22 @@ export const OnePet = () => {
                         <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('name')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Edad:</label>
+                        <label className="me-2">Breed:</label>
+                        {isEditing.breed ? (
+                            <input
+                                type="string"
+                                name="breed"
+                                value={petDetails.breed}
+                                onChange={handleChange}
+                                className="form-control me-2"
+                            />
+                        ) : (
+                            <span className="me-2">{petDetails.breed}</span>
+                        )}
+                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('breed')}></i>
+                    </div>
+                    <div className="mb-2 d-flex align-items-center">
+                        <label className="me-2">Age:</label>
                         {isEditing.age ? (
                             <input
                                 type="number"
@@ -227,7 +249,7 @@ export const OnePet = () => {
                         <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('age')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Sexo:</label>
+                        <label className="me-2">Sex:</label>
                         {isEditing.sex ? (
                             <select
                                 name="sex"
@@ -235,8 +257,8 @@ export const OnePet = () => {
                                 onChange={handleChange}
                                 className="form-control me-2"
                             >
-                                <option value="Male">Macho</option>
-                                <option value="Female">Hembra</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
                             </select>
                         ) : (
                             <span className="me-2">{petDetails.sex}</span>
@@ -259,7 +281,7 @@ export const OnePet = () => {
                         <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('pedigree')}></i>
                     </div>
                     <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Descripción:</label>
+                        <label className="me-2">Description:</label>
                         {isEditing.description ? (
                             <textarea
                                 name="description"
@@ -273,11 +295,11 @@ export const OnePet = () => {
                         <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('description')}></i>
                     </div>
                     <button type="submit" className="btn btn-primary mt-2" disabled={isLoading}>
-                        {isLoading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-save"></i> Guardar Cambios</>}
+                        {isLoading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-save"></i> Save Changes</>}
                     </button>
                 </div>
             </form>
-            <h3>Fotos Adicionales</h3>
+            <h3>Aditional Photos</h3>
             <DragDropContext onDragEnd={handleOnDragEnd}>
                 <Droppable droppableId="photos" direction="horizontal">
                     {(provided) => (
@@ -307,8 +329,7 @@ export const OnePet = () => {
                     )}
                 </Droppable>
             </DragDropContext>
-            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}
->
+            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
                  Cuidados
             </button>
             {careInfo && (
@@ -327,8 +348,44 @@ export const OnePet = () => {
                 </div>
             )}
             <Link to="/private" className="btn btn-primary " onClick={fetchCompatibilityInfo}>
-                 Volver a Private
+                 Back to Private
             </Link>
+            <h3>Likes Received</h3>
+            <ul>
+                {petDetails.likes.map((like, index) => (
+                    <li key={index}>
+                        <Link to={`/singlepet/${like.liker_pet_id}`}>
+                            {like.liker_pet_photo && (
+                                <img
+                                    src={like.liker_pet_photo}
+                                    alt={`${like.liker_pet_name} profile`}
+                                    className="rounded-circle me-2"
+                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                />
+                            )}
+                            {like.liker_pet_name} likes you
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+            <h3>Matches</h3>
+            <ul>
+                {petDetails.matches.map((match, index) => (
+                    <li key={index}>
+                        <Link to={`/singlepet/${match.match_pet_id}`}>
+                            {match.match_pet_photo && (
+                                <img
+                                    src={match.match_pet_photo}
+                                    alt={`${match.match_pet_name} profile`}
+                                    className="rounded-circle me-2"
+                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                />
+                            )}
+                            {match.match_pet_name}
+                        </Link>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
