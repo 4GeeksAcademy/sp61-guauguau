@@ -62,7 +62,7 @@ export const Navbar = () => {
                                     style={{ width: '40px', height: '40px', objectFit: 'cover' }}
                                 />
                             )}
-                            <button className="btn btn-danger ms-2" onClick={handleLogout}>Logout</button>
+                            <button className="btn btn-danger ms-2" onClick={handleLogout}>Logout </button>
                         </>
                     ) : null}
                 </div>
