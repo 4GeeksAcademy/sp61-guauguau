@@ -76,7 +76,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         const data = await response.json();
                         localStorage.setItem("token", data.access_token);
                         setStore({ auth: true, email });
-
+            
                         // Obtener datos del propietario autenticado
                         const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
                             method: 'GET',
@@ -86,7 +86,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                         });
                         if (ownerResponse.ok) {
                             const ownerData = await ownerResponse.json();
-                            setStore({ owner: ownerData.owner });
+                            setStore({
+                                profilePictureUrl: ownerData.owner.profile_picture_url,
+                                email: ownerData.owner.email,
+                                owner: ownerData.owner, // Asegúrate de que el propietario está en el estado
+                                ownerDescription: ownerData.owner.description // NUEVO CRIS
+                            });
                         }
                     } else {
                         throw new Error("Email or password wrong");
@@ -110,7 +115,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                         });
                         if (response.ok) {
                             const data = await response.json();
-                            setStore({ owner: data.owner, email: data.owner.email, ownerDescription: data.owner.description, profilePictureUrl: data.owner.profile_picture_url });
+                            setStore({
+                                profilePictureUrl: data.owner.profile_picture_url,
+                                email: data.owner.email,
+                                owner: data.owner, // Asegúrate de que el propietario está en el estado
+                                ownerDescription: data.owner.description // NUEVO CRIS
+                            });
                         } else {
                             setStore({ auth: false });
                             localStorage.removeItem("token");
