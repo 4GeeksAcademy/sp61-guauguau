@@ -3,15 +3,18 @@ import GeocodingService from "./GeocodingService";
 import { Context } from "../store/appContext";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 
+
 const mapContainerStyle = {
     width: "100%",
     height: "400px"
 };
 
+
 const center = {
-    lat: 40.712776,
-    lng: -74.005974
+    lat: 40.4169473,
+    lng: -3.7035285
 };
+
 
 export const OwnerSignUp = () => {
     const { actions } = useContext(Context);
@@ -24,17 +27,22 @@ export const OwnerSignUp = () => {
         longitude: center.lng
     });
 
+
     const [successMessage, setSuccessMessage] = useState(null);
+    const [typingTimeout, setTypingTimeout] = useState(null);
+
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
+
 
     useEffect(() => {
         if (formData.latitude && formData.longitude) {
             getAddressFromCoordinates(formData.latitude, formData.longitude);
         }
     }, [formData.latitude, formData.longitude]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,29 +52,42 @@ export const OwnerSignUp = () => {
         });
     };
 
-    const handleAddressChange = async (e) => {
+
+    const handleAddressChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
         });
+
+
         if (name === "address") {
-            try {
-                const data = await GeocodingService.getCoordinates(value);
-                if (data.results && data.results.length > 0) {
-                    const location = data.results[0].geometry.location;
-                    setFormData({
-                        ...formData,
-                        address: value,
-                        latitude: location.lat,
-                        longitude: location.lng
-                    });
-                }
-            } catch (error) {
-                console.error("Error during geocoding:", error);
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
             }
+
+
+            setTypingTimeout(
+                setTimeout(async () => {
+                    try {
+                        const data = await GeocodingService.getCoordinates(value);
+                        if (data.results && data.results.length > 0) {
+                            const location = data.results[0].geometry.location;
+                            setFormData((prevState) => ({
+                                ...prevState,
+                                address: value,
+                                latitude: location.lat,
+                                longitude: location.lng
+                            }));
+                        }
+                    } catch (error) {
+                        console.error("Error during geocoding:", error);
+                    }
+                }, 500) // Ajusta el retraso según sea necesario (500 ms en este caso)
+            );
         }
     };
+
 
     const handleMarkerDragEnd = async (e) => {
         const lat = e.latLng.lat();
@@ -78,19 +99,21 @@ export const OwnerSignUp = () => {
         });
     };
 
+
     const getAddressFromCoordinates = async (lat, lng) => {
         try {
             const data = await GeocodingService.getCoordinates(`${lat},${lng}`);
             if (data.results && data.results.length > 0) {
-                setFormData({
-                    ...formData,
+                setFormData((prevState) => ({
+                    ...prevState,
                     address: data.results[0].formatted_address
-                });
+                }));
             }
         } catch (error) {
             console.error("Error fetching address from coordinates:", error);
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -110,7 +133,9 @@ export const OwnerSignUp = () => {
         }
     };
 
+
     if (!isLoaded) return <div>Loading...</div>;
+
 
     return (
         <div className="container">
@@ -123,72 +148,75 @@ export const OwnerSignUp = () => {
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="name" className="form-label">Name</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="name" 
-                        name="name" 
-                        value={formData.name} 
-                        onChange={handleChange} 
-                        required 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email</label>
-                    <input 
-                        type="email" 
-                        className="form-control" 
-                        id="email" 
-                        name="email" 
-                        value={formData.email} 
-                        onChange={handleChange} 
-                        required 
+                    <input
+                        type="email"
+                        className="form-control"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="password" className="form-label">Password</label>
-                    <input 
-                        type="password" 
-                        className="form-control" 
-                        id="password" 
-                        name="password" 
-                        value={formData.password} 
-                        onChange={handleChange} 
-                        required 
+                    <input
+                        type="password"
+                        className="form-control"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="address" className="form-label">Address</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="address" 
-                        name="address" 
-                        value={formData.address} 
-                        onChange={handleAddressChange} 
-                        required 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleAddressChange}
+                        autoComplete="off"
+                        autoCorrect="off"
+                        spellCheck="false"
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="latitude" className="form-label">Latitude</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="latitude" 
-                        name="latitude" 
-                        value={formData.latitude} 
-                        readOnly 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="latitude"
+                        name="latitude"
+                        value={formData.latitude}
+                        readOnly
                     />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="longitude" className="form-label">Longitude</label>
-                    <input 
-                        type="text" 
-                        className="form-control" 
-                        id="longitude" 
-                        name="longitude" 
-                        value={formData.longitude} 
-                        readOnly 
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="longitude"
+                        name="longitude"
+                        value={formData.longitude}
+                        readOnly
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Submit</button>
