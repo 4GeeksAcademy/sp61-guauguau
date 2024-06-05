@@ -1,0 +1,161 @@
+.single-pet-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.pet-card {
+    background-color: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+.pet-card-header h2 {
+    font-size: 24px;
+    color: #ff5a5f;
+}
+
+.pet-card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pet-profile-photo {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.pet-details {
+    width: 100%;
+}
+
+.detail-item {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+}
+
+.detail-item label {
+    font-weight: bold;
+}
+
+.owner-info {
+    display: flex;
+    align-items: center;
+}
+
+.owner-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.pet-card-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.like-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.narrow-select {
+    max-width: 150px;
+    margin-right: 10px;
+    padding: 5px;
+    border: 2px solid #ff5a5f;
+    border-radius: 5px;
+    background-color: white;
+    color: #333;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.narrow-select:focus {
+    border-color: #e04848;
+    outline: none;
+}
+
+.like-button {
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+}
+
+.like-button:hover {
+    background-color: #e04848;
+}
+
+.additional-section {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+.additional-section h3 {
+    font-size: 22px;
+    color: #ff5a5f;
+    margin-bottom: 20px;
+}
+
+.additional-photos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.additional-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.info-buttons {
+    margin: 20px 0;
+}
+
+.care-info, .compatibility-info {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.back-button {
+    margin-top: 20px;
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: #e04848;
+}

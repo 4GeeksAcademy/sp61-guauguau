@@ -1,3 +1,5 @@
+import "../../styles/singlepet.css";
+
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import { useParams, Link } from 'react-router-dom';
@@ -25,10 +27,8 @@ export const SinglePet = () => {
     const [careInfo, setCareInfo] = useState("");
     const [compatibilityInfo, setCompatibilityInfo] = useState("");
 
-
     useEffect(() => {
         setIsMounted(true);
-
 
         const fetchPetDetails = async () => {
             try {
@@ -57,12 +57,10 @@ export const SinglePet = () => {
         };
         fetchPetDetails();
 
-
         return () => {
             setIsMounted(false);
         };
     }, [petId]);
-
 
     const handleLike = async () => {
         try {
@@ -86,7 +84,6 @@ export const SinglePet = () => {
         }
     };
 
-
     const fetchCareInfo = async () => {
         try {
             const careInfo = await actions.fetchCuidados(petDetails.breed);
@@ -95,7 +92,6 @@ export const SinglePet = () => {
             console.error("Error fetching care info:", error);
         }
     };
-
 
     const fetchCompatibilityInfo = async () => {
         try {
@@ -106,20 +102,50 @@ export const SinglePet = () => {
         }
     };
 
-
     return (
-        <div className="container">
-            <h2 className='p-5 ps-0'>{petDetails.name}, {petDetails.age} years</h2>
-            {errorMessage && <p className="text-danger">{errorMessage}</p>}
-            <div className="row">
-                <div className="col-md-4">
+        <div className="container single-pet-container">
+            <div className="pet-card">
+                <div className="pet-card-header">
+                    <h2>{petDetails.name}, {petDetails.age} years</h2>
+                    {errorMessage && <p className="text-danger">{errorMessage}</p>}
+                </div>
+                <div className="pet-card-body">
                     {petDetails.profile_photo_url && (
-                        <img src={petDetails.profile_photo_url} alt="Pet Profile" className="img-thumbnail w-100 mb-3" />
+                        <img src={petDetails.profile_photo_url} alt="Pet Profile" className="pet-profile-photo" />
                     )}
+                    <div className="pet-details">
+                        <div className="detail-item">
+                            <label>Breed:</label>
+                            <span>{petDetails.breed}</span>
+                        </div>
+                        <div className="detail-item">
+                            <label>Sex:</label>
+                            <span>{petDetails.sex}</span>
+                        </div>
+                        <div className="detail-item">
+                            <label>Pedigree:</label>
+                            <span>{petDetails.pedigree ? 'Yes' : 'No'}</span>
+                        </div>
+                        <div className="detail-item">
+                            <label>Description:</label>
+                            <span>{petDetails.description}</span>
+                        </div>
+                        <div className="detail-item owner-info">
+                            <label>Owner:</label>
+                            {petDetails.ownerPhoto && (
+                                <Link to={`/singleowner/${petDetails.ownerId}`}>
+                                    <img src={petDetails.ownerPhoto} alt="Owner Profile" className="owner-photo" />
+                                </Link>
+                            )}
+                            <span>{petDetails.owner}</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="pet-card-footer">
                     {store.auth && (
-                        <div>
+                        <div className="like-section">
                             <select
-                                className="form-select mb-3"
+                                className="form-select mb-3 narrow-select"
                                 value={selectedPetId || ''}
                                 onChange={(e) => setSelectedPetId(e.target.value)}
                             >
@@ -128,84 +154,40 @@ export const SinglePet = () => {
                                     <option key={pet.id} value={pet.id}>{pet.name}</option>
                                 ))}
                             </select>
-                            <button className="btn btn-primary mt-2" onClick={handleLike}>
+                            <button className="btn btn-primary like-button" onClick={handleLike}>
                                 <i className="fas fa-heart"></i> Like
                             </button>
                         </div>
                     )}
                 </div>
-                <div className="col-md-8">
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Name:</label>
-                        <span className="me-2">{petDetails.name}</span>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Breed:</label>
-                        <span className="me-2">{petDetails.breed}</span>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Age:</label>
-                        <span className="me-2">{petDetails.age}</span>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Sex:</label>
-                        <span className="me-2">{petDetails.sex}</span>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Pedigree:</label>
-                        <span className="me-2">{petDetails.pedigree ? 'Yes' : 'No'}</span>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Description:</label>
-                        <span className="me-2">{petDetails.description}</span>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Owner:</label>
-                        <span className="me-2 d-flex align-items-center">
-                            {petDetails.ownerPhoto && (
-                                <Link to={`/singleowner/${petDetails.ownerId}`}>
-                                    <img
-                                        src={petDetails.ownerPhoto}
-                                        alt="Owner Profile"
-                                        className="rounded-circle me-2"
-                                        style={{ width: '60px', height: '60px', objectFit: 'cover' }}
-                                    />
-                                </Link>
-                            )}
-                            {petDetails.owner}
-                        </span>
-                    </div>
-                </div>
             </div>
-            <h3 className='p-5 ps-0'>Additional pictures</h3>
-            <div className="row">
-                {petDetails.photos.map((photo, index) => (
-                    <div className="col-md-3 mb-3" key={index}>
-                        <img src={photo.url} alt={`Pet ${index}`} className="img-fluid" />
+            <div className="additional-section">
+                <h3>Additional pictures</h3>
+                <div className="additional-photos">
+                    {petDetails.photos.map((photo, index) => (
+                        <img src={photo.url} alt={`Pet ${index}`} className="additional-photo" key={index} />
+                    ))}
+                </div>
+                <div className="info-buttons">
+                    <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>Cuidados</button>
+                    <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>Compatibilidad</button>
+                </div>
+                {careInfo && (
+                    <div className="care-info">
+                        <h3>Cuidados</h3>
+                        <p>{careInfo}</p>
                     </div>
-                ))}
+                )}
+                {compatibilityInfo && (
+                    <div className="compatibility-info">
+                        <h3>Compatibilidad</h3>
+                        <p>{compatibilityInfo}</p>
+                    </div>
+                )}
+                <Link to="/pets" className="btn btn-secondary back-button">
+                    <i className="fas fa-arrow-left"></i> Back to the list of pets
+                </Link>
             </div>
-            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
-                Cuidados
-            </button>
-            {careInfo && (
-                <div>
-                    <h3>Cuidados</h3>
-                    <p>{careInfo}</p>
-                </div>
-            )}
-            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>
-                Compatibilidad
-            </button>
-            {compatibilityInfo && (
-                <div>
-                    <h3>Compatibilidad</h3>
-                    <p>{compatibilityInfo}</p>
-                </div>
-            )}
-            <Link to="/pets" className="btn btn-secondary mt-3">
-                <i className="fas fa-arrow-left"></i> Back to the list of pets
-            </Link>
         </div>
     );
 };
