@@ -15,6 +15,7 @@ from flask_jwt_extended import JWTManager
 
 api = Blueprint('api', __name__)
 
+
 # Allow CORS requests to this API
 CORS(api)
 

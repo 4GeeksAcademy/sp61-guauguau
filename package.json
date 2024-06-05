@@ -87,6 +87,9 @@
 		"react-dom": "^16.8.4",
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
+		"react-spring": "^9.7.3",
+		"react-swipeable-views": "^0.14.0",
+		"react-swipeable-views-utils": "^0.14.0",
 		"socket.io": "^4.7.5"
 	}
 }

@@ -58,14 +58,16 @@ export const Navbar = () => {
                         <>
                             <span className="me-2">{store.owner.name}</span>
                             {store.profilePictureUrl && (
-                                <img
-                                    src={store.profilePictureUrl}
-                                    alt="Profile"
-                                    className="rounded-circle"
-                                    style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-                                />
+                                <Link to="/private">
+                                    <img
+                                        src={store.profilePictureUrl}
+                                        alt="Profile"
+                                        className="rounded-circle"
+                                        style={{ width: '40px', height: '40px', objectFit: 'cover', cursor: 'pointer' }}
+                                    />
+                                </Link>
                             )}
-                            <button className="btn btn-danger ms-2" onClick={handleLogout}>Logout </button>
+                            <button className="btn btn-danger ms-2" onClick={handleLogout}>Logout</button>
                         </>
                     ) : null}
                 </div>
