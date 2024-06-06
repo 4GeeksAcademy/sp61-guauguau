@@ -1,11 +1,9 @@
 import "../../styles/pets.css";
-
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
 import { Context } from "../store/appContext";
 import { useSpring, animated } from "react-spring";
-
 
 export const Pets = () => {
     const { store, actions } = useContext(Context);
@@ -15,6 +13,7 @@ export const Pets = () => {
     const [previousIndex, setPreviousIndex] = useState(0);
     const [selectedPetId, setSelectedPetId] = useState(null);
     const [selectedPet, setSelectedPet] = useState(null);
+    const [showFullDescription, setShowFullDescription] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -91,6 +90,30 @@ export const Pets = () => {
         setSelectedPet(pet);
     };
 
+    const handleToggleDescription = () => {
+        setShowFullDescription(!showFullDescription);
+    };
+
+    const renderDescription = (description) => {
+        if (description.length <= 200) {
+            return description;
+        } else if (showFullDescription) {
+            return (
+                <>
+                    {description}
+                    <span className="show-more" onClick={handleToggleDescription}> show less</span>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    {description.slice(0, 200)}...
+                    <span className="show-more" onClick={handleToggleDescription}> show more</span>
+                </>
+            );
+        }
+    };
+
     return (
         <div className="pets-container">
             <h1 className="my-4">Find Your Perfect Pet</h1>
@@ -121,6 +144,16 @@ export const Pets = () => {
                     <div className="swipe-container">
                         {store.pets && store.pets.length > 0 ? (
                             <>
+                                <div className="navigation-arrows">
+                                    <div className="arrow left-arrow">
+                                        <i className="fas fa-arrow-left"></i>
+                                        <span className="arrow-text">dislike</span>
+                                    </div>
+                                    <div className="arrow right-arrow">
+                                        <span className="arrow-text">like</span>
+                                        <i className="fas fa-arrow-right"></i>
+                                    </div>
+                                </div>
                                 <SwipeableViews
                                     index={index}
                                     onChangeIndex={handleChangeIndex}
@@ -147,21 +180,22 @@ export const Pets = () => {
                                                     </animated.div>
                                                 )}
                                                 <div className="card-description">
-                                                    <p>{pet.description}</p>
+                                                    <p>{renderDescription(pet.description)}</p>
                                                     <div className="additional-photos">
                                                         {pet.photos && pet.photos.map((photo, photoIdx) => (
                                                             <img key={photoIdx} src={photo.url} alt={`Pet ${photoIdx}`} className="additional-photo" />
                                                         ))}
                                                     </div>
                                                 </div>
+                                                <div className="card-footer p-3">
+                                                    <button onClick={handleNext} className="next-button pets-button"><i className="fas fa-times"></i></button>
+                                                    <button onClick={handleLike} className="like-button pets-button"><i className="fas fa-heart"></i></button>
+                                                    <Link to={`/singlepet/${pet.id}`} className="view-button pets-button"><i className="fas fa-eye"></i></Link>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
                                 </SwipeableViews>
-                                <div className="navigation-buttons">
-                                    <button onClick={handleNext}>Next</button>
-                                    <button onClick={handleLike}>Like</button>
-                                </div>
                             </>
                         ) : (
                             <p>No pets available</p>

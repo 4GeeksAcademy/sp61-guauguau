@@ -4,7 +4,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import { useParams, Link } from 'react-router-dom';
 
-
 export const SinglePet = () => {
     const { petId } = useParams();
     const { store, actions } = useContext(Context);
@@ -107,7 +106,14 @@ export const SinglePet = () => {
             <div className="pet-card">
                 <div className="pet-card-header">
                     <h2>{petDetails.name}, {petDetails.age} years</h2>
-                    {errorMessage && <p className="text-danger">{errorMessage}</p>}
+                    <div className="owner-info">
+                        {petDetails.ownerPhoto && (
+                            <Link to={`/singleowner/${petDetails.ownerId}`}>
+                                <img src={petDetails.ownerPhoto} alt="Owner Profile" className="owner-photo" />
+                            </Link>
+                        )}
+                        <span>{petDetails.owner}</span>
+                    </div>
                 </div>
                 <div className="pet-card-body">
                     {petDetails.profile_photo_url && (
@@ -126,18 +132,9 @@ export const SinglePet = () => {
                             <label>Pedigree:</label>
                             <span>{petDetails.pedigree ? 'Yes' : 'No'}</span>
                         </div>
-                        <div className="detail-item">
-                            <label>Description:</label>
+                        <div className="detail-item-description">
+                            <label>About me:</label>
                             <span>{petDetails.description}</span>
-                        </div>
-                        <div className="detail-item owner-info">
-                            <label>Owner:</label>
-                            {petDetails.ownerPhoto && (
-                                <Link to={`/singleowner/${petDetails.ownerId}`}>
-                                    <img src={petDetails.ownerPhoto} alt="Owner Profile" className="owner-photo" />
-                                </Link>
-                            )}
-                            <span>{petDetails.owner}</span>
                         </div>
                     </div>
                 </div>
@@ -162,15 +159,15 @@ export const SinglePet = () => {
                 </div>
             </div>
             <div className="additional-section">
-                <h3>Additional pictures</h3>
+                <div className="additional-text"><h3>Additional pictures</h3></div>
                 <div className="additional-photos">
                     {petDetails.photos.map((photo, index) => (
                         <img src={photo.url} alt={`Pet ${index}`} className="additional-photo" key={index} />
                     ))}
                 </div>
                 <div className="info-buttons">
-                    <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>Cuidados</button>
-                    <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>Compatibilidad</button>
+                    <button className="btn  me-2 ia-btn" onClick={fetchCareInfo}>Cuidados </button>
+                    <button className="btn  me-2 ia-btn" onClick={fetchCompatibilityInfo}>Compatibilidad </button>
                 </div>
                 {careInfo && (
                     <div className="care-info">

@@ -1,9 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Seymour+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Seymour+One&display=swap');
+
 .pets-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
     font-family: 'Arial', sans-serif;
+    background: rgb(255,105,155);
+    background: linear-gradient(0deg, rgba(255,105,155,1) 20%, rgba(255,133,122,1) 62%);
 }
 
 .select-pet {
@@ -70,6 +75,7 @@
     background-color: white;
     transition: transform 0.3s ease-in-out;
     margin-bottom: 20px;
+    padding-bottom: 60px; /* Espacio para los botones */
 }
 
 .card-img-top {
@@ -104,6 +110,14 @@
 .card-description {
     padding: 20px;
     text-align: center;
+    padding-bottom: 3em;
+}
+
+.show-more {
+    color: rgb(245, 73, 101);
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
 }
 
 .additional-photos {
@@ -130,40 +144,122 @@
     pointer-events: none;
 }
 
-.navigation-buttons {
+.card-footer {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     width: 100%;
-    max-width: 400px;
-    margin-top: 20px;
+    padding: 0 20px;
 }
 
-button {
-    padding: 10px 20px;
-    font-size: 16px;
+.pets-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    outline: none;
+    
+}
+
+.pets-button:hover {
+    transform: scale(1.1);
+    
+}
+
+.pets-button:active {
+    transform: scale(0.9);
+    
+}
+
+.like-button {
     background-color: #ff5a5f;
     color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    outline: none;
 }
 
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+.next-button {
+    background-color: #ddd;
+    color: grey;
+}
+.next-button:hover {
+    color: #e04848;
 }
 
-button:not(:disabled):hover {
-    background-color: #e04848;
+.view-button {
+    background-color: white;
+    color: rgb(102, 231, 70);
+    text-decoration: none;
+}
+.view-button:hover {
+    color:rgb(0, 168, 22)
 }
 
-button:focus {
+.pets-button:focus {
     outline: none;
 }
 
 h1.my-4 {
-    font-size: 28px;
-    color: #ff5a5f;
+    font-size: 2.5em;
+    color: #ffffff;
+    font-family: "Luckiest Guy", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Estilos generales */
+.show-more {
+    color: rgb(252, 65, 96);
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+/* Estilos para las flechas y el texto */
+.navigation-arrows {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    pointer-events: none;
+}
+
+.arrow {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    pointer-events: all;
+}
+
+.left-arrow {
+    justify-content: flex-start;
+    position: absolute;
+    left: -150px; /* Ajusta esta distancia según sea necesario */
+}
+
+.right-arrow {
+    justify-content: flex-end;
+    position: absolute;
+    right: -150px; /* Ajusta esta distancia según sea necesario */
+}
+
+.arrow-text {
+    margin: 0 10px;
+    color: white;
+    font-size: 30px;
 }
