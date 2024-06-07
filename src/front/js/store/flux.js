@@ -626,31 +626,32 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			fetchCuidados: async (raza) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/cuidados/${raza}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    return data.text; // Devuelve el texto de los cuidados
-                } catch (error) {
-                    console.error("Error fetching cuidados:", error);
-                    throw error;
-                }
-            },
-            fetchCompatibilidad: async (raza) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/compatibilidad/${raza}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    return data.text; // Devuelve el texto de la compatibilidad
-                } catch (error) {
-                    console.error("Error fetching compatibilidad:", error);
-                    throw error;
-                }
-            },
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/cuidados/${raza}`);
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const data = await response.json();
+					return data.text; // Devuelve el texto de los cuidados
+				} catch (error) {
+					console.error("Error fetching cuidados:", error);
+					throw error;
+				}
+			},
+			fetchCompatibilidad: async (raza) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/compatibilidad/${raza}`);
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const data = await response.json();
+					return data.text; // Devuelve el texto de la compatibilidad
+				} catch (error) {
+					console.error("Error fetching compatibilidad:", error);
+					throw error;
+				}
+			},
+			
             likePet: async (likerPetId, likedPetId) => {
 				try {
 					const token = localStorage.getItem("token");

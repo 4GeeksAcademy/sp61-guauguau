@@ -1,12 +1,15 @@
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, current_app
 from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 import os
-import openai
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from openai import OpenAI
+# Inicializar el cliente de OpenAI
+client = OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -501,15 +504,15 @@ def get_cuidados(raza):
     prompt = f"Cuidados necesarios para {raza}:\n1. Alimentación:\n- \n2. Ejercicio:\n- \n3. Higiene:\n- \n4. Salud:\n- \n5. Entorno:\n-"
     try:
         current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ]
         )
         current_app.logger.info(f"Respuesta de OpenAI: {response}")
-        return jsonify({"text": response.choices[0].message['content'].strip()}), 200
+        return jsonify({"text": response.choices[0].message.content.strip()}), 200
     except Exception as e:
         current_app.logger.error(f"Error al obtener cuidados: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -519,19 +522,18 @@ def get_compatibilidad(raza):
     prompt = f"Compatibilidad de {raza} con otras razas:\n1. Compatibilidad Alta:\n- \n2. Compatibilidad Moderada:\n- \n3. Compatibilidad Baja:\n-"
     try:
         current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ]
         )
         current_app.logger.info(f"Respuesta de OpenAI: {response}")
-        return jsonify({"text": response.choices[0].message['content'].strip()}), 200
+        return jsonify({"text": response.choices[0].message.content.strip()}), 200
     except Exception as e:
         current_app.logger.error(f"Error al obtener compatibilidad: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
 
 
 # OBTENER OWNER PETS

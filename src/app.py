@@ -13,6 +13,7 @@ from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
 
 
 from flask_jwt_extended import create_access_token
@@ -29,7 +30,41 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.url_map.strict_slashes = False
 
+# Configurar SocketIO
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Configurar eventos de socket.io
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + data)
+    socketio.emit('response', data)
+
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
+
+@socketio.on('joinRoom')
+def handle_join_room(data):
+    room = f"{data['petId1']}_{data['petId2']}"
+    join_room(room)
+    emit('message', f"User joined room {room}", room=room)
+
+@socketio.on('leaveRoom')
+def handle_leave_room(data):
+    room = f"{data['petId1']}_{data['petId2']}"
+    leave_room(room)
+    emit('message', f"User left room {room}", room=room)
+
+@socketio.on('sendMessage')
+def handle_send_message(data):
+    room = f"{data['petId1']}_{data['petId2']}"
+    emit('message', data['message'], room=room)
 # database condiguration
+
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(

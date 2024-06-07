@@ -27,6 +27,7 @@ import { AdminSignUp } from "./pages/adminsignup";
 import  AdminPrivate from "./pages/adminprivate"
 import { EditAdmin } from "./pages/editadmin";
 import { PetsFinder } from "./pages/finder";
+import { Chat } from "./pages/chat";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -54,6 +55,7 @@ const Layout = () => {
                         <Route element={<City/>} path="/city" />
                         <Route element={<EditCity/>} path="/editcity/:id" />
                         <Route element={<Pets/>} path="/pets" />
+                        <Route element={<Chat />} path="/chat/:petId1/:petId2" />
                         <Route element={<PetsFinder/>} path="/petsfinder" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
