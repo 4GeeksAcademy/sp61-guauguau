@@ -75,10 +75,11 @@
 	"dependencies": {
 		"@react-google-maps/api": "^2.19.3",
 		"axios": "^1.7.2",
+		"bootstrap-icons": "^1.11.3",
 		"cloudinary-react": "^1.8.1",
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
-		"openai": "^4.47.3",
+		"openai": "^4.48.1",
 		"prop-types": "^15.6.1",
 		"react": "^16.8.4",
 		"react-beautiful-dnd": "^13.1.1",

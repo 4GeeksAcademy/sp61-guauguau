@@ -1,3 +1,123 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+body {
+  font-family: "Comfortaa", sans-serif;
+  
+}
+section {
+  background-color: #FEF5F0;
+  margin: 0;
+  padding: 0;
+  }
+
+.container {
+  font-family: "Comfortaa", sans-serif;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #FEF5F0;
+}
+.primary-btn {
+font-size: 1.125rem;
+font-weight: 700;
+font-family: "Comfortaa", sans-serif;
+letter-spacing: .03em;
+display: inline-block;
+position: relative;
+overflow: hidden;
+border-radius: 40px;
+color: #fff;
+padding: 15px 30px;
+text-align: center;
+text-transform: uppercase;
+transition: all 0.4s ease;
+cursor: pointer;
+border: none;
+width: 100%;
+}
+
+.login-btn {
+  background: linear-gradient(90deg, #6A82FB 0%, #FC5C7D 100%);
+}
+
+.primary-btn2 {
+  background: linear-gradient(90deg, #F86CA7 0%, #FF7F18 100%);
+}
+
+.primary-btn1 {
+  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
+}
+
+.primary-btn2:hover {
+  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
+}
+
+.primary-btn1:hover {
+  background: linear-gradient(90deg, #F86CA7 0%, #FF7F18 100%);
+}
+
+h1{
+  color: #30475E;
+}
+h1, h5 {
+  font-weight: bold;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 127, 24, 0.5);
+  border-color: #FF7F18;
+}
+
+
+form {
+  border-radius: 5px;
+  margin-top: 5rem;
+  background-color: #E7B2A5;
+  padding: 40px;
+  box-shadow: 5px 7px 35px #202C38;
+}
+
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  margin-right: 5px;
+}
+
+.form-control {
+  font-size: .875rem;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Espacio entre los botones */
+  margin-top: 10px;
+}
+
+.login-redirect {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.login-redirect p {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.login-redirect a {
+  color: #6A82FB;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.login-redirect a:hover {
+  color: #FC5C7D;
+}
