@@ -25,6 +25,8 @@ export const SinglePet = () => {
     const [careInfo, setCareInfo] = useState("");
     const [compatibilityInfo, setCompatibilityInfo] = useState("");
     const [matches, setMatches] = useState([]);
+    const [isLoadingCareInfo, setIsLoadingCareInfo] = useState(false);
+    const [isLoadingCompatibilityInfo, setIsLoadingCompatibilityInfo] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -87,21 +89,25 @@ export const SinglePet = () => {
     };
 
     const fetchCareInfo = async () => {
+        setIsLoadingCareInfo(true);
         try {
             const careInfo = await actions.fetchCuidados(petDetails.breed);
             setCareInfo(careInfo);
         } catch (error) {
             console.error("Error fetching care info:", error);
         }
+        setIsLoadingCareInfo(false);
     };
 
     const fetchCompatibilityInfo = async () => {
+        setIsLoadingCompatibilityInfo(true);
         try {
             const compatibilityInfo = await actions.fetchCompatibilidad(petDetails.breed);
             setCompatibilityInfo(compatibilityInfo);
         } catch (error) {
             console.error("Error fetching compatibility info:", error);
         }
+        setIsLoadingCompatibilityInfo(false);
     };
 
     return (
@@ -182,8 +188,27 @@ export const SinglePet = () => {
                     </div>
                 ))}
             </div>
-            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
-                Cuidados
+            <button className="btn btn-secondary me-2" onClick={fetchCareInfo} disabled={isLoadingCareInfo}>
+                {isLoadingCareInfo ? (
+                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                        <div className="wheel"></div>
+                        <div className="hamster">
+                            <div className="hamster__body">
+                                <div className="hamster__head">
+                                    <div className="hamster__ear"></div>
+                                    <div className="hamster__eye"></div>
+                                    <div className="hamster__nose"></div>
+                                </div>
+                                <div className="hamster__limb hamster__limb--fr"></div>
+                                <div className="hamster__limb hamster__limb--fl"></div>
+                                <div className="hamster__limb hamster__limb--br"></div>
+                                <div className="hamster__limb hamster__limb--bl"></div>
+                                <div className="hamster__tail"></div>
+                            </div>
+                        </div>
+                        <div className="spoke"></div>
+                    </div>
+                ) : 'Cuidados'}
             </button>
             {careInfo && (
                 <div>
@@ -191,8 +216,27 @@ export const SinglePet = () => {
                     <p>{careInfo}</p>
                 </div>
             )}
-            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>
-                Compatibilidad
+            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo} disabled={isLoadingCompatibilityInfo}>
+                {isLoadingCompatibilityInfo ? (
+                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                        <div className="wheel"></div>
+                        <div className="hamster">
+                            <div className="hamster__body">
+                                <div className="hamster__head">
+                                    <div className="hamster__ear"></div>
+                                    <div className="hamster__eye"></div>
+                                    <div className="hamster__nose"></div>
+                                </div>
+                                <div className="hamster__limb hamster__limb--fr"></div>
+                                <div className="hamster__limb hamster__limb--fl"></div>
+                                <div className="hamster__limb hamster__limb--br"></div>
+                                <div className="hamster__limb hamster__limb--bl"></div>
+                                <div className="hamster__tail"></div>
+                            </div>
+                        </div>
+                        <div className="spoke"></div>
+                    </div>
+                ) : 'Compatibilidad'}
             </button>
             {compatibilityInfo && (
                 <div>
