@@ -7,8 +7,10 @@
     align-items: center;
     margin-top: 20px;
     font-family: 'Arial', sans-serif;
+    /*
     background: rgb(255,105,155);
     background: linear-gradient(0deg, rgba(255,105,155,1) 20%, rgba(255,133,122,1) 62%);
+    */
 }
 
 .select-pet {
@@ -64,7 +66,9 @@
     align-items: center;
     height: 100%;
 }
-
+.card-back {
+    background-color: antiquewhite;
+}
 .card {
     position: relative;
     width: 100%;
@@ -209,7 +213,7 @@
 
 h1.my-4 {
     font-size: 2.5em;
-    color: #ffffff;
+    color: rgb(255,105,155);
     font-family: "Luckiest Guy", cursive;
     font-weight: 400;
     font-style: normal;

@@ -1,6 +1,6 @@
 /* General Styles used on every website (Don't Repeat Yourself) */
-@import url('https://fonts.googleapis.com/css2?family=Seymour+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Seymour+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&family=Dosis:wght@200..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
 
 #ocultar {
     display: none;
@@ -10,165 +10,80 @@
     cursor: pointer;
 }
 
+a, a:hover, a:visited, a:active {
+    text-decoration: none;
+    color: black;
+}
+
 .footer {
     width: 100%;
-}
-
-.footer-top {
-    height: 40vh;
-    background-image: url('https://img.freepik.com/foto-gratis/hermosa-foto-perros-bailando-playa_181624-34927.jpg?t=st=1717709829~exp=1717713429~hmac=321d67269f78252078531315216f159f44328217c2eee9a98564fbaf59a1f31c&w=1380');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center 20%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.footer-top .jumbotron {
-    background: rgba(0, 0, 0, 0.658);
-    padding: 2rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1em;
-    width: 100%;
-    height: 100%;
-}
-
-.jumbotron p {
-    font-size: 1.2em;
-    width: 70%;
-}
-
-.footer-top .btn-pink {
-    background-color: #ff007f;
-    color: white;
-}
-
-.footer-middle {
-    height: 20vh;
-    background-color: #FF3FA4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.footer-middle ul {
-    display: flex;
-    justify-content: space-around;
-    list-style: none;
-    gap: 3em;
-}
-
-.footer-middle ul li {
-    color: white;
-    margin: 5px 0;
-}
-
-.footer-bottom {
-    height: 10vh;
-    background-color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-}
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-}
-
-.footer-logo span {
-    font-family: "Luckiest Guy", cursive;
+    background-color: #FEF1E8;
+    font-family: "Cabin", sans-serif;
+    font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    font-size: 40px;
+    height: 40vh;
+  
+    
 }
 
-.footer-logo img {
-    height: 50px;
-    margin-right: 10px;
+.footer-row {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 3rem;
+}
+.btn-footer {
+    background: rgb(248,110,150);
+    background: linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    color: #fff;
+    border-radius: 30px;
+    padding: 1em;
+}
+.link-admin-login {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 1.5rem;
+}
+
+h3 {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-align: left;
+  }
+
+h1 {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+.footer .list-unstyled {
+    padding-left: 0;
+}
+.footer .list-unstyled li {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px; /* Espacio entre los elementos de la lista */
+}
+
+.footer .list-unstyled li i {
+	margin-right: 10px; /* Espacio entre el icono y el texto */
 }
 
 .footer-text {
-    text-align: center;
-    font-family: "Luckiest Guy", cursive;
-    font-weight: 400;
-    font-style: normal;
+    border-top: 1px solid #DEE2E6;
+    padding-top: 1em;
 }
 
-.footer-icons i {
-    margin: 0 10px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    font-size: 34px;
-}
-
-/* Responsive Styles */
-@media (max-width: 1200px) {
-    .footer-top {
-        height: 35vh;
-    }
-    .footer-middle {
-        height: 15vh;
-    }
-    .footer-bottom {
-        height: 15vh;
-        flex-direction: column;
-        text-align: center;
-    }
-    .footer-bottom .footer-icons {
-        margin-top: 10px;
-    }
-}
-
-@media (max-width: 768px) {
-    .footer-top {
-        height: 30vh;
-    }
-    .footer-middle ul {
-        flex-direction: column;
-        gap: 1em;
-    }
-    .footer-bottom {
-        flex-direction: column;
-        height: auto;
-        padding: 1rem;
-    }
-    .footer-logo span {
-        font-size: 30px;
-    }
-    .footer-icons i {
-        font-size: 1.2rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .footer-top {
-        height: 25vh;
-    }
-    .jumbotron p {
-        font-size: 1em;
-        width: 90%;
-    }
-    .footer-middle ul {
-        gap: 0.5em;
-    }
-    .footer-bottom {
-        padding: 0.5rem;
-    }
-    .footer-logo img {
-        height: 40px;
-    }
-    .footer-logo span {
-        font-size: 24px;
-    }
-    .footer-icons i {
-        font-size: 1rem;
-    }
-}

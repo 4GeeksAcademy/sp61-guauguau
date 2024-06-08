@@ -14,15 +14,22 @@ export const Pets = () => {
     const [selectedPetId, setSelectedPetId] = useState(null);
     const [selectedPet, setSelectedPet] = useState(null);
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [isComponentMounted, setIsComponentMounted] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
             await actions.fetchPets();
-            setIsLoading(false);
+            if (isComponentMounted) {
+                setIsLoading(false);
+            }
         };
 
         fetchData();
-    }, []);
+
+        return () => {
+            setIsComponentMounted(false);
+        };
+    }, [actions, isComponentMounted]);
 
     const handleChangeIndex = (newIndex) => {
         if (newIndex >= store.pets.length) {
@@ -95,6 +102,7 @@ export const Pets = () => {
     };
 
     const renderDescription = (description) => {
+        if (!description) return ""; // Handle null or undefined descriptions
         if (description.length <= 200) {
             return description;
         } else if (showFullDescription) {

@@ -157,12 +157,10 @@
 
 
 .additional-section h3 {
-    background-color: rgba(245, 73, 144);
+    
     font-size: 22px;
-    color: #ffffff;
-    margin-bottom: 20px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px,
-          rgba(245, 73, 144, 0.5) 5px 10px 15px;
+    color: #ff5a5f;
+    
 }
 
 .additional-photos {

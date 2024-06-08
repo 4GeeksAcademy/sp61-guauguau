@@ -1,36 +1,44 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 
 export const Footer = () => (
-  <footer className="footer mt-auto">
-    <div className="footer-top">
-      <div className="jumbotron text-white">
-        <h1>They Met On Guau...Guau </h1>
-        <p>Please share your story with us! We need our a daily love fix.</p>
-        <button className="btn btn-pink">Coming Soon</button>
-      </div>
-    </div>
-    <div className="footer-middle text-white">
-      <ul>
-        <li>About Us</li>
-        <li>Política de Privacidad</li>
-        <li>Contacto</li>
-      </ul>
-    </div>
-    <div className="footer-bottom text-center">
-      <div className="footer-logo">
-        <img src="https://img.freepik.com/vector-gratis/esquema-impresion-pata-corazon-rojo_78370-2364.jpg?t=st=1717710854~exp=1717714454~hmac=a166f636a220e99be9dfaba6763470e85fff62f8dd88d115c8b53c06db696f1e&w=740" alt="Logo" />
-        <span>¡Guau...Guau!</span>
-      </div>
-      <div className="footer-text">
-        Made with <i className="fa fa-heart text-danger" /> by{" "}
-        <a href="http://www.4geeksacademy.com">4Geeks Academy</a>
-      </div>
-      <div className="footer-icons">
-	  	<i className="fa-brands fa-github"></i>
-		<i className="fa-brands fa-instagram"></i>
-		<i className="fa-brands fa-facebook"></i>
-      </div>
-    </div>
-  </footer>
+	<footer className="footer mt-auto p-5 text-center">
+		<div className="container">
+			<div className="row footer-row">
+				<div className="col-md-3">
+					<h3>Contacts</h3>
+					<ul className="list-unstyled">
+						<li><i className="fa fa-phone" /> Phone: +1 234 567 890</li>
+						<li><i className="fa fa-envelope" /> Email: contact@example.com</li>
+						<li><i className="fa fa-map-marker" /> Address: 1234 Street Name, City</li>
+					</ul>
+				</div>
+				<div className="col-md-6">
+					<h1>Want To Know<br/>More Abou Us?</h1>
+					<button className="btn btn-footer mt-2 ps-5 pe-5">About Us</button>
+				</div>
+				<div className="col-md-3">
+					<h3>Our social networks:</h3>
+					<ul className="list-unstyled">
+						<li><i className="fa-brands fa-github" /> <a href="https://github.com">Github</a></li>
+						<li><i className="fa-brands fa-linkedin" /> <a href="https://linkedin.com">LinkedIn</a></li>
+						<li><i className="fa-brands fa-facebook" /> <a href="https://facebook.com">Facebook</a></li>
+					</ul>
+				</div>
+			</div>
+			
+			<p className="mt-4 footer-text">
+				Made with <i className="fa fa-heart text-danger" /> by{" "}
+				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>
+			</p>
+			<div className="">
+					<h5>Are you the admin?</h5>
+					<Link to="/adminlogin">
+					<a className="link-admin-login">Login</a>
+                    </Link>
+					
+				</div>
+
+		</div>
+	</footer>
 );
