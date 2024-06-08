@@ -1,13 +1,107 @@
 body {
   font-family: "Comfortaa", sans-serif;
-  
 }
 section {
   background-color: #FEF5F0;
   margin: 0;
   padding: 0;
-  }
+}
 
+/* NAVBAR - HEADER */
+.header-area {
+  background-color: #0a0e1a;
+  padding: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-logo img {
+  height: 40px;
+}
+
+.main-menu {
+  flex-grow: 1;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.menu-list li {
+  margin: 0 15px;
+}
+
+.header-area .main-menu .menu-list a {
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 800;
+  transition: color 0.3s;
+  background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: rgb(255, 99, 71);
+  font-optical-sizing: auto;
+  font-style: normal;
+  text-align: left;
+}
+
+.menu-list a:hover,
+.menu-list a.active {
+  color: #f39c12;
+}
+
+.header-icons a {
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0 10px;
+  transition: color 0.3s;
+}
+
+.header-icons a:hover {
+  color: #f39c12;
+}
+
+.header-icons i {
+  display: block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border: 1px solid #ffffff;
+  border-radius: 50%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.header-icons i:hover {
+  background-color: #f39c12;
+  color: #0a0e1a;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  border: none;
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* FOOTER */
+.footer {
+  background-color: #E7B2A5;
+  padding: 1rem 0;
+  width: 100%;
+  bottom: 0;
+}
 .container {
   font-family: "Comfortaa", sans-serif;
   font-size: 1rem;
@@ -17,107 +111,184 @@ section {
   text-align: left;
   background-color: #FEF5F0;
 }
-.primary-btn {
-font-size: 1.125rem;
-font-weight: 700;
-font-family: "Comfortaa", sans-serif;
-letter-spacing: .03em;
-display: inline-block;
-position: relative;
-overflow: hidden;
-border-radius: 40px;
-color: #fff;
-padding: 15px 30px;
-text-align: center;
-text-transform: uppercase;
-transition: all 0.4s ease;
-cursor: pointer;
-border: none;
-width: 100%;
-}
-
-.login-btn {
-  background: linear-gradient(90deg, #6A82FB 0%, #FC5C7D 100%);
-}
-
-.primary-btn2 {
-  background: linear-gradient(90deg, #F86CA7 0%, #FF7F18 100%);
-}
-
-.primary-btn1 {
-  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
-}
-
-.primary-btn2:hover {
-  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
-}
-
-.primary-btn1:hover {
-  background: linear-gradient(90deg, #F86CA7 0%, #FF7F18 100%);
-}
-
-h1{
+h1 {
   color: #30475E;
 }
 h1, h5 {
   font-weight: bold;
 }
 
+/* FORMULARIOS */
+form {
+  border-radius: 5px;
+  margin: 5rem;
+  background-color: #FEF5F0;
+  padding: 40px;
+  box-shadow: 5px 7px 35px #202C38;
+}
 .form-group {
   position: relative;
 }
-
 .form-control:focus {
   outline: none;
   box-shadow: 0 0 10px rgba(255, 127, 24, 0.5);
   border-color: #FF7F18;
 }
-
-
-form {
-  border-radius: 5px;
-  margin-top: 5rem;
-  background-color: #E7B2A5;
-  padding: 40px;
-  box-shadow: 5px 7px 35px #202C38;
-}
-
 .custom-checkbox {
   display: flex;
   align-items: center;
   margin-bottom: 0;
   margin-right: 5px;
 }
-
 .form-control {
   font-size: .875rem;
 }
 
+path input .bi  {
+  display: flex;
+}
+
+/* BOTONES */
+.primary-btn {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: "Comfortaa", sans-serif;
+  letter-spacing: .03em;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 40px;
+  color: #fff;
+  padding: 15px 30px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+.login-btn {
+  background: linear-gradient(90deg, #6A82FB 0%, #FC5C7D 100%);
+}
+.primary-btn2 {
+  background: linear-gradient(90deg, #F86CA7 0%, #FF7F18 100%);
+}
+.primary-btn1 {
+  background: #FEF5F0;
+  color: #001D23;
+}
+.primary-btn2:hover {
+  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
+}
+.primary-btn1:hover {
+  background: #001D23;
+  color: #FEF5F0;
+}
+.primary-btn2:active,
+.primary-btn1:active {
+  background-color: #FF7F18;
+}
 .button-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px; /* Espacio entre los botones */
+  gap: 10px;
   margin-top: 10px;
 }
+
 
 .login-redirect {
   text-align: center;
   margin-top: 20px;
 }
-
-.login-redirect p {
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
 .login-redirect a {
   color: #6A82FB;
   font-weight: 700;
   text-decoration: none;
   transition: color 0.3s ease;
 }
-
 .login-redirect a:hover {
   color: #FC5C7D;
 }
+.login-redirect p {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+/* MENSAJES DE ERROR O EXITO */
+.alert-success {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #270;
+  background-color: #DFF2BF;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.alert-danger {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #cc0033;
+  background-color: #fce4e4;
+  border: 1px solid #fcc2c3;
+  padding: 15px 30px;
+  border-radius: 5px;
+  margin-top: 10px;
+  text-align: center;
+}
+/* LOGO - IMAGEN */
+img {
+  overflow-clip-margin: content-box;
+  overflow: clip;
+}
+.img-fluid {
+  height: auto;
+  margin-right: 2rem;
+}
+
+/* INPUT ICONS */
+.input-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.input-icon svg {
+  position: absolute;
+  left: 10px;
+}
+
+.form-control {
+  padding-left: 30px;
+}
+
+.form-group.position-relative {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group .input-icon {
+  position: relative;
+}
+
+.input-icon input.form-control {
+  padding-left: 35px;
+}
+
+.input-icon svg {
+  top: 20%;
+}
+
+/* CHECKBOX */
+.custom-control-input {
+  font-family: system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}
+
