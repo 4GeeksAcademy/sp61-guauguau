@@ -7,11 +7,17 @@
     align-items: center;
     margin-top: 20px;
     font-family: 'Arial', sans-serif;
-   
-    background: linear-gradient(180deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
-    /*
-    background: linear-gradient(0deg, rgba(255,105,155,1) 20%, rgba(255,133,122,1) 62%);
-    */
+    background-color: #FBE5DA;
+}
+
+.my-4 {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: #001D23;
 }
 
 .select-pet {
@@ -66,20 +72,24 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+    
 }
+
 .card-back {
     background-color: antiquewhite;
 }
+
 .card {
     position: relative;
     width: 100%;
-    max-width: 350px;
+    
+    max-width: 100%;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     border-radius: 15px;
     overflow: hidden;
     background-color: white;
     transition: transform 0.3s ease-in-out;
-    margin-bottom: 20px;
+    margin-bottom: 80px;
     padding-bottom: 60px; /* Espacio para los botones */
 }
 
@@ -173,17 +183,14 @@
     justify-content: center;
     font-size: 30px;
     outline: none;
-    
 }
 
 .pets-button:hover {
     transform: scale(1.1);
-    
 }
 
 .pets-button:active {
     transform: scale(0.9);
-    
 }
 
 .like-button {
@@ -195,6 +202,7 @@
     background-color: #ddd;
     color: grey;
 }
+
 .next-button:hover {
     color: #e04848;
 }
@@ -204,15 +212,14 @@
     color: rgb(102, 231, 70);
     text-decoration: none;
 }
+
 .view-button:hover {
-    color:rgb(0, 168, 22)
+    color: rgb(0, 168, 22);
 }
 
 .pets-button:focus {
     outline: none;
 }
-
-
 
 /* Estilos generales */
 .show-more {
@@ -231,7 +238,6 @@
     width: 100%;
     top: 50%;
     transform: translateY(-50%);
-    
     pointer-events: none;
 }
 
@@ -244,21 +250,117 @@
     cursor: pointer;
     pointer-events: all;
 }
-
+@media (max-width: 578px) {
+    .arrow {
+        display: none;
+    }
+}
 .left-arrow {
     justify-content: flex-start;
     position: absolute;
-    left: -150px; /* Ajusta esta distancia según sea necesario */
+    left: -50px; /* Ajusta esta distancia según sea necesario */
 }
 
 .right-arrow {
     justify-content: flex-end;
     position: absolute;
-    right: -150px; /* Ajusta esta distancia según sea necesario */
+    right: -50px; /* Ajusta esta distancia según sea necesario */
 }
 
 .arrow-text {
     margin: 0 10px;
     color: white;
     font-size: 30px;
+}
+
+.match-modal-content {
+    background-color: #ffebee; /* Fondo rojo claro */
+    text-align: center;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: #001D23;
+}
+
+.match-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+.match-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 10px;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.match-heart {
+    font-size: 50px;
+    position: absolute;
+    color: #e91e63;
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.notice-modal-content {
+    background-color: #f3f4f6; /* Fondo gris claro */
+    color: #333; /* Texto oscuro */
+    text-align: center;
+}
+
+.notice-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.notice-icon {
+    font-size: 40px;
+    color: #ff5722; /* Color de alerta */
+    margin-top: 10px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 576px) {
+    .swipe-container {
+        max-width: 100%;
+    }
+
+    .card-container {
+        min-width: 100%;
+    }
+
+    .card {
+        min-width: 100%;
+    }
+
+    .navigation-arrows {
+        top: 90%; /* Ajusta la posición de las flechas según sea necesario */
+    }
+
+    .left-arrow {
+        left: 10px;
+    }
+
+    .right-arrow {
+        right: 10px;
+    }
 }

@@ -1,10 +1,13 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
 import perroImage from "../../img/perro4.png";
+import salchichas from "../../img/salchichas.png";
+import corazonesrojos from "../../img/corazonesrojos.png";
 import "../../styles/home.css";
 import { ApiBreed } from "./apiBreed";
-import { CardContainer } from "./cardContainer";
+
 import { PetsFinder } from "./finder";
 import { Team } from "./team";
 
@@ -12,21 +15,26 @@ export const Home = () => {
     const { store, actions } = useContext(Context);
 
     return (
-        <div className="text-center">
+        <div className="container-fluid text-center">
             <div className="container-home">
                 
-                <div className="jumbotron p-4 p-md-5">
-                    <div className="row jumbo-contain">
-                        <div className="col-md-6 px-0">
-                            <h1 className="display-4 main-text">Connect Your Dog with New Friends<br/>Join Our Community Today!</h1>
-                            <p className="lead my-3">
-                                <button className="btn btn-multicolor m-2 ps-5 pe-5">Login</button>
-                                <button className="btn btn-multicolor-border m-2 ps-5 pe-5">Signup</button>
+                <div className="jumbotron p-1">
+                    <div className="row flex-sm-row flex-md-row flex-column jumbo-contain">
+                        <div className="col-md-6 mb-5">
+                            <h1 className="display-4 main-text">Connect Your <span className="dog-title">Dog</span> with New Friends<br/>Join Our Community Today!</h1>
+                            <p className="lead my-4">
+                            <Link to="/login">
+                                <button className="btn btn-multicolor ps-5 pe-5">Login</button>
+                            </Link>
+                            <Link to="/ownersignup">
+                                <button className="btn btn-multicolor-border ps-5 pe-5">Signup</button>
+                            </Link>
                             </p>
                         </div>
                         <div className="col-md-6 main-img">
-                            <div className="image-container">
-                                <img src="https://img.freepik.com/foto-gratis/pareja-joven-caminando-sus-bulldogs-franceses-parque_1303-17957.jpg" alt="Imagen con máscara de recorte"/>
+                        <div className="image-container position-relative">
+                                <img src={corazonesrojos} alt="Imagen de fondo" className="position-absolute top-0 start-0" style={{ zIndex: 1 }} />
+                                <img className src={salchichas} alt="Imagen con máscara de recorte" style={{ position: "relative", zIndex: 2 }} />
                             </div>
                         </div>
                     </div>
@@ -34,9 +42,9 @@ export const Home = () => {
             </div>
             
 			<PetsFinder />
-            <CardContainer />
+            
 
-			<div className="jumbotron-container">
+			<div className=" container-fluid jumbotron-container">
             <div className="jumbotron-content">
                 <div className="jumbotron-image">
                     <img src={"https://img.freepik.com/foto-gratis/hermosa-mujer-morena-juega-dos-perros-shiba-inu-mira-otro-lado-piensa-como-alimentar-mascotas-ensenar-comandos-expresa-caricias-aisladas-sobre-fondo-rosa_273609-34195.jpg?t=st=1717894956~exp=1717898556~hmac=3f05cee4ff23049d132967897d049f4c37a01c52fecab0d36b786904197c133a&w=1800"} alt="title" />

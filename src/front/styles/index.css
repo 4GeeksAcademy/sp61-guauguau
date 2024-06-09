@@ -8,10 +8,10 @@
 
 /* Aplicamos la máscara de recorte */
 .image-container img {
-    width: 70%; 
-    height: 50vh; 
+    width: 60%; 
+    height: 40vh; 
     object-fit: cover;
-    clip-path: ellipse(70% 80% at 70% 70%); 
+     
     margin: 0;
 }
 /* Ocultar la imagen en pantallas medianas y pequeñas */
@@ -21,19 +21,24 @@
     }
 }
 
+.container-fluid {
+    margin: 0;
+    padding:0;
+}
 .container-home {
-    background-color: #F4EDE6;
+    background-color: #FBE5DA;
+    padding: 1em;
 }
 
 @media (min-width: 992px) {
-    .container-home, .card-container {
+    .card-container {
         width: 90%;
         margin: 0 auto;
     }
 }
 
 @media (max-width: 991.98px) {
-    .container-home, .card-container {
+    .card-container {
         width: 100%;
     }
 }
@@ -43,13 +48,25 @@
     font-optical-sizing: auto;
     font-weight: 800;
     font-style: normal;
-    margin-top: 2em;
-    margin-bottom: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: #001D23;
+    
 }
-
+.dog-title {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
 .jumbo-content {
     display: flex;
     justify-content: center;
+    
 }
 
 .btn-multicolor-border {
@@ -58,6 +75,7 @@
     border: none;
     color: #000;
     padding: 1em 20px;
+    margin-left: 30px;
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -102,6 +120,35 @@ a, a:hover, a:visited, a:active {
     color: black;
 }
 
+
+
+/* Nueva media query para ajustar el jumbotron */
+@media (max-width: 991.98px) {
+    .jumbo-contain {
+        flex-direction: column; /* Asegura que los elementos del jumbotron estén en columna */
+        text-align: center; /* Centra el texto */
+    }
+
+    .col-md-6 {
+        width: 100%; /* Ocupa el 100% del ancho */
+    }
+
+    .main-text {
+        font-size: 2em; /* Ajusta el tamaño del texto si es necesario */
+        padding: 1em; /* Añade padding si es necesario */
+    }
+
+    .lead {
+        display: flex;
+        justify-content: center; /* Centra los botones horizontalmente */
+        gap: 3em; /* Espacio entre los botones */
+    }
+
+    .btn-multicolor, .btn-multicolor-border {
+        width: auto; /* Ajusta el ancho de los botones */
+        margin-bottom: 0; /* Elimina el espacio inferior entre los botones */
+    }
+}
 /* CARD CONTAINER */
 
 .car-container .row {
@@ -191,11 +238,8 @@ a, a:hover, a:visited, a:active {
     color: #696969;
 }
 
-/* segundo jumbotron */
-
 .jumbotron-container {
-    width: 90%;
-    margin: 0 auto;
+    margin: 2em auto;
     background-color: #F5F2FC; /* Ajusta el color de fondo según tus necesidades */
     padding: 2em;
     border-radius: 10px; /* Opcional: para esquinas redondeadas */
@@ -204,15 +248,17 @@ a, a:hover, a:visited, a:active {
 .jumbotron-content {
     display: flex;
     align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas más pequeñas */
 }
 
 .jumbotron-image {
     flex: 1;
     margin-right: 2em;
+    margin-bottom: 1em; /* Añadir margen inferior para evitar que la imagen se pegue al texto en pantallas pequeñas */
 }
 
 .jumbotron-image img {
-    width: 50%;
+    width: 100%; /* Ajusta la imagen para que tome el 100% del contenedor */
     height: auto;
     border-radius: 10px; /* Opcional: para esquinas redondeadas */
 }
@@ -220,6 +266,22 @@ a, a:hover, a:visited, a:active {
 .jumbotron-text {
     flex: 1;
     text-align: left;
+}
+
+/* Estilos específicos para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .jumbotron-content {
+        flex-direction: column; /* Cambia la dirección del flujo a columna */
+        align-items: center; /* Centra los elementos en la columna */
+    }
+
+    .jumbotron-image {
+        margin-right: 0;
+    }
+
+    .jumbotron-text {
+        text-align: center; /* Centra el texto para pantallas pequeñas */
+    }
 }
 
 .jumbotron-text h1 {
@@ -245,47 +307,180 @@ a, a:hover, a:visited, a:active {
 .finder-main-container {
     background-color: #FBF6F3;
     margin-top: 150px;
-    padding-left: 7em;
-    padding-right: 7em; 
+    
 }
+
 .form-finder {
     z-index: 1;
     margin-top: 3rem;
     
 }
+
 .finder-bg .container {
-    position: relative; /* Posiciona el contenedor relativamente */
-    padding: 2em; /* Ajusta el padding según tus necesidades */
-    overflow: visible; /* Asegúrate de que el desbordamiento esté visible */
+    position: relative;
+    padding: 2em;
+    overflow:hidden;
+   
 }
 
-.image-wrapper {  
-    position: relative; /* Posiciona el wrapper absolutamente */
-    top: -330px; /* Ajusta según tus necesidades para que sobresalga */
-    left: 10%; /* Ajusta para que esté completamente a la izquierda */
+.image-wrapper {
+    position: relative;
+    top: -330px;
+    left: 20%;
     
 }
 
 .floating-image {
-    position: absolute; /* Posiciona la imagen absolutamente */
-    top: 30%; /* Ajusta según tus necesidades para que sobresalga */
-    left: 1%;
-    transform: translateX(-50%); /* Centra la imagen horizontalmente */
-    width: 350px; /* Ajusta el tamaño según tus necesidades */
-    height: auto; /* Mantén la proporción de la imagen */
-    z-index: 1; /* Asegúrate de que la imagen esté por encima del contenedor */
-    
-    
+    position: absolute;
+    top: 30%;
+    left: 20%;
+    transform: translateX(-50%);
+    width: 350px;
+    height: auto;
+    z-index: 1;
 }
 
-.form-finder-filters .col-md-3 label {
-    color: #F86F90;
+.filter label {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
     font-family: "Dosis", sans-serif;
     font-optical-sizing: auto;
     font-weight: 800;
     font-style: normal;
     font-size: 1.5em;
+    margin-bottom: 1em;
 }
+
+/* Responsive Styles */
+
+@media (max-width: 992px) {
+.form-finder-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.form-finder-filters .col-md-3,
+.form-finder-filters .col-12 {
+    flex: 1 1 100%;
+     max-width: 100%;
+}
+}
+
+@media (max-width: 576px) {
+    .form-finder-filters {
+        flex-direction: column;
+    }
+
+    
+    .image-wrapper {
+        
+        top: -400px;
+        left: 10%;
+        
+    }
+}
+
+@media (max-width: 768px) {
+    
+    .image-wrapper {
+        position: relative;
+        top: -360px;
+        left: 10%;
+        
+    }
+}
+/* Basic rc-slider styles */
+.rc-slider {
+    position: relative;
+    height: 14px;
+    padding: 5px 0;
+    width: 100%;
+    border-radius: 6px;
+    -ms-touch-action: none;
+    touch-action: none;
+  }
+  
+  .rc-slider * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  
+  .rc-slider-rail {
+    position: absolute;
+    width: 100%;
+    background-color: #e9e9e9;
+    height: 4px;
+    border-radius: 6px;
+  }
+  
+  .rc-slider-track {
+    position: absolute;
+    left: 0;
+    height: 4px;
+    border-radius: 6px;
+    background-color: #abe2fb;
+  }
+  
+  .rc-slider-handle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    cursor: -webkit-grab;
+    cursor: grab;
+    margin-top: -5px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: solid 2px #96dbfa;
+    background-color: #fff;
+    touch-action: pan-x;
+  }
+  
+  .rc-slider-handle:focus,
+  .rc-slider-handle:hover,
+  .rc-slider-handle:active {
+    border-color: #57c5f7;
+    box-shadow: 0 0 0 5px #96dbfa;
+  }
+  
+  .rc-slider-disabled {
+    background-color: #e9e9e9;
+    cursor: not-allowed;
+  }
+  
+  .rc-slider-disabled .rc-slider-handle,
+  .rc-slider-disabled .rc-slider-track {
+    background-color: #ccc;
+    border-color: #ccc;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  
+
+
+/* Custom rc-slider styles */
+.rc-slider-rail {
+    background-color: #f6cbd8; /* color de la barra de fondo */
+}
+
+.rc-slider-track {
+    background-color: #f86f90; /* color de la barra de rango */
+}
+
+.rc-slider-handle {
+    border-color: #f86f90; /* color de los controles del slider */
+}
+
+.rc-slider-handle:focus,
+.rc-slider-handle:hover,
+.rc-slider-handle:active {
+    border-color: #f86f90;
+    box-shadow: 0 0 5px #f86f90;
+}
+
 
 /* TEAM */
 
