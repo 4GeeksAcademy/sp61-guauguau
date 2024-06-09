@@ -80,54 +80,61 @@ const getState = ({ getStore, getActions, setStore }) => {
                         });
                         if (ownerResponse.ok) {
                             const ownerData = await ownerResponse.json();
+                            console.log("Owner data:", ownerData);  // Log para depuración
                             setStore({
                                 profilePictureUrl: ownerData.owner.profile_picture_url,
                                 email: ownerData.owner.email,
                                 owner: ownerData.owner,
                                 ownerDescription: ownerData.owner.description,
-                                currentPetId: ownerData.owner.pets[0].id // Asegúrate de establecer currentPetId
+                                currentPetId: ownerData.owner.pets.length > 0 ? ownerData.owner.pets[0].id : null  // Solo establece currentPetId si hay mascotas
                             });
+                        } else {
+                            console.error("Error fetching owner data:", await ownerResponse.text());
                         }
                     } else {
                         throw new Error("Email or password wrong");
                     }
                 } catch (error) {
+                    console.error("Login error:", error);
                     setStore({ auth: false, email: null });
                     throw error;
                 }
             },
 
-			verifyToken: async () => {
-				try {
-					const token = localStorage.getItem("token");
-					if (token) {
-						setStore({ auth: true, token });
-						const response = await fetch(process.env.BACKEND_URL + "/api/protected", {
-							method: 'GET',
-							headers: {
-								'Authorization': `Bearer ${token}`
-							}
-						});
-						if (response.ok) {
-							const data = await response.json();
-							setStore({
-								profilePictureUrl: data.owner.profile_picture_url,
-								email: data.owner.email,
-								owner: data.owner, // Asegúrate de que el propietario está en el estado
-								ownerDescription: data.owner.description // NUEVO CRIS
-							});
-						} else {
-							setStore({ auth: false });
-							localStorage.removeItem("token");
-						}
-					} else {
-						setStore({ auth: false });
-					}
-				} catch (error) {
-					console.error("Error verifying token:", error);
-					setStore({ auth: false });
-				}
-			},
+            verifyToken: async () => {
+                try {
+                    const token = localStorage.getItem("token");
+                    if (token) {
+                        setStore({ auth: true, token });
+                        const response = await fetch(process.env.BACKEND_URL + "/api/protected", {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log("Verify token data:", data);  // Log para depuración
+                            setStore({
+                                profilePictureUrl: data.owner.profile_picture_url,
+                                email: data.owner.email,
+                                owner: data.owner,
+                                ownerDescription: data.owner.description,
+                                currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null  // Solo establece currentPetId si hay mascotas
+                            });
+                        } else {
+                            console.error("Error verifying token:", await response.text());
+                            setStore({ auth: false });
+                            localStorage.removeItem("token");
+                        }
+                    } else {
+                        setStore({ auth: false });
+                    }
+                } catch (error) {
+                    console.error("Error verifying token:", error);
+                    setStore({ auth: false });
+                }
+            },
 			selectPet: (petId) => {
 				setStore({ selectedPetId: petId });
 			},

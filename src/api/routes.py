@@ -123,7 +123,8 @@ def login():
         return jsonify({"message": "Wrong password"}), 401
     
     access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    return jsonify(access_token=access_token)  # Verifica que esto está devolviendo el token correctamente
+
 
 @api.route('/protected', methods=['GET'])
 @jwt_required()
@@ -137,6 +138,7 @@ def protected():
     owner_data["pets"] = [pet.serialize() for pet in owner.pets]
 
     return jsonify({"owner": owner_data}), 200
+
 
 
 ##### ROUTES PETS #########################################
