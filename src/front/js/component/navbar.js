@@ -40,7 +40,7 @@ export const Navbar = () => {
 
     return (
         <header className="header-area sticky">
-            <div className="container-fluid d-flex justify-content-between align-items-center">
+            <div className="container-fluid d-flex justify-content-between align-items-center container-navbar">
                 <div className="header-logo">
                     <Link to="/">
                         <img alt="logo" className="img-fluid" src={logo} />

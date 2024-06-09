@@ -1,3 +1,12 @@
+/* Definimos el contenedor de la imagen */
+
+
+.image-container {
+    width: 100%; 
+    height: auto; 
+    overflow: hidden;
+    position: relative;
+}
 body {
   font-family: "Comfortaa", sans-serif;
 }
@@ -28,7 +37,7 @@ section {
   margin-left: 0.5rem;
 }
 
-.container-fluid {
+.container-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -190,7 +199,7 @@ input .bi {
   position: absolute;
   display: flex; }
 
-input:read-only {
+.read-only {
   background-color: #ccc;
   pointer-events: none;
 }
@@ -365,13 +374,118 @@ img {
     General Styles used on every website (Don't Repeat Yourself)
 */
 
-#ocultar{
-    display:none;
-   
-    padding:10px;
-    background-color:#f6f6f6;
-    width:200px;
-    cursor:pointer;
+/* Aplicamos la máscara de recorte */
+.image-container img {
+    width: 60%; 
+    height: 40vh; 
+    object-fit: cover;
+     
+    margin: 0;
+}
+/* Ocultar la imagen en pantallas medianas y pequeñas */
+@media (max-width: 991.98px) {
+    .image-container img {
+        display: none;
+    }
+}
+
+.container-fluid {
+    margin: 0;
+    padding:0;
+}
+.container-home {
+    background-color: #FBE5DA;
+    padding: 1em;
+}
+
+@media (min-width: 992px) {
+    .card-container {
+        width: 90%;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .card-container {
+        width: 100%;
+    }
+}
+
+.main-text {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: #001D23;
+    
+}
+.dog-title {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+.jumbo-content {
+    display: flex;
+    justify-content: center;
+    
+}
+
+.btn-multicolor-border {
+    position: relative;
+    background: transparent;
+    border: none;
+    color: #000;
+    padding: 1em 20px;
+    margin-left: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 30px; /* Ensure this is applied */
+    z-index: 1;
+    overflow: hidden;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.btn-multicolor-border::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    padding: 4px; /* Adjust this based on your border width */
+    background: linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+}
+
+.btn-multicolor-border:hover {
+    background: linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    color: #fff;
+    border-radius: 30px; /* Ensure this is applied */
+}
+
+a, a:hover, a:visited, a:active {
+    text-decoration: none;
+    color: black;
 }
 .wheel-and-hamster {
     --dur: 1s;
@@ -665,6 +779,506 @@ img {
     background-color: #fff;
 }
 
+
+/* Nueva media query para ajustar el jumbotron */
+@media (max-width: 991.98px) {
+    .jumbo-contain {
+        flex-direction: column; /* Asegura que los elementos del jumbotron estén en columna */
+        text-align: center; /* Centra el texto */
+    }
+
+    .col-md-6 {
+        width: 100%; /* Ocupa el 100% del ancho */
+    }
+
+    .main-text {
+        font-size: 2em; /* Ajusta el tamaño del texto si es necesario */
+        padding: 1em; /* Añade padding si es necesario */
+    }
+
+    .lead {
+        display: flex;
+        justify-content: center; /* Centra los botones horizontalmente */
+        gap: 3em; /* Espacio entre los botones */
+    }
+
+    .btn-multicolor, .btn-multicolor-border {
+        width: auto; /* Ajusta el ancho de los botones */
+        margin-bottom: 0; /* Elimina el espacio inferior entre los botones */
+    }
+}
+/* CARD CONTAINER */
+
+.car-container .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; 
+    padding: 2em 0; 
+    
+}
+
+.card-bg-1, .card-bg-2, .card-bg-3, .card-bg-4 {
+    flex: 1 1 calc(25% - 6em); /* Ajusta el tamaño de las tarjetas y el espacio entre ellas */
+    box-sizing: border-box;
+    margin-bottom: 6em; /* Ajusta este valor para cambiar el espacio vertical */
+    border: 1px solid transparent; /* Borde transparente */
+    background-clip: padding-box; /* Asegura que el fondo no se superponga al borde */
+    z-index: -2;
+}
+
+.card-body-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+
+.card.card-bg-1 {
+    background-color: #FBECEC; /* Color de fondo rojo claro */
+    height: 10vh;
+}
+
+.card.card-bg-2 {
+    background-color: #EFF8DD; /* Color de fondo verde claro */
+    height: 10vh;
+}
+
+.card.card-bg-3 {
+    background-color: #FFD9E7; /* Color de fondo azul claro */
+    height: 10vh;
+}
+
+.card.card-bg-4 {
+    background-color: #FDEAE1; /* Color de fondo amarillo claro */
+    height: 10vh;
+}
+
+/* Para asegurar que las tarjetas se alineen correctamente en pantallas más pequeñas */
+@media (max-width: 991.98px) {
+    .card {
+        flex: 1 1 calc(50% - 2em); /* Ajusta el tamaño para pantallas medianas */
+    }
+}
+
+@media (max-width: 767.98px) {
+    .card {
+        flex: 1 1 100%; /* Tarjetas a ancho completo en pantallas pequeñas */
+    }
+}
+
+.card-icon {
+    font-size: 2.5em;
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71); 
+    margin-bottom: 1em; 
+    padding-right: 1em;
+}
+
+.card-title {
+    color: #000;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-align: center;
+    margin-bottom: 0.5em; 
+}
+
+.card-text-home {
+    font-family: "Cabin", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    padding-bottom: 2em;
+    color: #696969;
+}
+
+.jumbotron-container {
+    margin: 2em auto;
+    background-color: #F5F2FC; /* Ajusta el color de fondo según tus necesidades */
+    padding: 2em;
+    border-radius: 10px; /* Opcional: para esquinas redondeadas */
+}
+
+.jumbotron-content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se ajusten en pantallas más pequeñas */
+}
+
+.jumbotron-image {
+    flex: 1;
+    margin-right: 2em;
+    
+    margin-bottom: 1em; /* Añadir margen inferior para evitar que la imagen se pegue al texto en pantallas pequeñas */
+}
+
+.jumbotron-image img {
+    width: 100%; /* Ajusta la imagen para que tome el 100% del contenedor */
+    height: auto;
+    border-radius: 10px; /* Opcional: para esquinas redondeadas */
+}
+
+.jumbotron-text {
+    flex: 1;
+    text-align: left;
+}
+
+/* Estilos específicos para pantallas más pequeñas */
+@media (max-width: 768px) {
+    .jumbotron-content {
+        flex-direction: column; /* Cambia la dirección del flujo a columna */
+        align-items: center; /* Centra los elementos en la columna */
+    }
+
+    .jumbotron-image {
+        margin-right: 0;
+    }
+
+    .jumbotron-text {
+        text-align: center; /* Centra el texto para pantallas pequeñas */
+    }
+}
+
+.jumbotron-text h1 {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    margin-bottom: 0.5em;
+}
+
+.jumbotron-text h3 {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #6c757d; /* Ajusta el color del subtítulo según tus necesidades */
+}
+
+
+
+
+/* FINDER */
+.finder-main-container {
+    background-color: #FBF6F3;
+    margin-top: 150px;
+    
+}
+
+.form-finder {
+    z-index: 1;
+    margin-top: 3rem;
+    
+}
+
+.finder-bg .container {
+    position: relative;
+    padding: 2em;
+    overflow:hidden;
+   
+}
+
+.image-wrapper {
+    position: relative;
+    top: -330px;
+    left: 20%;
+    
+}
+
+.floating-image {
+    position: absolute;
+    top: 30%;
+    left: 20%;
+    transform: translateX(-50%);
+    width: 350px;
+    height: auto;
+    z-index: 1;
+}
+
+.filter label {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+/* Responsive Styles */
+
+@media (max-width: 992px) {
+.form-finder-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.form-finder-filters .col-md-3,
+.form-finder-filters .col-12 {
+    flex: 1 1 100%;
+     max-width: 100%;
+}
+}
+
+@media (max-width: 576px) {
+    .form-finder-filters {
+        flex-direction: column;
+    }
+
+    
+    .image-wrapper {
+        
+        top: -400px;
+        left: 10%;
+        
+    }
+}
+
+@media (max-width: 768px) {
+    
+    .image-wrapper {
+        position: relative;
+        top: -360px;
+        left: 10%;
+        
+    }
+}
+/* Basic rc-slider styles */
+.rc-slider {
+    position: relative;
+    height: 14px;
+    padding: 5px 0;
+    width: 100%;
+    border-radius: 6px;
+    -ms-touch-action: none;
+    touch-action: none;
+  }
+  
+  .rc-slider * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  
+  .rc-slider-rail {
+    position: absolute;
+    width: 100%;
+    background-color: #e9e9e9;
+    height: 4px;
+    border-radius: 6px;
+  }
+  
+  .rc-slider-track {
+    position: absolute;
+    left: 0;
+    height: 4px;
+    border-radius: 6px;
+    background-color: #abe2fb;
+  }
+  
+  .rc-slider-handle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+    cursor: -webkit-grab;
+    cursor: grab;
+    margin-top: -5px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: solid 2px #96dbfa;
+    background-color: #fff;
+    touch-action: pan-x;
+  }
+  
+  .rc-slider-handle:focus,
+  .rc-slider-handle:hover,
+  .rc-slider-handle:active {
+    border-color: #57c5f7;
+    box-shadow: 0 0 0 5px #96dbfa;
+  }
+  
+  .rc-slider-disabled {
+    background-color: #e9e9e9;
+    cursor: not-allowed;
+  }
+  
+  .rc-slider-disabled .rc-slider-handle,
+  .rc-slider-disabled .rc-slider-track {
+    background-color: #ccc;
+    border-color: #ccc;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  
+
+
+/* Custom rc-slider styles */
+.rc-slider-rail {
+    background-color: #f6cbd8; /* color de la barra de fondo */
+}
+
+.rc-slider-track {
+    background-color: #f86f90; /* color de la barra de rango */
+}
+
+.rc-slider-handle {
+    border-color: #f86f90; /* color de los controles del slider */
+}
+
+.rc-slider-handle:focus,
+.rc-slider-handle:hover,
+.rc-slider-handle:active {
+    border-color: #f86f90;
+    box-shadow: 0 0 5px #f86f90;
+}
+
+
+/* TEAM */
+
+.team-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2em 0;
+}
+
+.team-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.team-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1em;
+    text-align: center;
+}
+
+.image-circle {
+    width: 150px; /* Ajusta el tamaño según tus necesidades */
+    height: 150px; /* Ajusta el tamaño según tus necesidades */
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.team-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-name {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    color: #000; /* Ajusta el color según tus necesidades */
+}
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+    .team-row {
+        flex-direction: column;
+    }
+}
+
+
+/* FOOTER */
+
+.footer {
+    width: 100%;
+    background-color: #FEF5F0;
+    font-family: "Cabin", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    height: auto;
+}
+
+.footer-row {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 3rem;
+}
+
+.btn-multicolor {
+    background: rgb(248,110,150);
+    background: linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    color: #fff;
+    border-radius: 30px;
+    padding: 1em;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.link-admin-login {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 1.5rem;
+}
+
+.footer-title {
+    background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: rgb(255, 99, 71);  
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    text-align: left;
+}
+
+h1 {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.footer .list-unstyled {
+    padding-left: 0;
+}
+
+.footer .list-unstyled li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Espacio entre los elementos de la lista */
+}
+
+.footer .list-unstyled li i {
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+.footer-text {
+    border-top: 1px solid #DEE2E6;
+    padding-top: 1em;
+}
 .message {
     padding: 10px;
     border-radius: 20px;

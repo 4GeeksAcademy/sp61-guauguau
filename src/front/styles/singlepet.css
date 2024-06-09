@@ -1,9 +1,13 @@
+
+
 .single-pet-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
     font-family: 'Arial', sans-serif;
+    background-color: #E8E8E8;
+    padding-top: 2em;
 }
 
 .pet-card {
@@ -15,12 +19,37 @@
     max-width: 500px;
     margin-bottom: 20px;
     padding: 20px;
+    position: relative;
     text-align: center;
 }
 
+.pet-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
 .pet-card-header h2 {
-    font-size: 24px;
+    font-size: 28px;
     color: #ff5a5f;
+    font-weight: bold;
+}
+
+.owner-info {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.owner-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
 }
 
 .pet-card-body {
@@ -43,7 +72,8 @@
 .detail-item {
     margin-bottom: 10px;
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
+    gap: 0.5em;
     align-items: center;
     font-size: 16px;
 }
@@ -51,18 +81,26 @@
 .detail-item label {
     font-weight: bold;
 }
-
-.owner-info {
-    display: flex;
-    align-items: center;
+.detail-item span {
+    text-align: left;
 }
 
-.owner-photo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
+.detail-item-description {
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, Helvetica, sans-serif;
+    border-top: 1px rgb(196, 196, 196) solid;
+    
+}
+.detail-item-description label {
+    font-weight: bold;
+    padding-top: 1em;
+}
+.detail-item-description span {
+    text-align: left;
+    
+    
+    padding: 1em;
 }
 
 .pet-card-footer {
@@ -115,10 +153,14 @@
     max-width: 600px;
 }
 
+
+
+
 .additional-section h3 {
+    
     font-size: 22px;
     color: #ff5a5f;
-    margin-bottom: 20px;
+    
 }
 
 .additional-photos {
@@ -129,14 +171,22 @@
 }
 
 .additional-photo {
-    width: 100px;
-    height: 100px;
+    width: 450px;
+    height: 450px;
     border-radius: 10px;
     object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.additional-photo:hover {
+    transform: scale(1.1);
 }
 
 .info-buttons {
-    margin: 20px 0;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 3em;
 }
 
 .care-info, .compatibility-info {
@@ -158,4 +208,35 @@
 
 .back-button:hover {
     background-color: #e04848;
+}
+
+.ia-btn {
+    transition: all 0.3s ease-in-out;
+    font-family: "Dosis", sans-serif;
+}
+  
+.ia-btn {
+    width: 200px;
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+    height: 60px;
+    border-radius: 50px;
+    background-image: linear-gradient(135deg, #feb692 0%, #ea5455 100%);
+    box-shadow: 0 20px 30px -6px rgba(238, 103, 97, 0.5);
+    outline: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1.5em;
+    color: white;
+    margin-top: 1em;
+}
+  
+.ia-btn:hover {
+    transform: translateY(3px);
+    box-shadow: none;
+    color: white;
+}
+  
+.ia-btn:active {
+    opacity: 0.5;
 }

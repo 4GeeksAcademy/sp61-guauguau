@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+import perroImage from "../../img/perro2.png";
 import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
+
 
 export const PetsFinder = () => {
     const { store, actions } = useContext(Context);
@@ -48,13 +49,17 @@ export const PetsFinder = () => {
     });
 
     return (
-        <div className="container">
-            <h1 className="my-4">List of Pets</h1>
-            <div className="mb-4">
-                <h4>Search Filters</h4>
+        <div className="container finder-main-container">
+            <h1 className="my-4 pt-4">You can filter and find the pet</h1>
+            <div className="finder-bg container">
+                <div className="image-wrapper">
+                    <img src={perroImage} className="floating-image" alt="Perro" />
+                </div>
+            </div>
+            <div className="mb-4 form-finder">
                 <form>
-                    <div className="row">
-                        <div className="col-md-3">
+                    <div className="row d-flex flex-row form-finder-filters">
+                        <div className="col-3 filter">
                             <label htmlFor="breed">Breed</label>
                             <input
                                 type="text"
@@ -64,7 +69,7 @@ export const PetsFinder = () => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="col-md-3">
+                        <div className="col-3 filter">
                             <label htmlFor="sex">Sex</label>
                             <select
                                 name="sex"
@@ -77,7 +82,18 @@ export const PetsFinder = () => {
                                 <option value="Female">Female</option>
                             </select>
                         </div>
-                        <div className="col-md-3">
+                        
+                        <div className="col-3 filter">
+                            <label htmlFor="city">City</label>
+                            <input
+                                type="text"
+                                name="city"
+                                className="form-control"
+                                value={filters.city}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className=" col-md-3 col-6 filter">
                             <label htmlFor="age">Age Range</label>
                             <Slider
                                 range
@@ -93,16 +109,6 @@ export const PetsFinder = () => {
                                 <span>{filters.ageRange[1]}</span>
                             </div>
                         </div>
-                        <div className="col-md-3">
-                            <label htmlFor="city">City</label>
-                            <input
-                                type="text"
-                                name="city"
-                                className="form-control"
-                                value={filters.city}
-                                onChange={handleChange}
-                            />
-                        </div>
                     </div>
                 </form>
             </div>
@@ -112,8 +118,8 @@ export const PetsFinder = () => {
                 <div className="row">
                     {filteredPets.length > 0 ? (
                         filteredPets.map(pet => (
-                            <div key={pet.id} className="col-md-4 mb-4">
-                                <div className="card h-100">
+                            <div key={pet.id} className="col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-4">
+                                <div className="card ">
                                     {pet.profile_photo_url && <img src={pet.profile_photo_url} className="card-img-top" alt={pet.name} />}
                                     <div className="card-body">
                                         <h2 className="card-title">
@@ -123,7 +129,7 @@ export const PetsFinder = () => {
                                         <p className="card-text">Sex: {pet.sex}</p>
                                         <p className="card-text">Age: {pet.age}</p>
                                         <p className="card-text">Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
-                                        <p className="card-text">City: {pet.city}</p> {/* Add city to the card */}
+                                        <p className="card-text">City: {pet.city}</p>
                                     </div>
                                 </div>
                             </div>

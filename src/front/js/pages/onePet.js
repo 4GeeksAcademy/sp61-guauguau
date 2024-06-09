@@ -15,8 +15,8 @@ export const OnePet = () => {
         photos: [],
         profile_photo_url: '',
         breed: '',
-        likes: [], // Añadido para almacenar los likes
-        matches: [] // Añadido para almacenar los matches
+        likes: [],
+        matches: []
     });
     const [isEditing, setIsEditing] = useState({
         name: false,
@@ -42,7 +42,7 @@ export const OnePet = () => {
             try {
                 const pet = await actions.getPetDetails(petId);
                 const likes = await actions.fetchPetLikes(petId);
-                const matches = await actions.fetchPetMatches(petId); // Obtener matches
+                const matches = await actions.fetchPetMatches(petId);
                 if (isMounted) {
                     setPetDetails({
                         name: pet.name || '',
@@ -53,8 +53,8 @@ export const OnePet = () => {
                         photos: pet.photos || [],
                         profile_photo_url: pet.profile_photo_url || '',
                         breed: pet.breed || '',
-                        likes: likes || [], // Asignar los likes
-                        matches: matches || [] // Asignar los matches
+                        likes: likes || [],
+                        matches: matches || []
                     });
                 }
             } catch (error) {

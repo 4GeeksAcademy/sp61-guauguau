@@ -1,9 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Seymour+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Seymour+One&display=swap');
+
 .pets-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
     font-family: 'Arial', sans-serif;
+    background-color: #FBE5DA;
+}
+
+.my-4 {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: #001D23;
 }
 
 .select-pet {
@@ -58,18 +72,25 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+    
+}
+
+.card-back {
+    background-color: antiquewhite;
 }
 
 .card {
     position: relative;
     width: 100%;
-    max-width: 350px;
+    
+    max-width: 100%;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     border-radius: 15px;
     overflow: hidden;
     background-color: white;
     transition: transform 0.3s ease-in-out;
-    margin-bottom: 20px;
+    margin-bottom: 80px;
+    padding-bottom: 60px; /* Espacio para los botones */
 }
 
 .card-img-top {
@@ -104,6 +125,14 @@
 .card-description {
     padding: 20px;
     text-align: center;
+    padding-bottom: 3em;
+}
+
+.show-more {
+    color: rgb(245, 73, 101);
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
 }
 
 .additional-photos {
@@ -130,40 +159,208 @@
     pointer-events: none;
 }
 
-.navigation-buttons {
+.card-footer {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     width: 100%;
-    max-width: 400px;
-    margin-top: 20px;
+    padding: 0 20px;
 }
 
-button {
-    padding: 10px 20px;
-    font-size: 16px;
+.pets-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    outline: none;
+}
+
+.pets-button:hover {
+    transform: scale(1.1);
+}
+
+.pets-button:active {
+    transform: scale(0.9);
+}
+
+.like-button {
     background-color: #ff5a5f;
     color: white;
-    border: none;
-    border-radius: 25px;
+}
+
+.next-button {
+    background-color: #ddd;
+    color: grey;
+}
+
+.next-button:hover {
+    color: #e04848;
+}
+
+.view-button {
+    background-color: white;
+    color: rgb(102, 231, 70);
+    text-decoration: none;
+}
+
+.view-button:hover {
+    color: rgb(0, 168, 22);
+}
+
+.pets-button:focus {
+    outline: none;
+}
+
+/* Estilos generales */
+.show-more {
+    color: rgb(252, 65, 96);
     cursor: pointer;
-    transition: background-color 0.3s;
-    outline: none;
+    font-weight: bold;
+    margin-left: 5px;
 }
 
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+/* Estilos para las flechas y el texto */
+.navigation-arrows {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
-button:not(:disabled):hover {
-    background-color: #e04848;
+.arrow {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    pointer-events: all;
+}
+@media (max-width: 578px) {
+    .arrow {
+        display: none;
+    }
+}
+.left-arrow {
+    justify-content: flex-start;
+    position: absolute;
+    left: -50px; /* Ajusta esta distancia según sea necesario */
 }
 
-button:focus {
-    outline: none;
+.right-arrow {
+    justify-content: flex-end;
+    position: absolute;
+    right: -50px; /* Ajusta esta distancia según sea necesario */
 }
 
-h1.my-4 {
-    font-size: 28px;
-    color: #ff5a5f;
+.arrow-text {
+    margin: 0 10px;
+    color: white;
+    font-size: 30px;
+}
+
+.match-modal-content {
+    background-color: #ffebee; /* Fondo rojo claro */
+    text-align: center;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    color: #001D23;
+}
+
+.match-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+.match-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 10px;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.match-heart {
+    font-size: 50px;
+    position: absolute;
+    color: #e91e63;
+    animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.notice-modal-content {
+    background-color: #f3f4f6; /* Fondo gris claro */
+    color: #333; /* Texto oscuro */
+    text-align: center;
+}
+
+.notice-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.notice-icon {
+    font-size: 40px;
+    color: #ff5722; /* Color de alerta */
+    margin-top: 10px;
+}
+
+/* Estilos responsivos */
+@media (max-width: 576px) {
+    .swipe-container {
+        max-width: 100%;
+    }
+
+    .card-container {
+        min-width: 100%;
+    }
+
+    .card {
+        min-width: 100%;
+    }
+
+    .navigation-arrows {
+        top: 90%; /* Ajusta la posición de las flechas según sea necesario */
+    }
+
+    .left-arrow {
+        left: 10px;
+    }
+
+    .right-arrow {
+        right: 10px;
+    }
 }

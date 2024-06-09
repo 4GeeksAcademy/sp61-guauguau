@@ -1,5 +1,4 @@
 import "../../styles/pets.css";
-
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
@@ -15,15 +14,27 @@ export const Pets = () => {
     const [previousIndex, setPreviousIndex] = useState(0);
     const [selectedPetId, setSelectedPetId] = useState(null);
     const [selectedPet, setSelectedPet] = useState(null);
+    const [showFullDescription, setShowFullDescription] = useState(false);
+    const [isComponentMounted, setIsComponentMounted] = useState(true);
+    const [matchMessage, setMatchMessage] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [matchedPet, setMatchedPet] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             await actions.fetchPets();
-            setIsLoading(false);
+            if (isComponentMounted) {
+                setIsLoading(false);
+            }
         };
 
         fetchData();
-    }, []);
+
+        return () => {
+            setIsComponentMounted(false);
+        };
+    }, [, isComponentMounted]);
 
     const handleChangeIndex = (newIndex) => {
         if (newIndex >= store.pets.length) {
@@ -39,31 +50,43 @@ export const Pets = () => {
         handleChangeIndex(index + 1);
     };
 
+    const handlePrevious = () => {
+        handleChangeIndex(index - 1);
+    };
+
     const handleLike = async () => {
+        if (!store.auth) {
+            setModalTitle("Notice");
+            setMatchMessage("You need to be logged in to like a pet.");
+            setShowModal(true);
+            var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+            myModal.show();
+            return;
+        }
+
         setLike(true);
         setTimeout(() => {
             setLike(false);
             handleChangeIndex(index + 1);
         }, 1000); // Adjust the delay as needed
 
-        try {
-            if (store.auth) {
-                if (!selectedPetId) {
-                    alert("You need to select one of your pets to like another pet.");
-                    return;
-                }
-                const result = await actions.likePet(selectedPetId, store.pets[index].id);
-                if (result.match) {
-                    alert("It's a match!");
-                } else {
-                    alert("You liked this pet!");
-                }
-            } else {
-                alert("You need to be logged in to like a pet.");
-            }
-        } catch (error) {
-            console.error('Error liking the pet:', error);
-            alert('Failed to like the pet. Please try again.');
+        if (!selectedPetId) {
+            setModalTitle("Notice");
+            setMatchMessage("You need to select one of your pets to like another pet.");
+            setShowModal(true);
+            var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+            myModal.show();
+            return;
+        }
+
+        const result = await actions.likePet(selectedPetId, store.pets[index].id);
+        if (result.match) {
+            setModalTitle("Match");
+            setMatchedPet(store.pets[index]);
+            setMatchMessage("It's a match!");
+            setShowModal(true);
+            var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+            myModal.show();
         }
     };
 
@@ -89,6 +112,31 @@ export const Pets = () => {
         setSelectedPetId(petId);
         const pet = store.owner.pets.find(p => p.id === parseInt(petId));
         setSelectedPet(pet);
+    };
+
+    const handleToggleDescription = () => {
+        setShowFullDescription(!showFullDescription);
+    };
+
+    const renderDescription = (description) => {
+        if (!description) return ""; // Handle null or undefined descriptions
+        if (description.length <= 200) {
+            return description;
+        } else if (showFullDescription) {
+            return (
+                <>
+                    {description}
+                    <span className="show-more" onClick={handleToggleDescription}> show less</span>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    {description.slice(0, 200)}...
+                    <span className="show-more" onClick={handleToggleDescription}> show more</span>
+                </>
+            );
+        }
     };
 
     return (
@@ -121,6 +169,14 @@ export const Pets = () => {
                     <div className="swipe-container">
                         {store.pets && store.pets.length > 0 ? (
                             <>
+                                <div className="navigation-arrows">
+                                    <div className="arrow left-arrow" onClick={handlePrevious}>
+                                        <i className="fas fa-arrow-left"></i>
+                                    </div>
+                                    <div className="arrow right-arrow" onClick={handleNext}>
+                                        <i className="fas fa-arrow-right"></i>
+                                    </div>
+                                </div>
                                 <SwipeableViews
                                     index={index}
                                     onChangeIndex={handleChangeIndex}
@@ -147,21 +203,22 @@ export const Pets = () => {
                                                     </animated.div>
                                                 )}
                                                 <div className="card-description">
-                                                    <p>{pet.description}</p>
+                                                    <p>{renderDescription(pet.description)}</p>
                                                     <div className="additional-photos">
                                                         {pet.photos && pet.photos.map((photo, photoIdx) => (
                                                             <img key={photoIdx} src={photo.url} alt={`Pet ${photoIdx}`} className="additional-photo" />
                                                         ))}
                                                     </div>
                                                 </div>
+                                                <div className="card-footer p-3">
+                                                    <button onClick={handleNext} className="next-button pets-button"><i className="fas fa-times"></i></button>
+                                                    <button onClick={handleLike} className="like-button pets-button"><i className="fas fa-heart"></i></button>
+                                                    <Link to={`/singlepet/${pet.id}`} className="view-button pets-button"><i className="fas fa-eye"></i></Link>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
                                 </SwipeableViews>
-                                <div className="navigation-buttons">
-                                    <button onClick={handleNext}>Next</button>
-                                    <button onClick={handleLike}>Like</button>
-                                </div>
                             </>
                         ) : (
                             <p>No pets available</p>
@@ -169,6 +226,33 @@ export const Pets = () => {
                     </div>
                 </>
             )}
+            <div className="modal fade" id="matchModal" tabIndex="-1" aria-labelledby="matchModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content match-modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="matchModalLabel">{modalTitle}</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            {modalTitle === "Match" && matchedPet && selectedPet ? (
+                                <div className="match-container">
+                                    <img src={selectedPet.profile_photo_url} alt={selectedPet.name} className="match-photo" />
+                                    <div className="match-heart">❤️</div>
+                                    <img src={matchedPet.profile_photo_url} alt={matchedPet.name} className="match-photo" />
+                                </div>
+                            ) : (
+                                <div className="notice-content">
+                                    <p>{matchMessage}</p>
+                                    <i className="fas fa-exclamation-circle notice-icon"></i>
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

@@ -121,10 +121,9 @@ def login():
         return jsonify({"message": "Email not found"}), 401
     if password != owner.password:
         return jsonify({"message": "Wrong password"}), 401
-
+    
     access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)  # Verifica que esto está devolviendo el token correctamente
-
+    return jsonify(access_token=access_token)
 
 @api.route('/protected', methods=['GET'])
 @jwt_required()
@@ -138,6 +137,7 @@ def protected():
     owner_data["pets"] = [pet.serialize() for pet in owner.pets]
 
     return jsonify({"owner": owner_data}), 200
+
 
 ##### ROUTES PETS #########################################
 @api.route('/pets', methods=['GET'])

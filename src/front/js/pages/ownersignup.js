@@ -230,7 +230,7 @@ export const OwnerSignUp = () => {
                                     <label htmlFor="latitude" className="form-label">Latitude</label>
                                     <input 
                                         type="text" 
-                                        className="form-control mb-3" 
+                                        className="form-control read-only mb-3 " 
                                         id="latitude" 
                                         name="latitude" 
                                         value={formData.latitude} 
@@ -241,7 +241,7 @@ export const OwnerSignUp = () => {
                                     <label htmlFor="longitude" className="form-label">Longitude</label>
                                     <input 
                                         type="text" 
-                                        className="form-control mb-3" 
+                                        className="form-control read-only mb-3" 
                                         id="longitude" 
                                         name="longitude" 
                                         value={formData.longitude} 

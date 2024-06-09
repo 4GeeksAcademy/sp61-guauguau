@@ -6,6 +6,7 @@ import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import Login from "./pages/login";
 import { Private } from "./pages/private";
+import { PrivateView } from "./pages/privateView";
 import { OwnerSignUp } from "./pages/ownersignup";
 import { ShowOwners } from "./pages/showowners";
 import { EditOwner } from "./pages/editowner";
@@ -52,14 +53,14 @@ const Layout = () => {
                         <Route element={<ShowOwners />} path="/showowners" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
-                        <Route element={<City />} path="/city" />
-                        <Route element={<EditCity />} path="/editcity/:id" />
-                        <Route element={<Pets />} path="/pets" />
+                        <Route element={<PrivateView />} path="/privateView" />
+                        <Route element={<City/>} path="/city" />
+                        <Route element={<EditCity/>} path="/editcity/:id" />
+                        <Route element={<Pets/>} path="/pets" />
                         <Route element={<Chat />} path="/chat/:matchId" />
                         <Route element={<PetsFinder />} path="/petsfinder" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<EditOwner />} path="/editowner/:ownerId" />
-                        <Route element={<Login />} path="/login" />
+                        <Route element={<EditOwner />} path="/editowner/:ownerId" />                       
                         <Route element={<AdminLogin />} path="/adminlogin" />
                         <Route element={<AdminSignUp />} path="/adminsignup" />
                         <Route element={<AdminPrivate />} path="/adminprivate" />
