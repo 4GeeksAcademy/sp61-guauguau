@@ -49,7 +49,7 @@ export const PetsFinder = () => {
 
     return (
         <div className="container">
-            <h1 className="my-4">List of Pets</h1>
+            <h1 className="my-4">You can filter and find the pet</h1>
             <div className="mb-4">
                 <h4>Search Filters</h4>
                 <form>

@@ -6,7 +6,7 @@ export const Footer = () => (
 		<div className="container">
 			<div className="row footer-row">
 				<div className="col-md-3">
-					<h3>Contacts</h3>
+					<h3 className="footer-title">Contacts</h3>
 					<ul className="list-unstyled">
 						<li><i className="fa fa-phone" /> Phone: +1 234 567 890</li>
 						<li><i className="fa fa-envelope" /> Email: contact@example.com</li>
@@ -15,10 +15,10 @@ export const Footer = () => (
 				</div>
 				<div className="col-md-6">
 					<h1>Want To Know<br/>More Abou Us?</h1>
-					<button className="btn btn-footer mt-2 ps-5 pe-5">About Us</button>
+					<button className="btn btn-multicolor mt-2 ps-5 pe-5">About Us</button>
 				</div>
 				<div className="col-md-3">
-					<h3>Our social networks:</h3>
+					<h3 className="footer-title">Our social networks:</h3>
 					<ul className="list-unstyled">
 						<li><i className="fa-brands fa-github" /> <a href="https://github.com">Github</a></li>
 						<li><i className="fa-brands fa-linkedin" /> <a href="https://linkedin.com">LinkedIn</a></li>
@@ -33,9 +33,7 @@ export const Footer = () => (
 			</p>
 			<div className="">
 					<h5>Are you the admin?</h5>
-					<Link to="/adminlogin">
-					<a className="link-admin-login">Login</a>
-                    </Link>
+					<Link to="/adminlogin" className="link-admin-login">Login</Link>
 					
 				</div>
 

@@ -211,13 +211,7 @@
     outline: none;
 }
 
-h1.my-4 {
-    font-size: 2.5em;
-    color: rgb(255,105,155);
-    font-family: "Luckiest Guy", cursive;
-    font-weight: 400;
-    font-style: normal;
-}
+
 
 /* Estilos generales */
 .show-more {
