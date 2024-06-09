@@ -1,27 +1,28 @@
 import axios from 'axios';
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			auth: false,
-            email: null,
-            owners: [],
-            owner: null,
-            selectedPetId: null, // Añadido para la mascota seleccionada
-            profilePictureUrl: null,
-            ownerDescription: null, // NUEVO CRIS
-            city: [],
-            pets: [],
-            currentPet: null,
-            message: null,
-            breed: [],
-			life_span:[],
-			raza: [],
-            currentBreed: null,
-            admins: [],
-            adminAuth: false,
-            adminEmail: null,
-            adminErrorMessage: null,
-            photo: [],
+			email: null,
+			owners: [],
+			owner: null,
+			selectedPetId: null, // Añadido para la mascota seleccionada
+			profilePictureUrl: null,
+			ownerDescription: null, // NUEVO CRIS
+			city: [],
+			pets: [],
+			currentPet: null,
+			currentPetId: null,
+			message: null,
+			breed: [],
+			currentBreed: null,
+			admins: [],
+			adminAuth: false,
+			adminEmail: null,
+			adminErrorMessage: null,
+			photo: [],
+			token: localStorage.getItem('token'), // Añadido para mantener el token en el estado
 			demo: [
 				{
 					title: "FIRST",
@@ -69,7 +70,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         const data = await response.json();
                         localStorage.setItem("token", data.access_token);
                         setStore({ auth: true, email });
-            
+
                         // Obtener datos del propietario autenticado
                         const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
                             method: 'GET',
@@ -82,8 +83,9 @@ const getState = ({ getStore, getActions, setStore }) => {
                             setStore({
                                 profilePictureUrl: ownerData.owner.profile_picture_url,
                                 email: ownerData.owner.email,
-                                owner: ownerData.owner, // Asegúrate de que el propietario está en el estado
-                                ownerDescription: ownerData.owner.description // NUEVO CRIS
+                                owner: ownerData.owner,
+                                ownerDescription: ownerData.owner.description,
+                                currentPetId: ownerData.owner.pets[0].id // Asegúrate de establecer currentPetId
                             });
                         }
                     } else {
@@ -95,44 +97,106 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 
-            verifyToken: async () => {
-                try {
-                    const token = localStorage.getItem("token");
-                    if (token) {
-                        setStore({ auth: true });
-                        const response = await fetch(process.env.BACKEND_URL + "/api/protected", {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
-                            setStore({
-                                profilePictureUrl: data.owner.profile_picture_url,
-                                email: data.owner.email,
-                                owner: data.owner, // Asegúrate de que el propietario está en el estado
-                                ownerDescription: data.owner.description // NUEVO CRIS
-                            });
-                        } else {
-                            setStore({ auth: false });
-                            localStorage.removeItem("token");
-                        }
-                    } else {
-                        setStore({ auth: false });
-                    }
-                } catch (error) {
-                    console.error("Error verifying token:", error);
-                    setStore({ auth: false });
-                }
-            },
-            selectPet: (petId) => {
-                setStore({ selectedPetId: petId });
-            },
+			verifyToken: async () => {
+				try {
+					const token = localStorage.getItem("token");
+					if (token) {
+						setStore({ auth: true, token });
+						const response = await fetch(process.env.BACKEND_URL + "/api/protected", {
+							method: 'GET',
+							headers: {
+								'Authorization': `Bearer ${token}`
+							}
+						});
+						if (response.ok) {
+							const data = await response.json();
+							setStore({
+								profilePictureUrl: data.owner.profile_picture_url,
+								email: data.owner.email,
+								owner: data.owner, // Asegúrate de que el propietario está en el estado
+								ownerDescription: data.owner.description // NUEVO CRIS
+							});
+						} else {
+							setStore({ auth: false });
+							localStorage.removeItem("token");
+						}
+					} else {
+						setStore({ auth: false });
+					}
+				} catch (error) {
+					console.error("Error verifying token:", error);
+					setStore({ auth: false });
+				}
+			},
+			selectPet: (petId) => {
+				setStore({ selectedPetId: petId });
+			},
 			logout: () => {
 				localStorage.removeItem("token");
-				setStore({ auth: false, email: null, profilePictureUrl: null });
+				setStore({ auth: false, email: null, profilePictureUrl: null, token: null });
 			},
+			fetchMessages: async (matchId) => {
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/messages/${matchId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem("token")}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Error fetching messages");
+                    }
+
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error("Error fetching messages:", error);
+                    throw error;
+                }
+            },
+			sendMessage: async (matchId, senderPetId, content) => {
+                console.log("sendMessage called with:", {
+                    matchId,
+                    senderPetId,
+                    content
+                });
+
+                if (!matchId || !senderPetId || !content) {
+                    console.error("Missing data:", {
+                        matchId,
+                        senderPetId,
+                        content
+                    });
+                    throw new Error("Missing data");
+                }
+
+                try {
+                    const response = await fetch(`${process.env.BACKEND_URL}/api/message`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem("token")}`
+                        },
+                        body: JSON.stringify({
+                            match_id: matchId,
+                            sender_pet_id: senderPetId,
+                            content: content
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || "Error sending message");
+                    }
+
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error("Error sending message:", error);
+                    throw error;
+                }
+            },
 			signUp: async (name, email, password, address, latitude, longitude) => {
 				try {
 					const requestOptions = {
@@ -164,40 +228,40 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.catch(error => console.error("Error fetching owners:", error));
 			},
 			getOwnerDetails: async (ownerId) => {
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/owner/${ownerId}`);
-                    if (!response.ok) {
-                        throw new Error('Error fetching owner details');
-                    }
-                    const owner = await response.json();
-                    owner.pets = owner.pets || [];
-                    return owner;
-                } catch (error) {
-                    console.error('Error fetching owner details:', error);
-                }
-            },
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/owner/${ownerId}`);
+					if (!response.ok) {
+						throw new Error('Error fetching owner details');
+					}
+					const owner = await response.json();
+					owner.pets = owner.pets || [];
+					return owner;
+				} catch (error) {
+					console.error('Error fetching owner details:', error);
+				}
+			},
 			updateOwnerDescription: async (description) => {
-                try {
-                    const token = localStorage.getItem("token");
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/update_owner_description`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ description })
-                    });
+				try {
+					const token = localStorage.getItem("token");
+					const response = await fetch(`${process.env.BACKEND_URL}/api/update_owner_description`, {
+						method: 'PUT',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${token}`
+						},
+						body: JSON.stringify({ description })
+					});
 
-                    if (!response.ok) {
-                        throw new Error('Error updating description');
-                    }
+					if (!response.ok) {
+						throw new Error('Error updating description');
+					}
 
-                    const data = await response.json();
-                    setStore({ ownerDescription: data.description });
-                } catch (error) {
-                    console.error('Error updating description:', error);
-                }
-            },
+					const data = await response.json();
+					setStore({ ownerDescription: data.description });
+				} catch (error) {
+					console.error('Error updating description:', error);
+				}
+			},
 			fetchPets: () => {
 				console.log(process.env.BACKEND_URL + "/api/pets");
 				fetch(process.env.BACKEND_URL + "/api/pets")
@@ -628,34 +692,32 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			fetchCuidados: async (raza) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/cuidados/${raza}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    return data.text; // Devuelve el texto de los cuidados
-                } catch (error) {
-                    console.error("Error fetching cuidados:", error);
-                    throw error;
-                }
-            },
-            fetchCompatibilidad: async (raza) => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + `/api/compatibilidad/${raza}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    return data.text; // Devuelve el texto de la compatibilidad
-                } catch (error) {
-                    console.error("Error fetching compatibilidad:", error);
-                    throw error;
-                }
-            },
-
-			
-            likePet: async (likerPetId, likedPetId) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/cuidados/${raza}`);
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const data = await response.json();
+					return data.text; // Devuelve el texto de los cuidados
+				} catch (error) {
+					console.error("Error fetching cuidados:", error);
+					throw error;
+				}
+			},
+			fetchCompatibilidad: async (raza) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/compatibilidad/${raza}`);
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const data = await response.json();
+					return data.text; // Devuelve el texto de la compatibilidad
+				} catch (error) {
+					console.error("Error fetching compatibilidad:", error);
+					throw error;
+				}
+			},
+			likePet: async (likerPetId, likedPetId) => {
 				try {
 					const token = localStorage.getItem("token");
 					const response = await fetch(`${process.env.BACKEND_URL}/api/like_pet`, {

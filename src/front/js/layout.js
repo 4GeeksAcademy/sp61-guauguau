@@ -24,9 +24,10 @@ import { EditCity } from "./pages/editcity";
 import { Photo } from "./pages/photo";
 import AdminLogin from "./pages/adminlogin";
 import { AdminSignUp } from "./pages/adminsignup";
-import  AdminPrivate from "./pages/adminprivate"
+import AdminPrivate from "./pages/adminprivate";
 import { EditAdmin } from "./pages/editadmin";
 import { PetsFinder } from "./pages/finder";
+import { Chat } from "./pages/chat";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -37,24 +38,25 @@ const Layout = () => {
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    <Navbar />                
+                    <Navbar />
                     <Routes>
                         <Route element={<Home />} path="/" />
                         <Route element={<Demo />} path="/demo" />
-                        <Route element={<Breed/>} path="/breed" />
-                        <Route element={<Photo/>} path="/photo" />
-                        <Route element={<SinglePet/>} path="/singlepet/:petId" />
-                        <Route element={<SingleOwner/>} path="/singleowner/:ownerId" />
-                        <Route element={<OnePet/>} path="/pet/:petId" />
-                        <Route element={<PetSignUp/>} path="/petSignUp" />
+                        <Route element={<Breed />} path="/breed" />
+                        <Route element={<Photo />} path="/photo" />
+                        <Route element={<SinglePet />} path="/singlepet/:petId" />
+                        <Route element={<SingleOwner />} path="/singleowner/:ownerId" />
+                        <Route element={<OnePet />} path="/pet/:petId" />
+                        <Route element={<PetSignUp />} path="/petSignUp" />
                         <Route element={<OwnerSignUp />} path="/ownersignup" />
                         <Route element={<ShowOwners />} path="/showowners" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
-                        <Route element={<City/>} path="/city" />
-                        <Route element={<EditCity/>} path="/editcity/:id" />
-                        <Route element={<Pets/>} path="/pets" />
-                        <Route element={<PetsFinder/>} path="/petsfinder" />
+                        <Route element={<City />} path="/city" />
+                        <Route element={<EditCity />} path="/editcity/:id" />
+                        <Route element={<Pets />} path="/pets" />
+                        <Route element={<Chat />} path="/chat/:matchId" />
+                        <Route element={<PetsFinder />} path="/petsfinder" />
                         <Route element={<Single />} path="/single/:theid" />
                         <Route element={<EditOwner />} path="/editowner/:ownerId" />
                         <Route element={<Login />} path="/login" />

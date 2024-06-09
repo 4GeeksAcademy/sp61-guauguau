@@ -2,12 +2,12 @@ import "../../styles/singlepet.css";
 
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
-import { useParams, Link } from 'react-router-dom';
-
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 export const SinglePet = () => {
     const { petId } = useParams();
     const { store, actions } = useContext(Context);
+    const navigate = useNavigate();
     const [petDetails, setPetDetails] = useState({
         name: '',
         age: '',
@@ -26,6 +26,9 @@ export const SinglePet = () => {
     const [isMounted, setIsMounted] = useState(true);
     const [careInfo, setCareInfo] = useState("");
     const [compatibilityInfo, setCompatibilityInfo] = useState("");
+    const [matches, setMatches] = useState([]);
+    const [isLoadingCareInfo, setIsLoadingCareInfo] = useState(false);
+    const [isLoadingCompatibilityInfo, setIsLoadingCompatibilityInfo] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -33,6 +36,7 @@ export const SinglePet = () => {
         const fetchPetDetails = async () => {
             try {
                 const pet = await actions.getPetDetails(petId);
+                const matches = await actions.fetchPetMatches(petId);
                 if (isMounted) {
                     setPetDetails({
                         name: pet.name || '',
@@ -47,6 +51,7 @@ export const SinglePet = () => {
                         ownerPhoto: pet.owner_photo_url || '',
                         ownerId: pet.owner_id || ''
                     });
+                    setMatches(matches);
                 }
             } catch (error) {
                 console.error("Failed to fetch pet details:", error);
@@ -55,6 +60,7 @@ export const SinglePet = () => {
                 }
             }
         };
+
         fetchPetDetails();
 
         return () => {
@@ -72,6 +78,7 @@ export const SinglePet = () => {
                 const result = await actions.likePet(selectedPetId, petId);
                 if (result.match) {
                     alert("It's a match!");
+                    setMatches(prevMatches => [...prevMatches, result.matchPet]);
                 } else {
                     alert("You liked this pet!");
                 }
@@ -85,21 +92,25 @@ export const SinglePet = () => {
     };
 
     const fetchCareInfo = async () => {
+        setIsLoadingCareInfo(true);
         try {
             const careInfo = await actions.fetchCuidados(petDetails.breed);
             setCareInfo(careInfo);
         } catch (error) {
             console.error("Error fetching care info:", error);
         }
+        setIsLoadingCareInfo(false);
     };
 
     const fetchCompatibilityInfo = async () => {
+        setIsLoadingCompatibilityInfo(true);
         try {
             const compatibilityInfo = await actions.fetchCompatibilidad(petDetails.breed);
             setCompatibilityInfo(compatibilityInfo);
         } catch (error) {
             console.error("Error fetching compatibility info:", error);
         }
+        setIsLoadingCompatibilityInfo(false);
     };
 
     return (
@@ -188,6 +199,79 @@ export const SinglePet = () => {
                     <i className="fas fa-arrow-left"></i> Back to the list of pets
                 </Link>
             </div>
+            <button className="btn btn-secondary me-2" onClick={fetchCareInfo} disabled={isLoadingCareInfo}>
+                {isLoadingCareInfo ? (
+                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                        <div className="wheel"></div>
+                        <div className="hamster">
+                            <div className="hamster__body">
+                                <div className="hamster__head">
+                                    <div className="hamster__ear"></div>
+                                    <div className="hamster__eye"></div>
+                                    <div className="hamster__nose"></div>
+                                </div>
+                                <div className="hamster__limb hamster__limb--fr"></div>
+                                <div className="hamster__limb hamster__limb--fl"></div>
+                                <div className="hamster__limb hamster__limb--br"></div>
+                                <div className="hamster__limb hamster__limb--bl"></div>
+                                <div className="hamster__tail"></div>
+                            </div>
+                        </div>
+                        <div className="spoke"></div>
+                    </div>
+                ) : 'Cuidados'}
+            </button>
+            {careInfo && (
+                <div>
+                    <h3>Cuidados</h3>
+                    <p>{careInfo}</p>
+                </div>
+            )}
+            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo} disabled={isLoadingCompatibilityInfo}>
+                {isLoadingCompatibilityInfo ? (
+                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                        <div className="wheel"></div>
+                        <div className="hamster">
+                            <div className="hamster__body">
+                                <div className="hamster__head">
+                                    <div className="hamster__ear"></div>
+                                    <div className="hamster__eye"></div>
+                                    <div className="hamster__nose"></div>
+                                </div>
+                                <div className="hamster__limb hamster__limb--fr"></div>
+                                <div className="hamster__limb hamster__limb--fl"></div>
+                                <div className="hamster__limb hamster__limb--br"></div>
+                                <div className="hamster__limb hamster__limb--bl"></div>
+                                <div className="hamster__tail"></div>
+                            </div>
+                        </div>
+                        <div className="spoke"></div>
+                    </div>
+                ) : 'Compatibilidad'}
+            </button>
+            {compatibilityInfo && (
+                <div>
+                    <h3>Compatibilidad</h3>
+                    <p>{compatibilityInfo}</p>
+                </div>
+            )}
+            <h3 className='p-5 ps-0'>Matches</h3>
+            <div className="row">
+                {matches.map((match, index) => (
+                    <div className="col-md-3 mb-3" key={index}>
+                        <div className="d-flex align-items-center">
+                            <img src={match.match_pet_photo} alt={match.match_pet_name} className="img-fluid rounded-circle me-2" style={{ width: '50px', height: '50px' }} />
+                            <span>{match.match_pet_name}</span>
+                            <button className="btn btn-secondary ms-2" onClick={() => navigate(`/chat/${petId}/${match.match_pet_id}`)}>
+                                <i className="fas fa-comments"></i> Chat
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <Link to="/pets" className="btn btn-secondary mt-3">
+                <i className="fas fa-arrow-left"></i> Back to the list of pets
+            </Link>
         </div>
     );
 };

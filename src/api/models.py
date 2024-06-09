@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+# En models.py
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -157,3 +159,35 @@ class Adminn(db.Model):
             "password": self.password
         }
 
+class Match(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pet1_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    pet2_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    pet1 = db.relationship('Pet', foreign_keys=[pet1_id], backref='matches_as_pet1')
+    pet2 = db.relationship('Pet', foreign_keys=[pet2_id], backref='matches_as_pet2')
+
+    def __repr__(self):
+        return f'<Match {self.pet1_id} matched with {self.pet2_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pet1_id": self.pet1_id,
+            "pet2_id": self.pet2_id
+        }
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
+    sender_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "match_id": self.match_id,
+            "sender_pet_id": self.sender_pet_id,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat()  # convertir datetime a string
+        }
