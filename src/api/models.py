@@ -56,7 +56,7 @@ class Owner(db.Model):
     longitude = db.Column(db.Float, nullable=True)
     description = db.Column(db.String(500), nullable=True)
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=True)
-
+    
     pets = db.relationship('Pet', backref='owner', lazy=True)
     city = db.relationship('City', backref='owners')
 

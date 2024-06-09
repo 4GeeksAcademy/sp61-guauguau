@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Context } from "../store/appContext";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
+import logoGuauuGuauu from "../../img/logo.png";
 import "../../styles/home.css";
 import { ApiBreed } from "./apiBreed";
 
@@ -13,7 +13,7 @@ export const Home = () => {
 			
 
 			<p>
-				<img src={rigoImageUrl} />
+				<img src={logoGuauuGuauu} />
 			</p>
 			<div className="alert alert-info">
 				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
@@ -24,7 +24,6 @@ export const Home = () => {
 					Read documentation
 				</a>
 			</p>
-			
 		</div>
 	);
 };

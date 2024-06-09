@@ -1,3 +1,366 @@
+body {
+  font-family: "Comfortaa", sans-serif;
+}
+section {
+  background-color: #FEF5F0;
+  margin: 0;
+  padding: 0;
+}
+
+/* NAVBAR - HEADER */
+.header-area {
+  background-color: #0a0e1a;
+  padding: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 0;
+  z-index: 1000;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo img {
+  width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.container-fluid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.main-menu {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-list li {
+  margin: 0 15px;
+}
+
+.header-area .main-menu .menu-list a {
+  color: white; /* Color blanco por defecto */
+  text-decoration: none; /* Eliminar subrayado */
+  display: inline-block;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+}
+
+.menu-list a:hover,
+.menu-list a.active {
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; /* Usar el color original cuando se pase el cursor */
+  color: transparent; /* Necesario para que el color del texto use el fondo degradado */
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.header-icons a {
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0 10px;
+  transition: color 0.3s;
+}
+
+.header-icons a:hover {
+  color: #f39c12;
+}
+
+.header-icons i {
+  display: block;
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  border: 1px solid #FF7F18;
+  border-radius: 50%;
+  transition: background-color 0.3s, color 0.3s;
+  margin-right: 0.5rem;
+}
+
+.header-icons i:hover {
+  background-color: #FF7F18;
+  color: #0a0e1a;
+}
+
+.btn-danger {
+  background-color: #e74c3c;
+  border: none;
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+}
+
+/* FOOTER */
+.footer {
+  background-color: #E7B2A5;
+  padding: 1rem 0;
+  width: 100%;
+  bottom: 0;
+}
+.container {
+  font-family: "Comfortaa", sans-serif;
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+  color: #212529;
+  text-align: left;
+  background-color: #FEF5F0;
+}
+h1 {
+  color: #30475E;
+}
+h1, h5 {
+  font-weight: bold;
+}
+
+/* FORMULARIOS */
+form {
+  border-radius: 5px;
+  margin: 5rem;
+  background-color: #FEF5F0;
+  padding: 40px;
+  box-shadow: 5px 7px 35px #202C38;
+}
+.form-group {
+  position: relative;
+}
+.form-group.position-relative {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.form-group .input-icon {
+  position: relative;
+}
+
+.form-control:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(255, 127, 24, 0.5);
+  border-color: #FF7F18;
+}
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  margin-right: 5px;
+  accent-color: #FF7F18;
+}
+
+.form-control {
+  font-size: .875rem;
+}
+input .bi {
+  display: flex;
+}
+
+.input-icon .fa {
+  position: absolute;
+  display: flex; }
+
+input:read-only {
+  background-color: #ccc;
+  pointer-events: none;
+}
+/* TOGGLE PASSWORD */
+.input-icon {
+  position: relative;
+}
+
+#password {
+  padding-right: 40px;
+}
+
+#toggle-password {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#toggle-icon {
+  font-size: 17px;
+  color: #59595b; 
+}
+/* BOTONES */
+.primary-btn {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: "Comfortaa", sans-serif;
+  letter-spacing: .03em;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 40px;
+  color: #fff;
+  padding: 15px 30px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+}
+.login-btn {
+  background: linear-gradient(90deg, #6A82FB 0%, #FC5C7D 100%);
+}
+.primary-btn2 {
+  background: linear-gradient(90deg, #F86CA7 0%, #FF7F18 100%);
+}
+.primary-btn1 {
+  background: #FEF5F0;
+  color: #001D23;
+}
+.primary-btn2:hover {
+  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
+}
+.primary-btn1:hover {
+  background: #001D23;
+  color: #FEF5F0;
+}
+.primary-btn2:active,
+.primary-btn1:active {
+  background-color: #FF7F18;
+}
+.button-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.login-redirect {
+  text-align: center;
+  margin-top: 20px;
+}
+.login-redirect a {
+  color: #6A82FB;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.login-redirect a:hover {
+  color: #FC5C7D;
+}
+.login-redirect p {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+/* MENSAJES DE ERROR O EXITO */
+.alert-success {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #270;
+  background-color: #DFF2BF;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.alert-danger {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #cc0033;
+  background-color: #fce4e4;
+  border: 1px solid #fcc2c3;
+  padding: 15px 30px;
+  border-radius: 5px;
+  margin-top: 10px;
+  text-align: center;
+}
+/* LOGO - IMAGEN */
+img {
+  overflow-clip-margin: content-box;
+  overflow: clip;
+}
+.img-fluid {
+  height: auto;
+}
+
+/* INPUT ICONS */
+.input-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.input-icon i, .input-icon svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%); 
+}
+
+.form-control {
+  padding-left: 35px;
+}
+
+.form-group.position-relative {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group .input-icon {
+  position: relative;
+}
+
+.input-icon input.form-control {
+  padding-left: 35px;
+}
+
+.input-icon svg {
+  top: 50%;
+  transform: translateY(-50%); 
+}
+
+/* CHECKBOX */
+.custom-control-input {
+  font-family: system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
@@ -346,5 +709,3 @@ button {
 button:hover {
     background-color: #0056b3;
 }
-/* hasta aquí el chat*/
-
