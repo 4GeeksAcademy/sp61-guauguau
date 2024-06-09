@@ -7,6 +7,7 @@ const AdminLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,6 +29,10 @@ const AdminLogin = () => {
     const handleInputChange = (setter) => (e) => {
         setter(e.target.value);
         setErrorMessage("");
+    };
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
     };
 
     return (
@@ -59,18 +64,21 @@ const AdminLogin = () => {
                                 </div>
                             </div>
                             <div className="form-group position-relative">
-                                <label>Password</label>
+                                <label className="form-label">Password</label>
                                 <div className="input-icon d-flex align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock me-2" viewBox="0 0 16 16">
                                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
                                     </svg>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    placeholder="Create your password"
-                                    value={password}
-                                    onChange={handleInputChange(setPassword)}
-                                />
+                                    <input
+                                        type={passwordVisible ? "text" : "password"}
+                                        className="form-control mb-3"
+                                        placeholder="Create your password"
+                                        value={password}
+                                        onChange={handleInputChange(setPassword)}
+                                    />
+                                    <button type="button" id="toggle-password" onClick={togglePasswordVisibility} className="btn btn-link">
+                                        <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
+                                    </button>
                                 </div>
                             </div>
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Login</button>

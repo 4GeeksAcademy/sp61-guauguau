@@ -48,8 +48,6 @@ export const Navbar = () => {
                 </div>
                 <div className="main-menu">
                     <ul className="menu-list">
-                        <NavItem to="/">React Boilerplate</NavItem>
-                        <NavItem to="/demo">Check the Context in action</NavItem>
                         <NavItem to="/login">Owner Login</NavItem>
                         <NavItem to="/ownersignup">Owner Signup</NavItem>
                         <NavItem to="/showowners">View Owners</NavItem>

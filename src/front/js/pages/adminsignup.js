@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 
@@ -8,6 +8,7 @@ export const AdminSignUp = () => {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,6 +23,9 @@ export const AdminSignUp = () => {
         } catch (error) {
             setErrorMessage("An error occurred while signing up. Please try again later.");
         }
+    };
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
     };
 
     return (
@@ -57,7 +61,7 @@ export const AdminSignUp = () => {
                                     onChange={(e) => setName(e.target.value)}
                                     />
                                 </div>
-                                </div>
+                            </div>
                             <div className="form-group position-relative">
                                 <label htmlFor="inputEmail4" className="form-label">Email*</label>
                                 <div className="input-icon d-flex align-items-center">
@@ -80,12 +84,16 @@ export const AdminSignUp = () => {
                                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
                                     </svg>
                                     <input
-                                        type="password"
+                                        type={passwordVisible ? "text" : "password"}
                                         className="form-control mb-3"
                                         id="inputPassword4"
                                         placeholder="Create your password"
                                         value={password}
-                                        onChange={(e) => setPassword(e.target.value)} />
+                                        onChange={(e) => setPassword(e.target.value)} 
+                                    />
+                                    <button type="button" id="toggle-password" onClick={togglePasswordVisibility} className="btn btn-link toggle-password">
+                                        <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div className="form-row align-items-center">
@@ -102,7 +110,7 @@ export const AdminSignUp = () => {
                             <div className="button-group">
                                 <button type="submit" className="primary-btn primary-btn2 mt-2">Sign up now</button>
                             </div>   
-                                <div className="login-redirect">
+                            <div className="login-redirect">
                                 <Link to="/home">Back home</Link>
                             </div>
                             <div className="login-redirect">

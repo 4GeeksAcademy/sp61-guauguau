@@ -12,22 +12,43 @@ section {
   background-color: #0a0e1a;
   padding: 20px 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 0;
+  z-index: 1000;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
 }
 
 .header-logo img {
-  height: 40px;
+  width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.container-fluid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .main-menu {
   flex-grow: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .menu-list {
   list-style: none;
   padding: 0;
-  margin: 10px 0;
+  margin: 0;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu-list li {
@@ -35,23 +56,29 @@ section {
 }
 
 .header-area .main-menu .menu-list a {
-  text-transform: uppercase;
-  text-decoration: none;
+  color: white; /* Color blanco por defecto */
+  text-decoration: none; /* Eliminar subrayado */
+  display: inline-block;
+  font-weight: bold;
   font-size: 16px;
-  font-weight: 800;
-  transition: color 0.3s;
-  background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: rgb(255, 99, 71);
-  font-optical-sizing: auto;
-  font-style: normal;
-  text-align: left;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease;
 }
 
 .menu-list a:hover,
 .menu-list a.active {
-  color: #f39c12;
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; /* Usar el color original cuando se pase el cursor */
+  color: transparent; /* Necesario para que el color del texto use el fondo degradado */
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
 }
 
 .header-icons a {
@@ -67,17 +94,18 @@ section {
 
 .header-icons i {
   display: block;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
   text-align: center;
-  border: 1px solid #ffffff;
+  border: 1px solid #FF7F18;
   border-radius: 50%;
   transition: background-color 0.3s, color 0.3s;
+  margin-right: 0.5rem;
 }
 
 .header-icons i:hover {
-  background-color: #f39c12;
+  background-color: #FF7F18;
   color: #0a0e1a;
 }
 
@@ -129,6 +157,15 @@ form {
 .form-group {
   position: relative;
 }
+.form-group.position-relative {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+.form-group .input-icon {
+  position: relative;
+}
+
 .form-control:focus {
   outline: none;
   box-shadow: 0 0 10px rgba(255, 127, 24, 0.5);
@@ -139,15 +176,47 @@ form {
   align-items: center;
   margin-bottom: 0;
   margin-right: 5px;
+  accent-color: #FF7F18;
+  background-image:
 }
 .form-control {
   font-size: .875rem;
 }
-
-path input .bi  {
+input .bi {
   display: flex;
 }
 
+.input-icon .fa {
+  position: absolute;
+  display: flex; }
+
+input:read-only {
+  background-color: #ccc;
+  pointer-events: none;
+}
+/* TOGGLE PASSWORD */
+.input-icon {
+  position: relative;
+}
+
+#password {
+  padding-right: 40px;
+}
+
+#toggle-password {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#toggle-icon {
+  font-size: 17px;
+  color: #59595b; 
+}
 /* BOTONES */
 .primary-btn {
   font-size: 1.125rem;
@@ -196,7 +265,6 @@ path input .bi  {
   margin-top: 10px;
 }
 
-
 .login-redirect {
   text-align: center;
   margin-top: 20px;
@@ -244,7 +312,6 @@ img {
 }
 .img-fluid {
   height: auto;
-  margin-right: 2rem;
 }
 
 /* INPUT ICONS */
@@ -254,13 +321,15 @@ img {
   position: relative;
 }
 
-.input-icon svg {
+.input-icon i, .input-icon svg {
   position: absolute;
   left: 10px;
+  top: 50%;
+  transform: translateY(-50%); 
 }
 
 .form-control {
-  padding-left: 30px;
+  padding-left: 35px;
 }
 
 .form-group.position-relative {
@@ -278,7 +347,8 @@ img {
 }
 
 .input-icon svg {
-  top: 20%;
+  top: 50%;
+  transform: translateY(-50%); 
 }
 
 /* CHECKBOX */
