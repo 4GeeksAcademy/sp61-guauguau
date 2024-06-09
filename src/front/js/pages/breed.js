@@ -1,44 +1,25 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
+import { ApiBreed } from "./apiBreed";
+import { Autocomplete } from "./autocompletbreed";
 
 export const Breed = () => {
 	const { store, actions } = useContext(Context);
-    const [name, setName] = useState("");
-    const [type, setType] = useState("");
-    const [editMode, setEditMode] = useState(false);
-    const [editBreedId, setEditBreedId] = useState(null);
-    const [editName, setEditName] = useState("");
-    const [editType, setEditType] = useState("");
+	const [name, setName] = useState("");
+	const [type, setType] = useState("");
+	const [life_span, setLifeSpan] = useState("");
+	const [editMode, setEditMode] = useState(false);
+	const [editBreedId, setEditBreedId] = useState(null);
+	const [editName, setEditName] = useState("");
+	const [editType, setEditType] = useState("");
+	const [editLife, setEditLife] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (editMode) {
-            actions.editBreed(editBreedId, { name: editName, type: editType });
-            setEditMode(false);
-            setEditBreedId(null);
-            setEditName("");
-            setEditType("");
-        } else {
-            actions.signUpBreed(name, type);
-            setName("");
-            setType("");
-        }
-    };
-	
-    useEffect(() => {
-        actions.getBreed();
-    }, [actions]);
-    
-    const handleDeleteBreed = breedId => {
-        actions.deleteBreed(breedId); 
-    };
+	const handleSelectBreed = (raza) => {
+		setName(raza.name);
+		setType(raza.breed_group);
+		setLifeSpan(raza.life_span);
+	};
 
-    const handleEditClick = (breed) => {
-        setEditMode(true);
-        setEditBreedId(breed.id);
-        setEditName(breed.name);
-        setEditType(breed.type);
-    };
 
     return (
         <section className="section section-full section-top">

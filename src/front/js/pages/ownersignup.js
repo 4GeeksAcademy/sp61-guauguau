@@ -4,15 +4,18 @@ import { Context } from "../store/appContext";
 import { Link } from "react-router-dom";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 
+
 const mapContainerStyle = {
     width: "100%",
     height: "400px"
 };
 
+
 const center = {
-    lat: 40.712776,
-    lng: -74.005974
+    lat: 40.4169473,
+    lng: -3.7035285
 };
+
 
 export const OwnerSignUp = () => {
     const { actions } = useContext(Context);
@@ -26,17 +29,22 @@ export const OwnerSignUp = () => {
         longitude: center.lng
     });
 
+
     const [successMessage, setSuccessMessage] = useState(null);
+    const [typingTimeout, setTypingTimeout] = useState(null);
+
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
+
 
     useEffect(() => {
         if (formData.latitude && formData.longitude) {
             getAddressFromCoordinates(formData.latitude, formData.longitude);
         }
     }, [formData.latitude, formData.longitude]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,29 +54,42 @@ export const OwnerSignUp = () => {
         });
     };
 
-    const handleAddressChange = async (e) => {
+
+    const handleAddressChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
         });
+
+
         if (name === "address") {
-            try {
-                const data = await GeocodingService.getCoordinates(value);
-                if (data.results && data.results.length > 0) {
-                    const location = data.results[0].geometry.location;
-                    setFormData({
-                        ...formData,
-                        address: value,
-                        latitude: location.lat,
-                        longitude: location.lng
-                    });
-                }
-            } catch (error) {
-                console.error("Error during geocoding:", error);
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
             }
+
+
+            setTypingTimeout(
+                setTimeout(async () => {
+                    try {
+                        const data = await GeocodingService.getCoordinates(value);
+                        if (data.results && data.results.length > 0) {
+                            const location = data.results[0].geometry.location;
+                            setFormData((prevState) => ({
+                                ...prevState,
+                                address: value,
+                                latitude: location.lat,
+                                longitude: location.lng
+                            }));
+                        }
+                    } catch (error) {
+                        console.error("Error during geocoding:", error);
+                    }
+                }, 500) // Ajusta el retraso según sea necesario (500 ms en este caso)
+            );
         }
     };
+
 
     const handleMarkerDragEnd = async (e) => {
         const lat = e.latLng.lat();
@@ -80,19 +101,21 @@ export const OwnerSignUp = () => {
         });
     };
 
+
     const getAddressFromCoordinates = async (lat, lng) => {
         try {
             const data = await GeocodingService.getCoordinates(`${lat},${lng}`);
             if (data.results && data.results.length > 0) {
-                setFormData({
-                    ...formData,
+                setFormData((prevState) => ({
+                    ...prevState,
                     address: data.results[0].formatted_address
-                });
+                }));
             }
         } catch (error) {
             console.error("Error fetching address from coordinates:", error);
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -114,6 +137,7 @@ export const OwnerSignUp = () => {
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
+
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
@@ -130,7 +154,7 @@ export const OwnerSignUp = () => {
                                     </div>
                                 )}
                                 <div className="form-group position-relative">
-                                    <label htmlFor="name" className="form-label">Name</label>
+                                    <label htmlFor="name" className="form-label">Name*</label>
                                     <div className="input-icon d-flex align-items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person me-2" viewBox="0 0 16 16">
                                             <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
@@ -255,7 +279,7 @@ export const OwnerSignUp = () => {
                                 <Link to="/home">Back home</Link>
                             </div>
                             <div className="login-redirect">
-                                <p>Already have an account? <Link to="/login">Log In Here as Admin</Link></p>
+                                <p>Already have an account? <Link to="/login">Log In Here</Link></p>
                             </div>
                          </form>      
                     </div>

@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+# En models.py
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -22,6 +24,7 @@ class Breed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     type = db.Column(db.String(250), nullable=False)
+    life_span = db.Column(db.String(250), nullable=False)
 
     def __repr__(self):
         return f'<Breed {self.name}>'
@@ -53,7 +56,7 @@ class Owner(db.Model):
     longitude = db.Column(db.Float, nullable=True)
     description = db.Column(db.String(500), nullable=True)
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=True)
-
+    
     pets = db.relationship('Pet', backref='owner', lazy=True)
     city = db.relationship('City', backref='owners')
 
@@ -154,4 +157,37 @@ class Adminn(db.Model):
             "name": self.name,
             "email": self.email,
             "password": self.password
+        }
+
+class Match(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pet1_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    pet2_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    pet1 = db.relationship('Pet', foreign_keys=[pet1_id], backref='matches_as_pet1')
+    pet2 = db.relationship('Pet', foreign_keys=[pet2_id], backref='matches_as_pet2')
+
+    def __repr__(self):
+        return f'<Match {self.pet1_id} matched with {self.pet2_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pet1_id": self.pet1_id,
+            "pet2_id": self.pet2_id
+        }
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
+    sender_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "match_id": self.match_id,
+            "sender_pet_id": self.sender_pet_id,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat()  # convertir datetime a string
         }

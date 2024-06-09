@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
 const Login = () => {
@@ -7,14 +7,15 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         try {
             await actions.login(email, password);
+            navigate('/private');  // Redirigir despues de un login exitoso
         } catch (error) {
             setError(error.message);
         }
@@ -68,6 +69,9 @@ const Login = () => {
                             </div>    
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Login</button>
                             {error && <div className="alert alert-danger mt-3">{error}</div>}
+                            <div className="login-redirect">
+                                <Link to="/home">Back home</Link>
+                            </div>
                         </form>
                         {store.auth && (
                             <div className="mt-3">
