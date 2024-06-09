@@ -6,6 +6,7 @@ import { Home } from "./pages/home";
 import { Demo } from "./pages/demo";
 import Login from "./pages/login";
 import { Private } from "./pages/private";
+import { PrivateView } from "./pages/privateView";
 import { OwnerSignUp } from "./pages/ownersignup";
 import { ShowOwners } from "./pages/showowners";
 import { EditOwner } from "./pages/editowner";
@@ -51,6 +52,7 @@ const Layout = () => {
                         <Route element={<ShowOwners />} path="/showowners" />
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
+                        <Route element={<PrivateView />} path="/privateView" />
                         <Route element={<City/>} path="/city" />
                         <Route element={<EditCity/>} path="/editcity/:id" />
                         <Route element={<Pets/>} path="/pets" />

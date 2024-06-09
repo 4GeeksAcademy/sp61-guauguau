@@ -50,9 +50,9 @@ export const PetsFinder = () => {
 
     return (
         <div className="container finder-main-container">
-            <h1 className="my-4">You can filter and find the pet</h1>
+            <h1 className="my-4 pt-4">You can filter and find the pet</h1>
             <div className="finder-bg container">
-                <div className="image-wrapper ">
+                <div className="image-wrapper">
                     <img src={perroImage} className="floating-image" alt="Perro" />
                 </div>
             </div>

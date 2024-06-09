@@ -14,6 +14,12 @@
     clip-path: ellipse(70% 80% at 70% 70%); 
     margin: 0;
 }
+/* Ocultar la imagen en pantallas medianas y pequeñas */
+@media (max-width: 991.98px) {
+    .image-container img {
+        display: none;
+    }
+}
 
 .container-home {
     background-color: #F4EDE6;
@@ -239,6 +245,8 @@ a, a:hover, a:visited, a:active {
 .finder-main-container {
     background-color: #FBF6F3;
     margin-top: 150px;
+    padding-left: 7em;
+    padding-right: 7em; 
 }
 .form-finder {
     z-index: 1;
@@ -253,23 +261,25 @@ a, a:hover, a:visited, a:active {
 
 .image-wrapper {  
     position: relative; /* Posiciona el wrapper absolutamente */
-    top: -270px; /* Ajusta según tus necesidades para que sobresalga */
+    top: -330px; /* Ajusta según tus necesidades para que sobresalga */
     left: 10%; /* Ajusta para que esté completamente a la izquierda */
+    
 }
 
 .floating-image {
     position: absolute; /* Posiciona la imagen absolutamente */
     top: 30%; /* Ajusta según tus necesidades para que sobresalga */
-    right: 1%;
+    left: 1%;
     transform: translateX(-50%); /* Centra la imagen horizontalmente */
-    width: 250px; /* Ajusta el tamaño según tus necesidades */
+    width: 350px; /* Ajusta el tamaño según tus necesidades */
     height: auto; /* Mantén la proporción de la imagen */
-    z-index: -1; /* Asegúrate de que la imagen esté por encima del contenedor */
+    z-index: 1; /* Asegúrate de que la imagen esté por encima del contenedor */
+    
     
 }
 
 .form-finder-filters .col-md-3 label {
-    color: #253D4E;
+    color: #F86F90;
     font-family: "Dosis", sans-serif;
     font-optical-sizing: auto;
     font-weight: 800;

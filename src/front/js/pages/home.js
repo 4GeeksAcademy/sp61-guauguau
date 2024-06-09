@@ -32,10 +32,10 @@ export const Home = () => {
                     </div>
                 </div>
             </div>
-			<h1 className="main-text m-0 pt-3">What we Ofer</h1>
+            
+			<PetsFinder />
             <CardContainer />
 
-			<PetsFinder />
 			<div className="jumbotron-container">
             <div className="jumbotron-content">
                 <div className="jumbotron-image">

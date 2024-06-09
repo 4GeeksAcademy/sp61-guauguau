@@ -7,12 +7,14 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para controlar la redirección
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         try {
             await actions.login(email, password);
+            setIsLoggedIn(true); // Actualiza el estado para indicar que el usuario ha iniciado sesión
         } catch (error) {
             setError(error.message);
         }
@@ -44,9 +46,9 @@ const Login = () => {
                 <button type="submit" className="btn btn-primary">Login</button>
                 {error && <div className="alert alert-danger mt-3">{error}</div>}
             </form>
-            {store.auth && (
+            {isLoggedIn && store.auth && (
                 <div className="mt-3">
-                    <Link to="/private" className="btn btn-success">Go to Private Area</Link>
+                    <Link to="/privateView" className="btn btn-success">Go to Private Area</Link>
                 </div>
             )}
         </div>

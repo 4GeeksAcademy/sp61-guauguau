@@ -7,8 +7,9 @@
     align-items: center;
     margin-top: 20px;
     font-family: 'Arial', sans-serif;
+   
+    background: linear-gradient(180deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
     /*
-    background: rgb(255,105,155);
     background: linear-gradient(0deg, rgba(255,105,155,1) 20%, rgba(255,133,122,1) 62%);
     */
 }

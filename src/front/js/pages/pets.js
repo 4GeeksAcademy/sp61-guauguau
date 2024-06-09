@@ -29,7 +29,7 @@ export const Pets = () => {
         return () => {
             setIsComponentMounted(false);
         };
-    }, [actions, isComponentMounted]);
+    }, [, isComponentMounted]);
 
     const handleChangeIndex = (newIndex) => {
         if (newIndex >= store.pets.length) {
