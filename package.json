@@ -79,7 +79,7 @@
 		"dotenv": "^16.4.5",
 		"express": "^4.19.2",
 		"opena": "^0.1.19",
-		"openai": "^4.48.1",
+		"openai": "^4.48.2",
 		"prop-types": "^15.6.1",
 		"rc-slider": "^10.6.2",
 		"react": "^16.8.4",
@@ -87,6 +87,10 @@
 		"react-dom": "^16.8.4",
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
+		"react-spring": "^9.7.3",
+		"react-swipeable-views": "^0.14.0",
+		"react-swipeable-views-utils": "^0.14.0",
+		"socket.io": "^4.7.5",
 		"socket.io-client": "^4.7.5"
 	}
 }

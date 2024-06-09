@@ -15,6 +15,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 api = Blueprint('api', __name__)
 socketio = SocketIO()
 
+
 # Allow CORS requests to this API
 CORS(api)
 

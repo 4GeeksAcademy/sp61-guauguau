@@ -1,0 +1,169 @@
+.pets-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    font-family: 'Arial', sans-serif;
+}
+
+.select-pet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.form-select {
+    flex: 1;
+    max-width: 200px; /* Hacer el select más estrecho */
+    margin-right: 10px;
+    padding: 10px;
+    border: 2px solid #ff5a5f; /* Cambiar el color del borde */
+    border-radius: 5px;
+    background-color: white;
+    color: #333;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-select:focus {
+    border-color: #e04848; /* Cambiar el color del borde al hacer foco */
+    outline: none; /* Remover el borde azul predeterminado */
+}
+
+.selected-pet-info {
+    display: flex;
+    align-items: center;
+}
+
+.selected-pet-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+}
+
+.swipe-container {
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    height: auto; /* Ajusta según sea necesario */
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.card {
+    position: relative;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: white;
+    transition: transform 0.3s ease-in-out;
+    margin-bottom: 20px;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.card-title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-text {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.card-description {
+    padding: 20px;
+    text-align: center;
+}
+
+.additional-photos {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.additional-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin: 5px;
+}
+
+.like-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 64px;
+    color: red;
+    pointer-events: none;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    outline: none;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+    background-color: #e04848;
+}
+
+button:focus {
+    outline: none;
+}
+
+h1.my-4 {
+    font-size: 28px;
+    color: #ff5a5f;
+}
