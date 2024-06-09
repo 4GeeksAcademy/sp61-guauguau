@@ -32,6 +32,8 @@ export const OnePet = () => {
     const [isMounted, setIsMounted] = useState(true);
     const [careInfo, setCareInfo] = useState("");
     const [compatibilityInfo, setCompatibilityInfo] = useState("");
+    const [isFetchingCareInfo, setIsFetchingCareInfo] = useState(false);
+    const [isFetchingCompatibilityInfo, setIsFetchingCompatibilityInfo] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -168,27 +170,28 @@ export const OnePet = () => {
     };
 
     const fetchCareInfo = async () => {
+        setIsFetchingCareInfo(true);
         try {
             const careInfo = await actions.fetchCuidados(petDetails.breed);
             setCareInfo(careInfo);
-            console.log("Care Info:", careInfo); // Depuración
         } catch (error) {
             console.error("Error fetching care info:", error);
+        } finally {
+            setIsFetchingCareInfo(false);
         }
     };
 
     const fetchCompatibilityInfo = async () => {
+        setIsFetchingCompatibilityInfo(true);
         try {
             const compatibilityInfo = await actions.fetchCompatibilidad(petDetails.breed);
             setCompatibilityInfo(compatibilityInfo);
-            console.log("Compatibility Info:", compatibilityInfo); // Depuración
         } catch (error) {
             console.error("Error fetching compatibility info:", error);
+        } finally {
+            setIsFetchingCompatibilityInfo(false);
         }
     };
-
-    console.log("Care Info State:", careInfo); // Depuración
-    console.log("Compatibility Info State:", compatibilityInfo); // Depuración
 
     return (
         <div className="container">
@@ -299,7 +302,7 @@ export const OnePet = () => {
                     </button>
                 </div>
             </form>
-            <h3>Aditional Photos</h3>
+            <h3>Additional Photos</h3>
             <DragDropContext onDragEnd={handleOnDragEnd}>
                 <Droppable droppableId="photos" direction="horizontal">
                     {(provided) => (
@@ -318,7 +321,7 @@ export const OnePet = () => {
                                                 className="btn btn-danger mt-2"
                                                 onClick={() => handleDeletePhoto(photo.id)}
                                             >
-                                                Eliminar
+                                                Delete
                                             </button>
                                         </div>
                                     )}
@@ -330,25 +333,67 @@ export const OnePet = () => {
                 </Droppable>
             </DragDropContext>
             <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
-                 Cuidados
+                {isFetchingCareInfo ? (
+                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                        <div className="wheel"></div>
+                        <div className="hamster">
+                            <div className="hamster__body">
+                                <div className="hamster__head">
+                                    <div className="hamster__ear"></div>
+                                    <div className="hamster__eye"></div>
+                                    <div className="hamster__nose"></div>
+                                </div>
+                                <div className="hamster__limb hamster__limb--fr"></div>
+                                <div className="hamster__limb hamster__limb--fl"></div>
+                                <div className="hamster__limb hamster__limb--br"></div>
+                                <div className="hamster__limb hamster__limb--bl"></div>
+                                <div className="hamster__tail"></div>
+                            </div>
+                        </div>
+                        <div className="spoke"></div>
+                    </div>
+                ) : (
+                    "Care Info"
+                )}
             </button>
             {careInfo && (
                 <div>
-                    <h3>Cuidados</h3>
+                    <h3>Care Info</h3>
                     <p>{careInfo}</p>
                 </div>
             )}
-            <button className="btn btn-secondary me-2" >
-                 Compatibilidad
+            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>
+                {isFetchingCompatibilityInfo ? (
+                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
+                        <div className="wheel"></div>
+                        <div className="hamster">
+                            <div className="hamster__body">
+                                <div className="hamster__head">
+                                    <div className="hamster__ear"></div>
+                                    <div className="hamster__eye"></div>
+                                    <div className="hamster__nose"></div>
+                                </div>
+                                <div className="hamster__limb hamster__limb--fr"></div>
+                                <div className="hamster__limb hamster__limb--fl"></div>
+                                <div className="hamster__limb hamster__limb--br"></div>
+                                <div className="hamster__limb hamster__limb--bl"></div>
+                                <div className="hamster__tail"></div>
+                            </div>
+                        </div>
+                        <div className="spoke"></div>
+                    </div>
+                ) : (
+                    "Compatibility Info"
+                )}
             </button>
             {compatibilityInfo && (
                 <div>
-                    <h3>Compatibilidad</h3>
+                    <h3>Compatibility Info</h3>
                     <p>{compatibilityInfo}</p>
                 </div>
             )}
-            <Link to="/private" className="btn btn-primary " onClick={fetchCompatibilityInfo}>
-                 Back to Private
+            <Link to="/private" className="btn btn-primary mt-3">
+                Back to Private
             </Link>
             <h3>Likes Received</h3>
             <ul>

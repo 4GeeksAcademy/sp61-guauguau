@@ -157,3 +157,41 @@ class Adminn(db.Model):
             "password": self.password
         }
 
+class Match(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pet1_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    pet2_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    pet1 = db.relationship('Pet', foreign_keys=[pet1_id], backref='matches_as_pet1')
+    pet2 = db.relationship('Pet', foreign_keys=[pet2_id], backref='matches_as_pet2')
+
+    def __repr__(self):
+        return f'<Match {self.pet1_id} matched with {self.pet2_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pet1_id": self.pet1_id,
+            "pet2_id": self.pet2_id
+        }
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
+    sender_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
+    content = db.Column(db.String(500), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    
+    match = db.relationship('Match', backref='messages')
+    sender_pet = db.relationship('Pet', backref='sent_messages')
+
+    def __repr__(self):
+        return f'<Message from {self.sender_pet_id} in match {self.match_id}>'
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "match_id": self.match_id,
+            "sender_pet_id": self.sender_pet_id,
+            "content": self.content,
+            "timestamp": self.timestamp
+        }
