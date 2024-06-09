@@ -63,8 +63,32 @@ def handle_leave_room(data):
 def handle_send_message(data):
     room = f"{data['petId1']}_{data['petId2']}"
     emit('message', data['message'], room=room)
-# database condiguration
 
+@socketio.on('join')
+def on_join(data):
+    match_id = data['match_id']
+    join_room(f"match_{match_id}")
+    emit('status', {'msg': f"Joined room match_{match_id}"}, room=f"match_{match_id}")
+
+@socketio.on('leave')
+def on_leave(data):
+    match_id = data['match_id']
+    leave_room(f"match_{match_id}")
+    emit('status', {'msg': f"Left room match_{match_id}"}, room=f"match_{match_id}")
+
+@socketio.on('send_message')
+def on_send_message(data):
+    match_id = data['match_id']
+    sender_id = data['sender_id']
+    text = data['text']
+
+    new_message = Message(match_id=match_id, sender_id=sender_id, text=text)
+    db.session.add(new_message)
+    db.session.commit()
+
+    emit('new_message', new_message.serialize(), room=f"match_{match_id}")
+
+# database configuration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(
@@ -75,7 +99,6 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
-
 
 # Configura Cloudinary con tus credenciales
 cloudinary.config(
@@ -98,15 +121,11 @@ setup_commands(app)
 app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
-
-
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
-
-
 @app.route('/')
 def sitemap():
     if ENV == "development":
@@ -114,8 +133,6 @@ def sitemap():
     return send_from_directory(static_file_dir, 'index.html')
 
 # any other endpoint will try to serve it like a static file
-
-
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
@@ -124,8 +141,7 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
-
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    socketio.run(app, host='0.0.0.0', port=PORT, debug=True)
