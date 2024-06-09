@@ -13,7 +13,7 @@ export const CardContainer = () => {
                             </div>
                             <div className="pe-3">
                                 <h3 className="card-title pb-2">Find</h3>
-                                <p className="card-text-home">Locate and connect with dogs in your area.</p>
+                                
                             </div>
                         </div>
                     </div>
@@ -26,7 +26,7 @@ export const CardContainer = () => {
                             </div>
                             <div className="pe-3">
                                 <h3 className="card-title">Care</h3>
-                                <p className="card-text-home">Learn about compatibility and the best care for your pet.</p>
+                                
                             </div>
                         </div>
                     </div>
@@ -39,7 +39,7 @@ export const CardContainer = () => {
                             </div>
                             <div className="pe-3">
                                 <h3 className="card-title">Chat</h3>
-                                <p className="card-text-home">Chat with their owners when you make a match.</p>
+                               
                             </div>
                         </div>
                     </div>
@@ -52,7 +52,7 @@ export const CardContainer = () => {
                             </div>
                             <div className="pe-3">
                                 <h3 className="card-title">Explore</h3>
-                                <p className="card-text-home">Discover a world full of pets and new friendships.</p>
+                               
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+import perroImage from "../../img/perro2.png";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
@@ -48,12 +49,17 @@ export const PetsFinder = () => {
     });
 
     return (
-        <div className="container">
+        <div className="container finder-main-container">
             <h1 className="my-4">You can filter and find the pet</h1>
-            <div className="mb-4">
-                <h4>Search Filters</h4>
+            <div className="finder-bg container">
+                <div className="image-wrapper ">
+                    <img src={perroImage} className="floating-image" alt="Perro" />
+                </div>
+            </div>
+            <div className="mb-4 form-finder">
+               
                 <form>
-                    <div className="row">
+                    <div className="row form-finder-filters">
                         <div className="col-md-3">
                             <label htmlFor="breed">Breed</label>
                             <input

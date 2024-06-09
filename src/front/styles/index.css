@@ -96,11 +96,14 @@ a, a:hover, a:visited, a:active {
     color: black;
 }
 
+/* CARD CONTAINER */
+
 .car-container .row {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between; 
     padding: 2em 0; 
+    
 }
 
 .card-bg-1, .card-bg-2, .card-bg-3, .card-bg-4 {
@@ -109,6 +112,7 @@ a, a:hover, a:visited, a:active {
     margin-bottom: 6em; /* Ajusta este valor para cambiar el espacio vertical */
     border: 1px solid transparent; /* Borde transparente */
     background-clip: padding-box; /* Asegura que el fondo no se superponga al borde */
+    z-index: -2;
 }
 
 .card-body-container {
@@ -121,22 +125,22 @@ a, a:hover, a:visited, a:active {
 
 .card.card-bg-1 {
     background-color: #FBECEC; /* Color de fondo rojo claro */
-    height: 15vh;
+    height: 10vh;
 }
 
 .card.card-bg-2 {
     background-color: #EFF8DD; /* Color de fondo verde claro */
-    height: 15vh;
+    height: 10vh;
 }
 
 .card.card-bg-3 {
     background-color: #FFD9E7; /* Color de fondo azul claro */
-    height: 15vh;
+    height: 10vh;
 }
 
 .card.card-bg-4 {
     background-color: #FDEAE1; /* Color de fondo amarillo claro */
-    height: 15vh;
+    height: 10vh;
 }
 
 /* Para asegurar que las tarjetas se alineen correctamente en pantallas más pequeñas */
@@ -228,17 +232,74 @@ a, a:hover, a:visited, a:active {
     color: #6c757d; /* Ajusta el color del subtítulo según tus necesidades */
 }
 
+
+
+
+/* FINDER */
+.finder-main-container {
+    background-color: #FBF6F3;
+    margin-top: 150px;
+}
+.form-finder {
+    z-index: 1;
+    margin-top: 3rem;
+    
+}
+.finder-bg .container {
+    position: relative; /* Posiciona el contenedor relativamente */
+    padding: 2em; /* Ajusta el padding según tus necesidades */
+    overflow: visible; /* Asegúrate de que el desbordamiento esté visible */
+}
+
+.image-wrapper {  
+    position: relative; /* Posiciona el wrapper absolutamente */
+    top: -270px; /* Ajusta según tus necesidades para que sobresalga */
+    left: 10%; /* Ajusta para que esté completamente a la izquierda */
+}
+
+.floating-image {
+    position: absolute; /* Posiciona la imagen absolutamente */
+    top: 30%; /* Ajusta según tus necesidades para que sobresalga */
+    right: 1%;
+    transform: translateX(-50%); /* Centra la imagen horizontalmente */
+    width: 250px; /* Ajusta el tamaño según tus necesidades */
+    height: auto; /* Mantén la proporción de la imagen */
+    z-index: -1; /* Asegúrate de que la imagen esté por encima del contenedor */
+    
+}
+
+.form-finder-filters .col-md-3 label {
+    color: #253D4E;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 1.5em;
+}
+
 /* TEAM */
 
 .team-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 4em;
     padding: 2em 0;
 }
 
+.team-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
 .team-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1em;
     text-align: center;
 }
 
@@ -266,6 +327,14 @@ a, a:hover, a:visited, a:active {
     font-style: normal;
     color: #000; /* Ajusta el color según tus necesidades */
 }
+
+/* Media Queries para Responsividad */
+@media (max-width: 768px) {
+    .team-row {
+        flex-direction: column;
+    }
+}
+
 
 /* FOOTER */
 

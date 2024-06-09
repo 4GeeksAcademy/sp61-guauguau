@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Context } from "../store/appContext";
 import rigoImageUrl from "../../img/rigo-baby.jpg";
+import perroImage from "../../img/perro4.png";
 import "../../styles/home.css";
 import { ApiBreed } from "./apiBreed";
 import { CardContainer } from "./cardContainer";
@@ -13,6 +14,7 @@ export const Home = () => {
     return (
         <div className="text-center">
             <div className="container-home">
+                
                 <div className="jumbotron p-4 p-md-5">
                     <div className="row jumbo-contain">
                         <div className="col-md-6 px-0">

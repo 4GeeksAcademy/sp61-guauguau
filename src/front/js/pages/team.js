@@ -22,19 +22,20 @@ const teamMembers = [
 
 export const Team = () => {
     return (
-        
-        
-        <div className="team-container">
-        <h1 className='mt-3 p-3'>Know the developers</h1>
-            {teamMembers.map((member, index) => (
-                <div key={index} className="team-member">
-                    <div className="image-circle">
-                        <img src={member.imgSrc} alt={member.name} className="team-img"/>
+        <div className="container team-container">
+            <div className="team-row">
+                <h1 className='mt-3 p-3'>Know the developers</h1>
+            </div>
+            <div className="team-row">
+                {teamMembers.map((member, index) => (
+                    <div key={index} className="team-member">
+                        <div className="image-circle">
+                            <img src={member.imgSrc} alt={member.name} className="team-img"/>
+                        </div>
+                        <h4 className="team-name">{member.name}</h4>
                     </div>
-                    <h4 className="team-name">{member.name}</h4>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
-        
     );
 };
