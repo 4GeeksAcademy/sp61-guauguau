@@ -1,24 +1,23 @@
-from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like
+from flask import Flask, request, jsonify, Blueprint, current_app
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like, Match, Message
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import os
-import openai
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from openai import OpenAI
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_socketio import join_room, leave_room, send, emit, SocketIO
 
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+# Inicializar el cliente de OpenAI
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 api = Blueprint('api', __name__)
+socketio = SocketIO()
 
 
 # Allow CORS requests to this API
 CORS(api)
-
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -502,15 +501,15 @@ def get_cuidados(raza):
     prompt = f"Cuidados necesarios para {raza}:\n1. Alimentación:\n- \n2. Ejercicio:\n- \n3. Higiene:\n- \n4. Salud:\n- \n5. Entorno:\n-"
     try:
         current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ]
         )
         current_app.logger.info(f"Respuesta de OpenAI: {response}")
-        return jsonify({"text": response.choices[0].message['content'].strip()}), 200
+        return jsonify({"text": response.choices[0].message.content.strip()}), 200
     except Exception as e:
         current_app.logger.error(f"Error al obtener cuidados: {str(e)}")
         return jsonify({"error": str(e)}), 500
@@ -520,19 +519,18 @@ def get_compatibilidad(raza):
     prompt = f"Compatibilidad de {raza} con otras razas:\n1. Compatibilidad Alta:\n- \n2. Compatibilidad Moderada:\n- \n3. Compatibilidad Baja:\n-"
     try:
         current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        response = client.chat.completions.create(
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
             ]
         )
         current_app.logger.info(f"Respuesta de OpenAI: {response}")
-        return jsonify({"text": response.choices[0].message['content'].strip()}), 200
+        return jsonify({"text": response.choices[0].message.content.strip()}), 200
     except Exception as e:
         current_app.logger.error(f"Error al obtener compatibilidad: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
 
 
 # OBTENER OWNER PETS
@@ -590,12 +588,13 @@ def like_pet():
     # Verifica si hay un match
     match = Like.query.filter_by(liker_pet_id=liked_pet_id, liked_pet_id=liker_pet_id).first()
     if match:
+        # Si hay un match, crea una entrada en la tabla Match
+        new_match = Match(pet1_id=liker_pet_id, pet2_id=liked_pet_id)
+        db.session.add(new_match)
+        db.session.commit()
         return jsonify({"match": True}), 200
 
     return jsonify({"match": False}), 200
-
-
-
 
 @api.route('/pet/<int:pet_id>/likes', methods=['GET'])
 def get_pet_likes(pet_id):
@@ -632,10 +631,69 @@ def get_pet_matches(pet_id):
         if reciprocal_like:
             matched_pet = Pet.query.get(like.liked_pet_id)
             if matched_pet:
-                matches.append({
-                    "match_pet_id": matched_pet.id,
-                    "match_pet_name": matched_pet.name,
-                    "match_pet_photo": matched_pet.profile_photo_url
-                })
+                match = Match.query.filter(
+                    ((Match.pet1_id == pet_id) & (Match.pet2_id == matched_pet.id)) |
+                    ((Match.pet1_id == matched_pet.id) & (Match.pet2_id == pet_id))
+                ).first()
+                if match:
+                    matches.append({
+                        "match_id": match.id,
+                        "match_pet_id": matched_pet.id,
+                        "match_pet_name": matched_pet.name,
+                        "match_pet_photo": matched_pet.profile_photo_url
+                    })
 
     return jsonify(matches), 200
+
+
+@api.route('/matches/<int:pet_id>', methods=['GET'])
+@jwt_required()
+def get_matches(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"error": "Pet not found"}), 404
+
+    matches = Match.query.filter((Match.pet1_id == pet_id) | (Match.pet2_id == pet_id)).all()
+    matches_data = []
+    for match in matches:
+        matched_pet_id = match.pet2_id if match.pet1_id == pet_id else match.pet1_id
+        matched_pet = Pet.query.get(matched_pet_id)
+        if matched_pet:
+            matches_data.append({
+                "match_id": match.id,
+                "pet_id": matched_pet.id,
+                "name": matched_pet.name,
+                "profile_photo_url": matched_pet.profile_photo_url
+            })
+
+    return jsonify(matches_data), 200
+
+# MENSAJES
+
+@api.route('/messages/<int:match_id>', methods=['GET'])
+@jwt_required()
+@cross_origin()
+def get_messages(match_id):
+    messages = Message.query.filter_by(match_id=match_id).order_by(Message.timestamp).all()
+    return jsonify([message.serialize() for message in messages]), 200
+
+@api.route('/message', methods=['POST'])
+@jwt_required()
+@cross_origin()
+def send_message():
+    data = request.get_json()
+    match_id = data.get('match_id')
+    sender_pet_id = data.get('sender_pet_id')
+    content = data.get('content')
+
+    if not match_id or not sender_pet_id or not content:
+        return jsonify({"error": "Missing data"}), 400
+
+    new_message = Message(match_id=match_id, sender_pet_id=sender_pet_id, content=content)
+    db.session.add(new_message)
+    db.session.commit()
+
+    # Emitir el mensaje a los clientes conectados
+    socketio.emit('new_message', new_message.serialize(), room=f"match_{match_id}")
+
+    return jsonify(new_message.serialize()), 201

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
+import logoGuauuGuauu from "../../img/logo.png";
 import perroImage from "../../img/perro4.png";
 import salchichas from "../../img/salchichas.png";
 import corazonesrojos from "../../img/corazonesrojos.png";
