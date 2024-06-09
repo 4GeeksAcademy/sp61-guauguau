@@ -254,6 +254,7 @@ a, a:hover, a:visited, a:active {
 .jumbotron-image {
     flex: 1;
     margin-right: 2em;
+    
     margin-bottom: 1em; /* Añadir margen inferior para evitar que la imagen se pegue al texto en pantallas pequeñas */
 }
 
