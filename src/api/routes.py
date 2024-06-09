@@ -1,22 +1,19 @@
-from flask import Flask, request, jsonify, url_for, Blueprint, current_app
-from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like
+from flask import Flask, request, jsonify, Blueprint, current_app
+from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like, Match, Message
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 import os
 from openai import OpenAI
-# Inicializar el cliente de OpenAI
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
 
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
+# Inicializar el cliente de OpenAI
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 api = Blueprint('api', __name__)
+socketio = SocketIO()
 
 # Allow CORS requests to this API
 CORS(api)
@@ -591,12 +588,13 @@ def like_pet():
     # Verifica si hay un match
     match = Like.query.filter_by(liker_pet_id=liked_pet_id, liked_pet_id=liker_pet_id).first()
     if match:
+        # Si hay un match, crea una entrada en la tabla Match
+        new_match = Match(pet1_id=liker_pet_id, pet2_id=liked_pet_id)
+        db.session.add(new_match)
+        db.session.commit()
         return jsonify({"match": True}), 200
 
     return jsonify({"match": False}), 200
-
-
-
 
 @api.route('/pet/<int:pet_id>/likes', methods=['GET'])
 def get_pet_likes(pet_id):
@@ -640,3 +638,53 @@ def get_pet_matches(pet_id):
                 })
 
     return jsonify(matches), 200
+
+@api.route('/matches/<int:pet_id>', methods=['GET'])
+@jwt_required()
+def get_matches(pet_id):
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({"error": "Pet not found"}), 404
+
+    matches = Match.query.filter((Match.pet1_id == pet_id) | (Match.pet2_id == pet_id)).all()
+    matches_data = []
+    for match in matches:
+        matched_pet_id = match.pet2_id if match.pet1_id == pet_id else match.pet1_id
+        matched_pet = Pet.query.get(matched_pet_id)
+        if matched_pet:
+            matches_data.append({
+                "match_id": match.id,
+                "pet_id": matched_pet.id,
+                "name": matched_pet.name,
+                "profile_photo_url": matched_pet.profile_photo_url
+            })
+
+    return jsonify(matches_data), 200
+
+# MENSAJES
+
+@api.route('/messages/<int:match_id>', methods=['GET'])
+@jwt_required()
+def get_messages(match_id):
+    messages = Message.query.filter_by(match_id=match_id).order_by(Message.timestamp).all()
+    return jsonify([message.serialize() for message in messages]), 200
+
+@api.route('/message', methods=['POST'])
+@jwt_required()
+def send_message():
+    data = request.get_json()
+    match_id = data.get('match_id')
+    sender_id = data.get('sender_id')
+    text = data.get('text')
+
+    if not match_id or not sender_id or not text:
+        return jsonify({"error": "Missing data"}), 400
+
+    new_message = Message(match_id=match_id, sender_id=sender_id, text=text)
+    db.session.add(new_message)
+    db.session.commit()
+
+    # Emitir el mensaje a los clientes conectados
+    socketio.emit('new_message', new_message.serialize(), room=f"match_{match_id}")
+
+    return jsonify(new_message.serialize()), 201
