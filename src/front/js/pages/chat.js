@@ -88,19 +88,26 @@ export const Chat = () => {
     };
 
     return (
-        <div>
+        <div className="chat-container">
             <h2>Chat</h2>
-            <div>
+            <div className="messages-container">
                 {messages.map((msg, index) => (
-                    <div key={index}>{msg.content}</div>
+                    <div 
+                        key={index} 
+                        className={`message ${msg.sender_pet_id === store.currentPetId ? 'sent' : 'received'}`}
+                    >
+                        {msg.content}
+                    </div>
                 ))}
             </div>
-            <input 
-                type="text" 
-                value={newMessage} 
-                onChange={(e) => setNewMessage(e.target.value)} 
-            />
-            <button onClick={sendMessage}>Send</button>
+            <div className="input-container">
+                <input 
+                    type="text" 
+                    value={newMessage} 
+                    onChange={(e) => setNewMessage(e.target.value)} 
+                />
+                <button onClick={sendMessage}>Send</button>
+            </div>
         </div>
     );
 };

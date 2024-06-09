@@ -282,6 +282,69 @@
       transform: rotate(-1turn);
     }
   }
+/*Estilos del chat*/
+  .chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}
 
+.messages-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+}
 
+.message {
+    padding: 10px;
+    border-radius: 20px;
+    margin: 5px 0;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.message.sent {
+    background-color: #d1ffd6;
+    align-self: flex-end;
+    text-align: right;
+}
+
+.message.received {
+    background-color: #d6d1ff;
+    align-self: flex-start;
+    text-align: left;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+/* hasta aquí el chat*/
 
