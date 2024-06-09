@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+# En models.py
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -178,14 +180,8 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     match_id = db.Column(db.Integer, db.ForeignKey('match.id'), nullable=False)
     sender_pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
-    content = db.Column(db.String(500), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    
-    match = db.relationship('Match', backref='messages')
-    sender_pet = db.relationship('Pet', backref='sent_messages')
-
-    def __repr__(self):
-        return f'<Message from {self.sender_pet_id} in match {self.match_id}>'
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def serialize(self):
         return {
@@ -193,5 +189,5 @@ class Message(db.Model):
             "match_id": self.match_id,
             "sender_pet_id": self.sender_pet_id,
             "content": self.content,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp.isoformat()  # convertir datetime a string
         }

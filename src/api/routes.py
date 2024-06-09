@@ -3,11 +3,11 @@ from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like, M
 import cloudinary.uploader
 from cloudinary.uploader import upload
 from api.utils import generate_sitemap, APIException
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import os
 from openai import OpenAI
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-from flask_socketio import SocketIO, join_room, leave_room, send, emit
+from flask_socketio import join_room, leave_room, send, emit, SocketIO
 
 # Inicializar el cliente de OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -17,7 +17,6 @@ socketio = SocketIO()
 
 # Allow CORS requests to this API
 CORS(api)
-
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -631,13 +630,20 @@ def get_pet_matches(pet_id):
         if reciprocal_like:
             matched_pet = Pet.query.get(like.liked_pet_id)
             if matched_pet:
-                matches.append({
-                    "match_pet_id": matched_pet.id,
-                    "match_pet_name": matched_pet.name,
-                    "match_pet_photo": matched_pet.profile_photo_url
-                })
+                match = Match.query.filter(
+                    ((Match.pet1_id == pet_id) & (Match.pet2_id == matched_pet.id)) |
+                    ((Match.pet1_id == matched_pet.id) & (Match.pet2_id == pet_id))
+                ).first()
+                if match:
+                    matches.append({
+                        "match_id": match.id,
+                        "match_pet_id": matched_pet.id,
+                        "match_pet_name": matched_pet.name,
+                        "match_pet_photo": matched_pet.profile_photo_url
+                    })
 
     return jsonify(matches), 200
+
 
 @api.route('/matches/<int:pet_id>', methods=['GET'])
 @jwt_required()
@@ -665,22 +671,24 @@ def get_matches(pet_id):
 
 @api.route('/messages/<int:match_id>', methods=['GET'])
 @jwt_required()
+@cross_origin()
 def get_messages(match_id):
     messages = Message.query.filter_by(match_id=match_id).order_by(Message.timestamp).all()
     return jsonify([message.serialize() for message in messages]), 200
 
 @api.route('/message', methods=['POST'])
 @jwt_required()
+@cross_origin()
 def send_message():
     data = request.get_json()
     match_id = data.get('match_id')
-    sender_id = data.get('sender_id')
-    text = data.get('text')
+    sender_pet_id = data.get('sender_pet_id')
+    content = data.get('content')
 
-    if not match_id or not sender_id or not text:
+    if not match_id or not sender_pet_id or not content:
         return jsonify({"error": "Missing data"}), 400
 
-    new_message = Message(match_id=match_id, sender_id=sender_id, text=text)
+    new_message = Message(match_id=match_id, sender_pet_id=sender_pet_id, content=content)
     db.session.add(new_message)
     db.session.commit()
 

@@ -416,8 +416,8 @@ export const OnePet = () => {
             <h3>Matches</h3>
             <ul>
                 {petDetails.matches.map((match, index) => (
-                    <li key={index}>
-                        <Link to={`/singlepet/${match.match_pet_id}`}>
+                    <li key={index} className="d-flex align-items-center">
+                        <Link to={`/singlepet/${match.match_pet_id}`} className="me-2">
                             {match.match_pet_photo && (
                                 <img
                                     src={match.match_pet_photo}
@@ -428,6 +428,7 @@ export const OnePet = () => {
                             )}
                             {match.match_pet_name}
                         </Link>
+                        <Link to={`/chat/${match.match_id}`} className="btn btn-primary">Chat</Link>
                     </li>
                 ))}
             </ul>

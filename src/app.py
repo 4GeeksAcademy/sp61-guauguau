@@ -9,12 +9,12 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
 from api.models import db
-from api.routes import api
+from api.routes import api, socketio  # Importar socketio desde routes
 from api.admin import setup_admin
 from api.commands import setup_commands
-from flask_cors import CORS
-from flask_socketio import SocketIO, join_room, leave_room, send, emit
-
+from flask_cors import CORS, cross_origin
+from flask_socketio import join_room, leave_room, send, emit
+from api.models import Message
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
@@ -31,7 +31,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.url_map.strict_slashes = False
 
 # Configurar SocketIO
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio.init_app(app, cors_allowed_origins="*")
 
 # Configurar eventos de socket.io
 @socketio.on('message')
@@ -49,19 +49,19 @@ def handle_disconnect():
 
 @socketio.on('joinRoom')
 def handle_join_room(data):
-    room = f"{data['petId1']}_{data['petId2']}"
+    room = f"match_{data['match_id']}"
     join_room(room)
     emit('message', f"User joined room {room}", room=room)
 
 @socketio.on('leaveRoom')
 def handle_leave_room(data):
-    room = f"{data['petId1']}_{data['petId2']}"
+    room = f"match_{data['match_id']}"
     leave_room(room)
     emit('message', f"User left room {room}", room=room)
 
 @socketio.on('sendMessage')
 def handle_send_message(data):
-    room = f"{data['petId1']}_{data['petId2']}"
+    room = f"match_{data['match_id']}"
     emit('message', data['message'], room=room)
 
 @socketio.on('join')
@@ -79,14 +79,15 @@ def on_leave(data):
 @socketio.on('send_message')
 def on_send_message(data):
     match_id = data['match_id']
-    sender_id = data['sender_id']
+    sender_pet_id = data['sender_pet_id']
     text = data['text']
 
-    new_message = Message(match_id=match_id, sender_id=sender_id, text=text)
+    new_message = Message(match_id=match_id, sender_pet_id=sender_pet_id, content=text)
     db.session.add(new_message)
     db.session.commit()
 
     emit('new_message', new_message.serialize(), room=f"match_{match_id}")
+
 
 # database configuration
 db_url = os.getenv("DATABASE_URL")
