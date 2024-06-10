@@ -29,6 +29,15 @@ class Breed(db.Model):
     def __repr__(self):
         return f'<Breed {self.name}>'
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": self.type,
+            "life_span": self.life_span
+        }
+
+
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(100), nullable=True)
