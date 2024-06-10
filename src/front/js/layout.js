@@ -23,9 +23,9 @@ import { SinglePet } from "./pages/singlePet";
 import { SingleOwner } from "./pages/singleOwner";
 import { EditCity } from "./pages/editcity";
 import { Photo } from "./pages/photo";
-import AdminLogin from "./pages/adminlogin";
+import { AdminLogin } from "./pages/adminlogin";  // Importación correcta del componente
 import { AdminSignUp } from "./pages/adminsignup";
-import AdminPrivate from "./pages/adminprivate";
+import { AdminPrivate } from "./pages/adminprivate";  // Importación correcta del componente
 import { EditAdmin } from "./pages/editadmin";
 import { PetsFinder } from "./pages/finder";
 import { Chat } from "./pages/chat";
@@ -54,9 +54,9 @@ const Layout = () => {
                         <Route element={<Login />} path="/login" />
                         <Route element={<Private />} path="/private" />
                         <Route element={<PrivateView />} path="/privateView" />
-                        <Route element={<City/>} path="/city" />
-                        <Route element={<EditCity/>} path="/editcity/:id" />
-                        <Route element={<Pets/>} path="/pets" />
+                        <Route element={<City />} path="/city" />
+                        <Route element={<EditCity />} path="/editcity/:id" />
+                        <Route element={<Pets />} path="/pets" />
                         <Route element={<Chat />} path="/chat/:matchId" />
                         <Route element={<PetsFinder />} path="/petsfinder" />
                         <Route element={<Single />} path="/single/:theid" />

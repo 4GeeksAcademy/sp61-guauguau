@@ -75,6 +75,7 @@
 	"dependencies": {
 		"@react-google-maps/api": "^2.19.3",
 		"axios": "^1.7.2",
+		"bootstrap": "^5.3.3",
 		"bootstrap-icons": "^1.11.3",
 		"cloudinary-react": "^1.8.1",
 		"dotenv": "^16.4.5",
@@ -85,6 +86,7 @@
 		"rc-slider": "^10.6.2",
 		"react": "^16.8.4",
 		"react-beautiful-dnd": "^13.1.1",
+		"react-bootstrap": "^2.10.2",
 		"react-dom": "^16.8.4",
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",

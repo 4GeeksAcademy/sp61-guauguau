@@ -59,6 +59,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 				});
 				setStore({ demo: demo });
 			},
+			adminLogin: async (email, password) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "/api/adminlogin", {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email, password })
+					});
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message);
+					}
+					const data = await response.json();
+					localStorage.setItem("admin_token", data.access_token);
+					setStore({ adminAuth: true, adminEmail: email });
+				} catch (error) {
+					setStore({ adminAuth: false, adminErrorMessage: error.message });
+					throw error;
+				}
+			},
+			adminLogout: () => {
+				localStorage.removeItem("admin_token");
+				setStore({ adminAuth: false, adminEmail: null });
+			},
 			login: async (email, password) => {
                 const requestOptions = {
                     method: 'POST',
