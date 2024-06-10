@@ -37,28 +37,53 @@ def get_owners():
 
 @api.route('/add_owner', methods=['POST'])
 def create_owner():
-    data = request.json
-    required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": "The '" + field + "' cannot be empty"}), 400
+    try:
+        data = request.json
+        current_app.logger.info(f"Received data: {data}")
+        required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"The '{field}' cannot be empty"}), 400
 
-    existing_owner = Owner.query.filter_by(email=data['email']).first()
-    if existing_owner:
-        return jsonify({"error": "Email already exists!"}), 409
-    
-    new_owner = Owner(
-        email=data['email'], 
-        password=data['password'], 
-        name=data['name'],
-        address=data['address'],
-        latitude=data['latitude'],
-        longitude=data['longitude']
-    )
-    db.session.add(new_owner)
-    db.session.commit()
+        existing_owner = Owner.query.filter_by(email=data['email']).first()
+        if existing_owner:
+            return jsonify({"error": "Email already exists!"}), 409
 
-    return jsonify({"message": "Owner created!"}), 200
+        # Obtener la ciudad basada en la latitud y longitud
+        geolocator = Nominatim(user_agent="geoapiExercises")
+        location = geolocator.reverse(f"{data['latitude']}, {data['longitude']}")
+        city_name = location.raw['address'].get('city', location.raw['address'].get('town', ''))
+        current_app.logger.info(f"Geolocation result: {location.raw}")
+
+        # Buscar o crear la ciudad en la base de datos
+        city = City.query.filter_by(name=city_name).first()
+        if not city:
+            city = City(name=city_name, pet_friendly='Unknown')  # Ajustar según sea necesario
+            db.session.add(city)
+            db.session.commit()
+            current_app.logger.info(f"Created new city: {city_name}")
+
+        new_owner = Owner(
+            email=data['email'], 
+            password=data['password'], 
+            name=data['name'],
+            address=data['address'],
+            latitude=data['latitude'],
+            longitude=data['longitude'],
+            city_id=city.id  # Asociar la ciudad con el propietario
+        )
+        db.session.add(new_owner)
+        db.session.commit()
+
+        current_app.logger.info(f"New owner created: {new_owner.email}")
+
+        return jsonify({"message": "Owner created!"}), 200
+    except Exception as e:
+        current_app.logger.error(f"Error creating owner: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+
+
 
 
 @api.route("/owner/<int:owner_id>", methods=["GET"])
@@ -94,9 +119,25 @@ def update_owner(owner_id):
         owner.password = data["password"]
     if "name" in data:
         owner.name = data["name"]
+    if "address" in data:
+        owner.address = data["address"]
+    if "latitude" in data and "longitude" in data:
+        owner.latitude = data["latitude"]
+        owner.longitude = data["longitude"]
+        # Actualizar la ciudad basada en la nueva latitud y longitud
+        geolocator = Nominatim(user_agent="geoapiExercises")
+        location = geolocator.reverse(f"{data['latitude']}, {data['longitude']}")
+        city_name = location.raw['address'].get('city', location.raw['address'].get('town', ''))
+        city = City.query.filter_by(name=city_name).first()
+        if not city:
+            city = City(name=city_name, pet_friendly='Unknown')
+            db.session.add(city)
+            db.session.commit()
+        owner.city_id = city.id
 
     db.session.commit()
     return jsonify(owner.serialize()), 200
+
 
 
 @api.route("/update_owner_description", methods=["PUT"])
@@ -151,7 +192,6 @@ def protected():
         return jsonify({"error": str(e)}), 500
 
 
-
 ##### ROUTES PETS #########################################
 @api.route('/pets', methods=['GET'])
 def get_pets():
@@ -164,9 +204,10 @@ def get_pets():
         'age': pet.age,
         'pedigree': pet.pedigree,
         'description': pet.description,
-        'profile_photo_url': pet.profile_photo_url,  # Asegúrate de que esta propiedad está incluida
+        'profile_photo_url': pet.profile_photo_url,
         'owner_id': pet.owner_id,
-        'owner_name': pet.owner.name if pet.owner else None
+        'owner_name': pet.owner.name if pet.owner else None,
+        'owner_city': pet.owner.city.name if pet.owner and pet.owner.city else None  # Incluye la ciudad del dueño
     } for pet in pets]), 200
 
 @api.route('/pet/<int:pet_id>', methods=['GET'])
@@ -183,7 +224,8 @@ def get_pet(pet_id):
             'pedigree': pet.pedigree,
             'owner_id': pet.owner_id,
             'owner_name': pet.owner.name if pet.owner else None,
-            'owner_photo_url': pet.owner.profile_picture_url if pet.owner else None,  # Añadir esta línea
+            'owner_city': pet.owner.city.name if pet.owner and pet.owner.city else None,  # Incluye la ciudad del dueño
+            'owner_photo_url': pet.owner.profile_picture_url if pet.owner else None,
             'photos': photos,
             'description': pet.description,
             'profile_photo_url': pet.profile_photo_url
@@ -714,4 +756,4 @@ def send_message():
     # Emitir el mensaje a los clientes conectados
     socketio.emit('new_message', new_message.serialize(), room=f"match_{match_id}")
 
-    return jsonify(new_message.serialize()), 201
+    return jsonify(new_message.serialize()), 201 

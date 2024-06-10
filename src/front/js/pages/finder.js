@@ -44,7 +44,7 @@ export const PetsFinder = () => {
             (filters.breed === "" || pet.breed === filters.breed) &&
             (filters.sex === "" || pet.sex === filters.sex) &&
             (pet.age >= filters.ageRange[0] && pet.age <= filters.ageRange[1]) &&
-            (filters.city === "" || pet.city === filters.city)
+            (filters.city === "" || pet.owner_city === filters.city)
         );
     });
 
@@ -129,7 +129,7 @@ export const PetsFinder = () => {
                                         <p className="card-text">Sex: {pet.sex}</p>
                                         <p className="card-text">Age: {pet.age}</p>
                                         <p className="card-text">Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
-                                        <p className="card-text">City: {pet.city}</p>
+                                        <p className="card-text">City: {pet.owner_city}</p>
                                     </div>
                                 </div>
                             </div>

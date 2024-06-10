@@ -287,7 +287,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 						}
 						return response.json();
 					})
-					.then(data => setStore({ pets: data }))
+					.then(data => {
+						console.log("Pets data fetched:", data);  // Log para depuración
+						setStore({ pets: data });
+					})
 					.catch(error => console.error("Error fetching pets:", error));
 			},
 			fetchPetById: async (id) => {

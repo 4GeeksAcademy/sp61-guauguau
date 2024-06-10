@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-# En models.py
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -68,7 +67,6 @@ class Owner(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            "password": self.password,
             "profile_picture_url": self.profile_picture_url,
             "address": self.address,
             "latitude": self.latitude,
