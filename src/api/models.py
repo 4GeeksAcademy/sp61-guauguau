@@ -108,6 +108,7 @@ class Pet(db.Model):
             "id": self.id,
             "name": self.name,
             "breed_id": self.breed_id,
+            "breed": self.breed.name if self.breed else None,
             "sex": self.sex,
             "age": self.age,
             "pedigree": self.pedigree,

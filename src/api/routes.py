@@ -303,10 +303,30 @@ def fetch_and_save_breeds():
 def get_breeds():
     breeds = Breed.query.all()
     return jsonify([breed.serialize() for breed in breeds]), 200
+
 @api.route('/populate_breeds', methods=['POST'])
 def populate_breeds():
-    fetch_and_save_breeds()
-    return jsonify({"message": "Breeds table populated successfully."}), 200
+    url = 'https://api.thedogapi.com/v1/breeds'
+    headers = {
+        'x-api-key': 'your-api-key'
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        breeds = response.json()
+        for breed in breeds:
+            existing_breed = Breed.query.get(breed['id'])
+            if not existing_breed:
+                new_breed = Breed(
+                    id=breed['id'],
+                    name=breed['name'],
+                    type=breed.get('breed_group', 'Unknown'),
+                    life_span=breed.get('life_span', 'Unknown')
+                )
+                db.session.add(new_breed)
+        db.session.commit()
+        return jsonify({"message": "Breeds populated successfully"}), 200
+    else:
+        return jsonify({"error": f"Failed to fetch breeds: {response.status_code}"}), 400
 
 @api.route('/breed', methods=['POST'])
 def add_breed():

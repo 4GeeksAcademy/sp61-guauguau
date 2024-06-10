@@ -391,30 +391,30 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			fetchBreeds: async () => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/breed");
-                    const breeds = await response.json();
-                    setStore({ breeds: breeds });
-                } catch (error) {
-                    console.error("Error fetching breeds:", error);
-                }
-            },
-            populateBreeds: async () => {
-                try {
-                    const response = await fetch(process.env.BACKEND_URL + "/api/populate_breeds", {
-                        method: 'POST'
-                    });
-                    if (response.ok) {
-                        console.log("Breeds populated successfully");
-                        // Luego carga las razas
-                        getActions().fetchBreeds();
-                    } else {
-                        console.error("Failed to populate breeds");
-                    }
-                } catch (error) {
-                    console.error("Error populating breeds:", error);
-                }
-            },
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "/api/breed");
+					const breeds = await response.json();
+					setStore({ breeds: breeds });
+				} catch (error) {
+					console.error("Error fetching breeds:", error);
+				}
+			},
+			populateBreeds: async () => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "/api/populate_breeds", {
+						method: 'POST'
+					});
+					if (response.ok) {
+						console.log("Breeds populated successfully");
+						getActions().fetchBreeds();
+					} else {
+						console.error("Failed to populate breeds");
+					}
+				} catch (error) {
+					console.error("Error populating breeds:", error);
+				}
+			},
+			
 			deleteOwner: ownerId => {
 				const requestOptions = {
 					method: 'DELETE'
