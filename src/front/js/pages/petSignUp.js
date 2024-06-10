@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+import "../../styles/home.css";
 
 export const PetSignUp = () => {
     const { store, actions } = useContext(Context);
@@ -17,8 +18,8 @@ export const PetSignUp = () => {
     const [showBackButton, setShowBackButton] = useState(false);
 
     useEffect(() => {
-        actions.fetchOwners();
-        actions.getBreed();
+        // Llamada para poblar las razas y luego cargarlas
+        actions.populateBreeds();
     }, []);
 
     const handleChange = (e) => {
@@ -46,7 +47,6 @@ export const PetSignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
         try {
             const addedPet = await actions.addPet({
                 ...formData,
@@ -57,42 +57,20 @@ export const PetSignUp = () => {
             if (addedPet) {
                 const petId = addedPet.pet_id;
 
-                // Upload profile photo
                 if (formData.photo) {
                     const photoFormData = new FormData();
                     photoFormData.append("file", formData.photo);
-                    
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_profile_picture/${petId}`, {
-                        method: 'POST',
-                        body: photoFormData
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        console.error("Failed to upload profile photo:", result.error);
-                    }
+                    await actions.uploadPetPhoto(petId, photoFormData);
                 }
 
-                // Upload additional photos
                 for (let photo of formData.additional_photos) {
                     const additionalPhotoFormData = new FormData();
                     additionalPhotoFormData.append("file", photo);
-                    
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/upload_pet_additional_photos/${petId}`, {
-                        method: 'POST',
-                        body: additionalPhotoFormData
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        console.error("Failed to upload additional photo:", result.error);
-                    }
+                    await actions.uploadPetAdditionalPhotos(petId, additionalPhotoFormData);
                 }
 
                 setSuccessMessage("Pet created successfully!");
-                setShowBackButton(true); // Show the back button
+                setShowBackButton(true);
             } else {
                 console.error("Failed to add pet");
             }
@@ -107,50 +85,53 @@ export const PetSignUp = () => {
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <form className="form-styled" onSubmit={handleSubmit}>
-                        <h1 className="text-center px-3 mb-4" >Add your dog</h1>
-                        <h5 className="text-center text-muted mb-5">Fill out the form with your dog's information so other users can get to know them.</h5>
-                        {successMessage && <div className="alert alert-success" role="alert">{successMessage}</div>}
-                        <div className="form-group position-relative" onSubmit={handleSubmit}>
-                            <label htmlFor="name" className="form-label">Name</label>
-                            <input 
-                                type="text" 
-                                className="form-control" 
-                                id="name" 
-                                name="name" 
-                                placeholder="Your dog's name"
-                                value={formData.name} 
-                                onChange={handleChange} 
-                                required 
-                            />
-                        </div>
-                        <div className="form-group position-relative">
-                            <label htmlFor="breed_id" className="form-label">Breed</label>
-                            <select 
-                                className="form-select" 
-                                id="breed_id" 
-                                name="breed_id" 
-                                value={formData.breed_id} 
-                                onChange={handleChange} 
-                                required
-                            >
-                                <option value="">Select Breed</option>
-                                {store.breed && store.breed.map(breed => (
-                                    <option key={breed.id} value={breed.id}>{breed.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="form-group position-relative">
-                            <label htmlFor="sex" className="form-label">Sex</label>
-                            <input 
-                                type="text" 
-                                className="form-control" 
-                                id="sex" 
-                                name="sex" 
-                                value={formData.sex} 
-                                onChange={handleChange} 
-                                required 
-                            />
-                        </div>
+                            <h1 className="text-center px-3 mb-4">Add your dog</h1>
+                            <h5 className="text-center text-muted mb-5">Fill out the form with your dog's information so other users can get to know them.</h5>
+                            {successMessage && <div className="alert alert-success" role="alert">{successMessage}</div>}
+                            <div className="form-group position-relative">
+                                <label htmlFor="name" className="form-label">Name</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    id="name" 
+                                    name="name" 
+                                    placeholder="Your dog's name"
+                                    value={formData.name} 
+                                    onChange={handleChange} 
+                                    required 
+                                />
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="breed_id" className="form-label">Breed</label>
+                                <select 
+                                    className="form-select" 
+                                    id="breed_id" 
+                                    name="breed_id" 
+                                    value={formData.breed_id} 
+                                    onChange={handleChange} 
+                                    required
+                                >
+                                    <option value="">Select Breed</option>
+                                    {store.breeds && store.breeds.map(breed => (
+                                        <option key={breed.id} value={breed.id}>{breed.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="sex" className="form-label">Sex</label>
+                                <select 
+                                    className="form-select" 
+                                    id="sex" 
+                                    name="sex" 
+                                    value={formData.sex} 
+                                    onChange={handleChange} 
+                                    required
+                                >
+                                    <option value="">Select Sex</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
                             <div className="form-group position-relative">
                                 <label htmlFor="age" className="form-label">Age</label>
                                 <input 
@@ -198,13 +179,13 @@ export const PetSignUp = () => {
                                 />
                             </div>
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>
-                        {showBackButton && (
-                            <Link to="/private" className="btn btn-secondary mt-3">Back to Private</Link>
-                        )}
+                            {showBackButton && (
+                                <Link to="/private" className="btn btn-secondary mt-3">Back to Private</Link>
+                            )}
                         </form>
                     </div>
                 </div>
             </div>
-        </section>    
+        </section>
     );
 };
