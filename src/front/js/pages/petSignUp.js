@@ -119,15 +119,18 @@ export const PetSignUp = () => {
                             </div>
                             <div className="form-group position-relative">
                                 <label htmlFor="sex" className="form-label">Sex</label>
-                                <input 
-                                    type="text" 
-                                    className="form-control" 
+                                <select 
+                                    className="form-select" 
                                     id="sex" 
                                     name="sex" 
                                     value={formData.sex} 
                                     onChange={handleChange} 
-                                    required 
-                                />
+                                    required
+                                >
+                                    <option value="">Select Sex</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
                             </div>
                             <div className="form-group position-relative">
                                 <label htmlFor="age" className="form-label">Age</label>
