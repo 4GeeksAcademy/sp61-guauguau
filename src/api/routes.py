@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, Blueprint, current_app
 from api.models import db, User, Pet, City, Owner, Breed, Photo, Adminn, Like, Match, Message
 import cloudinary.uploader
 from cloudinary.uploader import upload
+from geopy.geocoders import Nominatim
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS, cross_origin
 import os
@@ -128,15 +129,27 @@ def login():
 @api.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
-    current_owner_email = get_jwt_identity()
-    owner = Owner.query.filter_by(email=current_owner_email).first()
-    if not owner:
-        return jsonify({"error": "Owner not found"}), 404
+    try:
+        current_owner_email = get_jwt_identity()
+        print(f"Current owner email: {current_owner_email}")  # Log para depuración
+        owner = Owner.query.filter_by(email=current_owner_email).first()
+        if not owner:
+            return jsonify({"error": "Owner not found"}), 404
 
-    owner_data = owner.serialize()
-    owner_data["pets"] = [pet.serialize() for pet in owner.pets]
+        # Inicializar geolocator
+        geolocator = Nominatim(user_agent="geoapiExercises")
+        location = geolocator.reverse(f"{owner.latitude}, {owner.longitude}")
+        city = location.raw['address'].get('city', location.raw['address'].get('town', ''))
 
-    return jsonify({"owner": owner_data}), 200
+        owner_data = owner.serialize()
+        owner_data["pets"] = [pet.serialize() for pet in owner.pets]
+        owner_data["city"] = city  # Add city to owner data
+
+        return jsonify({"owner": owner_data}), 200
+    except Exception as e:
+        print(f"Error in protected route: {str(e)}")  # Log para depuración
+        return jsonify({"error": str(e)}), 500
+
 
 
 ##### ROUTES PETS #########################################
@@ -538,23 +551,28 @@ def get_compatibilidad(raza):
 @api.route('/owner_pets', methods=['GET'])
 @jwt_required()
 def get_owner_pets():
-    current_owner_email = get_jwt_identity()
-    owner = Owner.query.filter_by(email=current_owner_email).first()
-    if not owner:
-        return jsonify({"error": "Owner not found"}), 404
+    try:
+        current_owner_email = get_jwt_identity()
+        print(f"Current owner email: {current_owner_email}")  # Log para depuración
+        owner = Owner.query.filter_by(email=current_owner_email).first()
+        if not owner:
+            return jsonify({"error": "Owner not found"}), 404
 
-    pets = Pet.query.filter_by(owner_id=owner.id).all()
-    return jsonify([{
-        'id': pet.id,
-        'name': pet.name,
-        'breed': pet.breed.name if pet.breed else None,
-        'sex': pet.sex,
-        'age': pet.age,
-        'pedigree': pet.pedigree,
-        'photo': pet.profile_photo_url,
-        'owner_id': pet.owner_id,
-        'owner_name': pet.owner.name if pet.owner else None
-    } for pet in pets]), 200
+        pets = Pet.query.filter_by(owner_id=owner.id).all()
+        return jsonify([{
+            'id': pet.id,
+            'name': pet.name,
+            'breed': pet.breed.name if pet.breed else None,
+            'sex': pet.sex,
+            'age': pet.age,
+            'pedigree': pet.pedigree,
+            'photo': pet.profile_photo_url,
+            'owner_id': pet.owner_id,
+            'owner_name': pet.owner.name if pet.owner else None
+        } for pet in pets]), 200
+    except Exception as e:
+        print(f"Error fetching owner's pets: {str(e)}")  # Log para depuración
+        return jsonify({"error": str(e)}), 500
 
 
 # LIKES Y MATCH

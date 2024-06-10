@@ -15,10 +15,12 @@ const Login = () => {
         e.preventDefault();
         setError("");
         try {
+            console.log("Attempting login with", email, password); // Log para depuración
             await actions.login(email, password);
             setIsLoggedIn(true);
             navigate('/private');
         } catch (error) {
+            console.error("Login failed:", error); // Log para depuración
             setError(error.message);
         }
     };
@@ -28,7 +30,7 @@ const Login = () => {
     };
 
     return (
-        <section className="section section-full section-top"> 
+        <section className="section section-full section-top">
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
@@ -68,7 +70,7 @@ const Login = () => {
                                         <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
                                     </button>
                                 </div>
-                            </div>    
+                            </div>
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Login</button>
                             {error && <div className="alert alert-danger mt-3">{error}</div>}
                             <div className="login-redirect">

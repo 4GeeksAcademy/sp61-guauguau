@@ -34,7 +34,7 @@ export const Home = () => {
                         <div className="col-md-6 main-img">
                         <div className="image-container position-relative">
                                 <img src={corazonesrojos} alt="Imagen de fondo" className="position-absolute top-0 start-0" style={{ zIndex: 1 }} />
-                                <img className src={salchichas} alt="Imagen con máscara de recorte" style={{ position: "relative", zIndex: 2 }} />
+                                <img src={salchichas} alt="Imagen con máscara de recorte" style={{ position: "relative", zIndex: 2 }} />
                             </div>
                         </div>
                     </div>
