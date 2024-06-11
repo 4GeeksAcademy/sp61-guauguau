@@ -35,9 +35,15 @@ export const OwnerSignUp = () => {
     });
 
     useEffect(() => {
+        let isMounted = true;
+
         if (formData.latitude && formData.longitude) {
             getAddressFromCoordinates(formData.latitude, formData.longitude);
         }
+
+        return () => {
+            isMounted = false;
+        };
     }, [formData.latitude, formData.longitude]);
 
     const handleChange = (e) => {
@@ -138,123 +144,123 @@ export const OwnerSignUp = () => {
                         <form className="form-styled" onSubmit={handleSubmit}>
                             <h1 className="text-center px-3 mb-4">Sign up as a GuauuGuauu Owner!</h1>
                             <h5 className="text-center text-muted mb-5">Please fill out the form to sign up.</h5>
-                                {successMessage && (
-                                    <div className="alert alert-success" role="alert">
-                                        {successMessage}
-                                    </div>
-                                )}
-                                <div className="form-group position-relative">
-                                    <label htmlFor="name" className="form-label">Name*</label>
-                                    <div className="input-icon d-flex align-items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person me-2" viewBox="0 0 16 16">
-                                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
-                                        </svg>
-                                        <input 
-                                            type="text" 
-                                            className="form-control" 
-                                            id="name" 
-                                            name="name" 
-                                            placeholder="Your name"
-                                            value={formData.name} 
-                                            onChange={handleChange} 
-                                            required 
-                                        />
-                                    </div>
-                                </div>    
-                                <div className="form-group position-relative">
-                                    <label htmlFor="email" className="form-label">Email*</label>
-                                    <div className="input-icon d-flex align-items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope me-2" viewBox="0 0 16 16">
-                                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
-                                        </svg>
-                                    <input 
-                                        type="email" 
-                                        className="form-control mb-3" 
-                                        id="email" 
-                                        name="email" 
+                            {successMessage && (
+                                <div className="alert alert-success" role="alert">
+                                    {successMessage}
+                                </div>
+                            )}
+                            <div className="form-group position-relative">
+                                <label htmlFor="name" className="form-label">Name*</label>
+                                <div className="input-icon d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person me-2" viewBox="0 0 16 16">
+                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+                                    </svg>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="name"
+                                        name="name"
+                                        placeholder="Your name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="email" className="form-label">Email*</label>
+                                <div className="input-icon d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope me-2" viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+                                    </svg>
+                                    <input
+                                        type="email"
+                                        className="form-control mb-3"
+                                        id="email"
+                                        name="email"
                                         placeholder="Enter your email"
-                                        value={formData.email} 
-                                        onChange={handleChange} 
-                                        required 
-                                    />
-                                    </div>
-                                </div>
-                                <div className="form-group position-relative">
-                                    <label htmlFor="password" className="form-label">Password*</label>
-                                    <div className="input-icon d-flex align-items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock me-2" viewBox="0 0 16 16">
-                                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
-                                        </svg>
-                                        <input 
-                                            type={passwordVisible ? "text" : "password"} 
-                                            className="form-control mb-3" 
-                                            id="password" 
-                                            name="password" 
-                                            placeholder="Create your password"
-                                            value={formData.password} 
-                                            onChange={handleChange} 
-                                            required 
-                                        />
-                                        <button type="button" id="toggle-password" onClick={togglePasswordVisibility} className="btn btn-link toggle-password">
-                                            <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className="form-group position-relative">
-                                    <label htmlFor="address" className="form-label">Address</label>
-                                    <div className="input-icon d-flex align-items-center">
-                                        <i className="fa fa-map-location-dot me-2"></i>
-                                        <input 
-                                            type="text" 
-                                            className="form-control mb-3" 
-                                            id="address" 
-                                            name="address" 
-                                            placeholder="Enter your address"
-                                            value={formData.address} 
-                                            onChange={handleAddressChange} 
-                                            required 
-                                        />  
-                                    </div>
-                                </div>
-                                <div className="form-group position-relative">
-                                    <label htmlFor="latitude" className="form-label">Latitude</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control read-only mb-3 " 
-                                        id="latitude" 
-                                        name="latitude" 
-                                        value={formData.latitude} 
-                                        readOnly 
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
                                     />
                                 </div>
-                                <div className="form-group position-relative">
-                                    <label htmlFor="longitude" className="form-label">Longitude</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control read-only mb-3" 
-                                        id="longitude" 
-                                        name="longitude" 
-                                        value={formData.longitude} 
-                                        readOnly 
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="password" className="form-label">Password*</label>
+                                <div className="input-icon d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock me-2" viewBox="0 0 16 16">
+                                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
+                                    </svg>
+                                    <input
+                                        type={passwordVisible ? "text" : "password"}
+                                        className="form-control mb-3"
+                                        id="password"
+                                        name="password"
+                                        placeholder="Create your password"
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    <button type="button" id="toggle-password" onClick={togglePasswordVisibility} className="btn btn-link toggle-password">
+                                        <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="address" className="form-label">Address</label>
+                                <div className="input-icon d-flex align-items-center">
+                                    <i className="fa fa-map-location-dot me-2"></i>
+                                    <input
+                                        type="text"
+                                        className="form-control mb-3"
+                                        id="address"
+                                        name="address"
+                                        placeholder="Enter your address"
+                                        value={formData.address}
+                                        onChange={handleAddressChange}
+                                        required
                                     />
                                 </div>
-                                <div className="form-group position-relative">
-                                    <GoogleMap
-                                        mapContainerStyle={mapContainerStyle}
-                                        zoom={14}
-                                        center={{ lat: formData.latitude, lng: formData.longitude }}
-                                    >
-                                        <Marker
-                                            position={{ lat: formData.latitude, lng: formData.longitude }}
-                                            draggable={true}
-                                            onDragEnd={handleMarkerDragEnd}
-                                        />
-                                    </GoogleMap>
-                                </div>  
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="latitude" className="form-label">Latitude</label>
+                                <input
+                                    type="text"
+                                    className="form-control read-only mb-3 "
+                                    id="latitude"
+                                    name="latitude"
+                                    value={formData.latitude}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="form-group position-relative">
+                                <label htmlFor="longitude" className="form-label">Longitude</label>
+                                <input
+                                    type="text"
+                                    className="form-control read-only mb-3"
+                                    id="longitude"
+                                    name="longitude"
+                                    value={formData.longitude}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="form-group position-relative">
+                                <GoogleMap
+                                    mapContainerStyle={mapContainerStyle}
+                                    zoom={14}
+                                    center={{ lat: formData.latitude, lng: formData.longitude }}
+                                >
+                                    <Marker
+                                        position={{ lat: formData.latitude, lng: formData.longitude }}
+                                        draggable={true}
+                                        onDragEnd={handleMarkerDragEnd}
+                                    />
+                                </GoogleMap>
+                            </div>
                             <div className="form-row align-items-center">
                                 <div className="col-md-auto">
                                     <div className="custom-control custom-checkbox mb-3 mb-md-0">
-                                        <input type="checkbox" name="checkbox"  className="custom-control-input mr-2" id="sign-in-checkbox"></input>
+                                        <input type="checkbox" name="checkbox" className="custom-control-input mr-2" id="sign-in-checkbox"></input>
                                         <label className="custom-control-label d-flex align-items-center" htmlFor="sign-in-checkbox">
                                             <p className="mb-0 me-1">I agree to</p>
                                             <a href="#">terms and conditions</a>
@@ -263,7 +269,7 @@ export const OwnerSignUp = () => {
                                 </div>
                             </div>
                             <div className="button-group">
-                                <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>   
+                                <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>
                             </div>
                             <div className="login-redirect">
                                 <Link to="/home">Back home</Link>
@@ -271,7 +277,7 @@ export const OwnerSignUp = () => {
                             <div className="login-redirect">
                                 <p>Already have an account? <Link to="/login">Log In Here</Link></p>
                             </div>
-                         </form>      
+                        </form>
                     </div>
                 </div>
             </div>

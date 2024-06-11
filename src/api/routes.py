@@ -39,7 +39,6 @@ def get_owners():
 def create_owner():
     try:
         data = request.json
-        current_app.logger.info(f"Received data: {data}")
         required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
         for field in required_fields:
             if field not in data:
@@ -53,7 +52,6 @@ def create_owner():
         geolocator = Nominatim(user_agent="geoapiExercises")
         location = geolocator.reverse(f"{data['latitude']}, {data['longitude']}")
         city_name = location.raw['address'].get('city', location.raw['address'].get('town', ''))
-        current_app.logger.info(f"Geolocation result: {location.raw}")
 
         # Buscar o crear la ciudad en la base de datos
         city = City.query.filter_by(name=city_name).first()
@@ -61,7 +59,6 @@ def create_owner():
             city = City(name=city_name, pet_friendly='Unknown')  # Ajustar según sea necesario
             db.session.add(city)
             db.session.commit()
-            current_app.logger.info(f"Created new city: {city_name}")
 
         new_owner = Owner(
             email=data['email'], 
@@ -75,12 +72,11 @@ def create_owner():
         db.session.add(new_owner)
         db.session.commit()
 
-        current_app.logger.info(f"New owner created: {new_owner.email}")
-
         return jsonify({"message": "Owner created!"}), 200
     except Exception as e:
         current_app.logger.error(f"Error creating owner: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 
 
@@ -178,8 +174,7 @@ def protected():
         if not owner:
             return jsonify({"error": "Owner not found"}), 404
 
-        # Inicializar geolocator
-        geolocator = Nominatim(user_agent="geoapiExercises", timeout=10)  # Añadir un tiempo de espera más largo
+        geolocator = Nominatim(user_agent="geoapiExercises", timeout=10)
         location = geolocator.reverse(f"{owner.latitude}, {owner.longitude}")
         city = location.raw['address'].get('city', location.raw['address'].get('town', ''))
 
@@ -191,6 +186,7 @@ def protected():
     except Exception as e:
         print(f"Error in protected route: {str(e)}")  # Log para depuración
         return jsonify({"error": str(e)}), 500
+
 
 ##### ROUTES PETS #########################################
 @api.route('/pets', methods=['GET'])
@@ -645,7 +641,6 @@ def get_compatibilidad(raza):
 def get_owner_pets():
     try:
         current_owner_email = get_jwt_identity()
-        print(f"Current owner email: {current_owner_email}")  # Log para depuración
         owner = Owner.query.filter_by(email=current_owner_email).first()
         if not owner:
             return jsonify({"error": "Owner not found"}), 404
@@ -658,12 +653,11 @@ def get_owner_pets():
             'sex': pet.sex,
             'age': pet.age,
             'pedigree': pet.pedigree,
-            'photo': pet.profile_photo_url,
+            'profile_photo_url': pet.profile_photo_url,
             'owner_id': pet.owner_id,
             'owner_name': pet.owner.name if pet.owner else None
         } for pet in pets]), 200
     except Exception as e:
-        print(f"Error fetching owner's pets: {str(e)}")  # Log para depuración
         return jsonify({"error": str(e)}), 500
 
 

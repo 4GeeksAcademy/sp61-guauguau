@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
 import { Context } from "../store/appContext";
 import { useSpring, animated } from "react-spring";
+import { PetsFinder } from "./finder";
 
 export const Pets = () => {
     const { store, actions } = useContext(Context);
@@ -139,6 +140,8 @@ export const Pets = () => {
     };
 
     return (
+        <>
+        
         <div className="pets-container">
             <h1 className="my-4">Find Your Perfect Pet</h1>
             {isLoading ? (
@@ -158,11 +161,13 @@ export const Pets = () => {
                                 ))}
                             </select>
                             {selectedPet && (
-                                <div className="selected-pet-info">
-                                    <img src={selectedPet.profile_photo_url} alt={selectedPet.name} className="selected-pet-photo" />
-                                    <span>{selectedPet.name}</span>
-                                </div>
-                            )}
+                            <div className="selected-pet-info">
+                                {selectedPet.profile_photo_url && (
+                                <img src={selectedPet.profile_photo_url} alt={selectedPet.name} className="selected-pet-photo" />
+                                )}
+        <span>{selectedPet.name}</span>
+    </div>
+)}
                         </div>
                     )}
                     <div className="swipe-container">
@@ -254,5 +259,8 @@ export const Pets = () => {
                 </div>
             </div>
         </div>
+        <PetsFinder/>
+        
+    </>
     );
 };

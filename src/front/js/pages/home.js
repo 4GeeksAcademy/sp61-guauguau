@@ -5,6 +5,7 @@ import logoGuauuGuauu from "../../img/logo.png";
 import perroImage from "../../img/perro4.png";
 import salchichas from "../../img/salchichas.png";
 import corazonesrojos from "../../img/corazonesrojos.png";
+
 import "../../styles/home.css";
 import { ApiBreed } from "./apiBreed";
 
@@ -16,30 +17,35 @@ export const Home = () => {
 
     return (
         <div className="container-fluid text-center">
-            <div className="container-home">
-                
-                <div className="jumbotron p-1">
-                    <div className="row flex-sm-row flex-md-row flex-column jumbo-contain">
-                        <div className="col-md-6 mb-5">
-                            <h1 className="display-4 main-text">Connect Your <span className="dog-title">Dog</span> with New Friends<br/>Join Our Community Today!</h1>
-                            <p className="lead my-4">
-                            <Link to="/login">
-                                <button className="btn btn-multicolor ps-5 pe-5">Login</button>
-                            </Link>
-                            <Link to="/ownersignup">
-                                <button className="btn btn-multicolor-border ps-5 pe-5">Signup</button>
-                            </Link>
-                            </p>
-                        </div>
-                        <div className="col-md-6 main-img">
-                        <div className="image-container position-relative">
-                                <img src={corazonesrojos} alt="Imagen de fondo" className="position-absolute top-0 start-0" style={{ zIndex: 1 }} />
-                                <img src={salchichas} alt="Imagen con máscara de recorte" style={{ position: "relative", zIndex: 2 }} />
+            <header>
+                <div className="row justify-content-center">
+                    <div className="col-lg-11">
+                        <div className="row">
+                            <div className="col-xxl-6 col-xl-5 d-flex align-items-center">
+                                <div className="banner-content">
+                                    <h1 className="display-4 main-text">Connect Your <span className="dog-title">Dog</span> with New Friends<br/>Join Our Community Today!</h1>
+                                        <p className="lead my-4">
+                                            <Link to="/login">
+                                                <button className="btn btn-multicolor ps-5 pe-5">Login</button>
+                                            </Link>
+                                            <Link to="/ownersignup">
+                                                <button className="btn btn-multicolor-border ps-5 pe-5">Signup</button>
+                                            </Link>
+                                        </p>
+                                </div>
+                            </div>
+                            <div className="col-xxl-6 col-xl-7 d-flex align-items-center justify-content-md-start justify-content-center">
+                                <div className="banner-img">
+                                    <img className="img-fluid salchichas" src={salchichas} alt=""/>
+                                    <img src={corazonesrojos} alt="Imagen de fondo" className="img-fluid corazones" />
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
+
             
 			<PetsFinder />
             
@@ -59,9 +65,7 @@ export const Home = () => {
 			<Team />
 
            
-            <div className="alert alert-info">
-                {store.message || "Loading message from the backend (make sure your python backend is running)..."}
-            </div>
+            
             
         </div>
     );
