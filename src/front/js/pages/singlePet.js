@@ -13,6 +13,7 @@ export const SinglePet = () => {
         age: '',
         sex: '',
         breed: '',
+        city: '',
         pedigree: false,
         description: '',
         photos: [],
@@ -43,6 +44,7 @@ export const SinglePet = () => {
                         age: pet.age || '',
                         sex: pet.sex || '',
                         breed: pet.breed || '',
+                        city: pet.owner_city || '',
                         pedigree: pet.pedigree || false,
                         description: pet.description || '',
                         photos: pet.photos || [],
@@ -139,6 +141,10 @@ export const SinglePet = () => {
                         <div className="detail-item">
                             <label>Sex:</label>
                             <span>{petDetails.sex}</span>
+                        </div>
+                        <div className="detail-item">
+                            <label>City:</label>
+                            <span>{petDetails.city}</span>
                         </div>
                         <div className="detail-item">
                             <label>Pedigree:</label>
