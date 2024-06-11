@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
 import perroImage from "../../img/perro2.png";
 import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css'; // Importa los estilos del slider
+import ReactPaginate from 'react-paginate'; // Importa la biblioteca de paginación
 
 export const PetsFinder = () => {
     const { store, actions } = useContext(Context);
@@ -13,6 +15,8 @@ export const PetsFinder = () => {
         ageRange: [0, 20],
         city: ""
     });
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 4;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,6 +52,14 @@ export const PetsFinder = () => {
         );
     });
 
+    const handlePageClick = ({ selected }) => {
+        setCurrentPage(selected);
+    };
+
+    const offset = currentPage * itemsPerPage;
+    const currentPets = filteredPets.slice(offset, offset + itemsPerPage);
+    const pageCount = Math.ceil(filteredPets.length / itemsPerPage);
+
     return (
         <div className="container-fluid finder-main-container">
             <h1 className="my-4 pt-4">You can filter and find the pet</h1>
@@ -56,10 +68,10 @@ export const PetsFinder = () => {
                     <img src={perroImage} className="floating-image" alt="Perro" />
                 </div>
             </div>
-            <div className="mb-4 form-finder">
+            <div className="mb-4 form-finder ">
                 <form>
-                    <div className="row d-flex flex-row form-finder-filters">
-                        <div className="col-3 filter">
+                    <div className="row d-flex flex-row form-finder-filters ">
+                        <div className="col-3 filter ">
                             <label htmlFor="breed">Breed</label>
                             <select
                                 name="breed"
@@ -118,21 +130,23 @@ export const PetsFinder = () => {
             {isLoading ? (
                 <p>Loading...</p>
             ) : (
-                <div className="row">
-                    {filteredPets.length > 0 ? (
-                        filteredPets.map(pet => (
+                <div className="row finder-gallery">
+                    {currentPets.length > 0 ? (
+                        currentPets.map(pet => (
                             <div key={pet.id} className="col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-4">
-                                <div className="card">
-                                    {pet.profile_photo_url && <img src={pet.profile_photo_url} className="card-img-top" alt={pet.name} />}
-                                    <div className="card-body">
-                                        <h2 className="card-title">
-                                            <Link to={`/singlepet/${pet.id}`}>{pet.name}</Link>
-                                        </h2>
-                                        <p className="card-text">Breed: {pet.breed}</p>
-                                        <p className="card-text">Sex: {pet.sex}</p>
-                                        <p className="card-text">Age: {pet.age}</p>
-                                        <p className="card-text">Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
-                                        <p className="card-text">City: {pet.owner_city}</p>
+                                <div className="card position-relative p-0 border border-0">
+                                    {pet.profile_photo_url && (
+                                        <div className="position-relative">
+                                            <img src={pet.profile_photo_url} className="card-img-top" alt={pet.name} />
+                                            <h2 className="card-title-overlay">
+                                                <Link to={`/singlepet/${pet.id}`} className="text-white">{pet.name}</Link>
+                                            </h2>
+                                        </div>
+                                    )}
+                                    <div className="card-body card-body-gallery">
+                                        <p className="card-text-finder">{pet.owner_city}</p>
+                                        <span className="card-text-finder">{pet.breed} </span> 
+                                        <span className="card-text-finder">{pet.age} years </span> 
                                     </div>
                                 </div>
                             </div>
@@ -141,6 +155,27 @@ export const PetsFinder = () => {
                         <p>No pets available</p>
                     )}
                 </div>
+            )}
+            {filteredPets.length > itemsPerPage && (
+                <ReactPaginate
+                    previousLabel={"← "}
+                    nextLabel={" →"}
+                    breakLabel={"..."}
+                    pageCount={pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={3}
+                    onPageChange={handlePageClick}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    previousClassName={"previous"}
+                    nextClassName={"next"}
+                    breakClassName={"break-me"}
+                    pageClassName={"page"}
+                    pageLinkClassName={"page-link"}
+                    previousLinkClassName={"previous-link"}
+                    nextLinkClassName={"next-link"}
+                    activeLinkClassName={"active-link"}
+                />
             )}
         </div>
     );

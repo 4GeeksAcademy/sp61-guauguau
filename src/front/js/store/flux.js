@@ -259,6 +259,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+			
 			fetchOwners: () => {
 				fetch(process.env.BACKEND_URL + "/api/owner")
 					.then(response => response.json())

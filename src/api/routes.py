@@ -39,7 +39,6 @@ def get_owners():
 def create_owner():
     try:
         data = request.json
-        current_app.logger.info(f"Received data: {data}")
         required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
         for field in required_fields:
             if field not in data:
@@ -53,7 +52,6 @@ def create_owner():
         geolocator = Nominatim(user_agent="geoapiExercises")
         location = geolocator.reverse(f"{data['latitude']}, {data['longitude']}")
         city_name = location.raw['address'].get('city', location.raw['address'].get('town', ''))
-        current_app.logger.info(f"Geolocation result: {location.raw}")
 
         # Buscar o crear la ciudad en la base de datos
         city = City.query.filter_by(name=city_name).first()
@@ -61,7 +59,6 @@ def create_owner():
             city = City(name=city_name, pet_friendly='Unknown')  # Ajustar según sea necesario
             db.session.add(city)
             db.session.commit()
-            current_app.logger.info(f"Created new city: {city_name}")
 
         new_owner = Owner(
             email=data['email'], 
@@ -75,12 +72,11 @@ def create_owner():
         db.session.add(new_owner)
         db.session.commit()
 
-        current_app.logger.info(f"New owner created: {new_owner.email}")
-
         return jsonify({"message": "Owner created!"}), 200
     except Exception as e:
         current_app.logger.error(f"Error creating owner: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 
 
