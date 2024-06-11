@@ -5,11 +5,11 @@ from cloudinary.uploader import upload
 from geopy.geocoders import Nominatim
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS, cross_origin
+import requests
 import os
 from openai import OpenAI
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 from flask_socketio import join_room, leave_room, send, emit, SocketIO
-
 # Inicializar el cliente de OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -332,6 +332,56 @@ def get_breed():
         'type': breed.type,
         'life_span': breed.life_span,
     } for breed in breed]), 200
+####esta ruta es la que se carga en petsignup#########
+def fetch_and_save_breeds():
+    url = 'https://api.thedogapi.com/v1/breeds'
+    headers = {
+        'x-api-key': 'your-api-key'
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        breeds = response.json()
+        for breed in breeds:
+            existing_breed = Breed.query.get(breed['id'])
+            if not existing_breed:
+                new_breed = Breed(
+                    id=breed['id'],
+                    name=breed['name'],
+                    type=breed.get('breed_group', 'Unknown'),
+                    life_span=breed.get('life_span', 'Unknown')
+                )
+                db.session.add(new_breed)
+        db.session.commit()
+    else:
+        print(f"Failed to fetch breeds: {response.status_code}")
+@api.route('/breed', methods=['GET'])
+def get_breeds():
+    breeds = Breed.query.all()
+    return jsonify([breed.serialize() for breed in breeds]), 200
+
+@api.route('/populate_breeds', methods=['POST'])
+def populate_breeds():
+    url = 'https://api.thedogapi.com/v1/breeds'
+    headers = {
+        'x-api-key': 'your-api-key'
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        breeds = response.json()
+        for breed in breeds:
+            existing_breed = Breed.query.get(breed['id'])
+            if not existing_breed:
+                new_breed = Breed(
+                    id=breed['id'],
+                    name=breed['name'],
+                    type=breed.get('breed_group', 'Unknown'),
+                    life_span=breed.get('life_span', 'Unknown')
+                )
+                db.session.add(new_breed)
+        db.session.commit()
+        return jsonify({"message": "Breeds populated successfully"}), 200
+    else:
+        return jsonify({"error": f"Failed to fetch breeds: {response.status_code}"}), 400
 
 @api.route('/breed', methods=['POST'])
 def add_breed():

@@ -16,6 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			currentPetId: null,
 			message: null,
 			breed: [],
+			externalBreeds: [], // Nueva propiedad para almacenar las razas de la API externa
 			currentBreed: null,
 			admins: [],
 			adminAuth: false,
@@ -57,6 +58,29 @@ const getState = ({ getStore, getActions, setStore }) => {
 					return elm;
 				});
 				setStore({ demo: demo });
+			},
+			adminLogin: async (email, password) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "/api/adminlogin", {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ email, password })
+					});
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.message);
+					}
+					const data = await response.json();
+					localStorage.setItem("admin_token", data.access_token);
+					setStore({ adminAuth: true, adminEmail: email });
+				} catch (error) {
+					setStore({ adminAuth: false, adminErrorMessage: error.message });
+					throw error;
+				}
+			},
+			adminLogout: () => {
+				localStorage.removeItem("admin_token");
+				setStore({ adminAuth: false, adminEmail: null });
 			},
 			login: async (email, password) => {
 				const requestOptions = {
@@ -389,6 +413,43 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.catch(error => console.error("Error deleting pet:", error));
 			},
+			fetchExternalBreeds: async () => {
+                try {
+                    const response = await axios.get('https://api.thedogapi.com/v1/breeds', {
+                        headers: {
+                            'x-api-key': 'your-api-key'
+                        }
+                    });
+                    setStore({ externalBreeds: response.data });
+                } catch (error) {
+                    console.error("Error fetching breeds from external API:", error);
+                }
+            },
+			fetchBreeds: async () => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "/api/breed");
+					const breeds = await response.json();
+					setStore({ breeds: breeds });
+				} catch (error) {
+					console.error("Error fetching breeds:", error);
+				}
+			},
+			populateBreeds: async () => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + "/api/populate_breeds", {
+						method: 'POST'
+					});
+					if (response.ok) {
+						console.log("Breeds populated successfully");
+						getActions().fetchBreeds();
+					} else {
+						console.error("Failed to populate breeds");
+					}
+				} catch (error) {
+					console.error("Error populating breeds:", error);
+				}
+			},
+			
 			deleteOwner: ownerId => {
 				const requestOptions = {
 					method: 'DELETE'

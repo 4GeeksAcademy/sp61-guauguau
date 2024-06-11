@@ -1,24 +1,22 @@
 import React, { useState, useContext, useEffect } from "react";
 import GeocodingService from "./GeocodingService";
 import { Context } from "../store/appContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
-
 
 const mapContainerStyle = {
     width: "100%",
     height: "400px"
 };
 
-
 const center = {
     lat: 40.4169473,
     lng: -3.7035285
 };
 
-
 export const OwnerSignUp = () => {
     const { actions } = useContext(Context);
+    const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -29,22 +27,18 @@ export const OwnerSignUp = () => {
         longitude: center.lng
     });
 
-
     const [successMessage, setSuccessMessage] = useState(null);
     const [typingTimeout, setTypingTimeout] = useState(null);
-
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
-
 
     useEffect(() => {
         if (formData.latitude && formData.longitude) {
             getAddressFromCoordinates(formData.latitude, formData.longitude);
         }
     }, [formData.latitude, formData.longitude]);
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -54,7 +48,6 @@ export const OwnerSignUp = () => {
         });
     };
 
-
     const handleAddressChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -62,12 +55,10 @@ export const OwnerSignUp = () => {
             [name]: value
         });
 
-
         if (name === "address") {
             if (typingTimeout) {
                 clearTimeout(typingTimeout);
             }
-
 
             setTypingTimeout(
                 setTimeout(async () => {
@@ -90,7 +81,6 @@ export const OwnerSignUp = () => {
         }
     };
 
-
     const handleMarkerDragEnd = async (e) => {
         const lat = e.latLng.lat();
         const lng = e.latLng.lng();
@@ -100,7 +90,6 @@ export const OwnerSignUp = () => {
             longitude: lng
         });
     };
-
 
     const getAddressFromCoordinates = async (lat, lng) => {
         try {
@@ -116,7 +105,6 @@ export const OwnerSignUp = () => {
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -130,10 +118,12 @@ export const OwnerSignUp = () => {
                 latitude: center.lat,
                 longitude: center.lng
             });
+            navigate("/login"); // Redirigir al login
         } catch (error) {
             console.error("Error signing up:", error);
         }
     };
+
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };

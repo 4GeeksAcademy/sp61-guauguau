@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-const AdminLogin = () => {
+export const AdminLogin = () => {
     const { store, actions } = useContext(Context);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -93,4 +93,4 @@ const AdminLogin = () => {
     );
 };
 
-export default AdminLogin;
+

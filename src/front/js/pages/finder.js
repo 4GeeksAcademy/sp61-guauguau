@@ -4,7 +4,6 @@ import { Context } from "../store/appContext";
 import perroImage from "../../img/perro2.png";
 import Slider from 'rc-slider';
 
-
 export const PetsFinder = () => {
     const { store, actions } = useContext(Context);
     const [isLoading, setIsLoading] = useState(true);
@@ -18,6 +17,7 @@ export const PetsFinder = () => {
     useEffect(() => {
         const fetchData = async () => {
             await actions.fetchPets();
+            await actions.populateBreeds();
             setIsLoading(false);
         };
 
@@ -61,13 +61,17 @@ export const PetsFinder = () => {
                     <div className="row d-flex flex-row form-finder-filters">
                         <div className="col-3 filter">
                             <label htmlFor="breed">Breed</label>
-                            <input
-                                type="text"
+                            <select
                                 name="breed"
                                 className="form-control"
                                 value={filters.breed}
                                 onChange={handleChange}
-                            />
+                            >
+                                <option value="">All</option>
+                                {store.breeds && store.breeds.map(breed => (
+                                    <option key={breed.id} value={breed.name}>{breed.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="col-3 filter">
                             <label htmlFor="sex">Sex</label>
@@ -82,7 +86,6 @@ export const PetsFinder = () => {
                                 <option value="Female">Female</option>
                             </select>
                         </div>
-                        
                         <div className="col-3 filter">
                             <label htmlFor="city">City</label>
                             <input
@@ -93,7 +96,7 @@ export const PetsFinder = () => {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className=" col-md-3 col-6 filter">
+                        <div className="col-md-3 col-6 filter">
                             <label htmlFor="age">Age Range</label>
                             <Slider
                                 range
@@ -119,7 +122,7 @@ export const PetsFinder = () => {
                     {filteredPets.length > 0 ? (
                         filteredPets.map(pet => (
                             <div key={pet.id} className="col-lg-3 col-md-4 col-sm-6 col-xs-12 mb-4">
-                                <div className="card ">
+                                <div className="card">
                                     {pet.profile_photo_url && <img src={pet.profile_photo_url} className="card-img-top" alt={pet.name} />}
                                     <div className="card-body">
                                         <h2 className="card-title">
