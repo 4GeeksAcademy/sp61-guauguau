@@ -16,7 +16,7 @@ export const PetsFinder = () => {
         city: ""
     });
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 4;
+    const itemsPerPage = 8;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -62,20 +62,20 @@ export const PetsFinder = () => {
 
     return (
         <div className="container-fluid finder-main-container">
-            <h1 className="my-4 pt-4">You can filter and find the pet</h1>
+            <h1 className="my-4 pt-4 text-center">You can filter and find the pet</h1>
             <div className="finder-bg container">
                 <div className="image-wrapper">
                     <img src={perroImage} className="floating-image" alt="Perro" />
                 </div>
             </div>
-            <div className="mb-4 form-finder ">
-                <form>
+            <div className="mb-4 form-finder">
+                <form className="form-finder-main">
                     <div className="row d-flex flex-row form-finder-filters ">
                         <div className="col-3 filter ">
                             <label htmlFor="breed">Breed</label>
                             <select
                                 name="breed"
-                                className="form-control"
+                                className="form-control input-finder"
                                 value={filters.breed}
                                 onChange={handleChange}
                             >
@@ -89,7 +89,7 @@ export const PetsFinder = () => {
                             <label htmlFor="sex">Sex</label>
                             <select
                                 name="sex"
-                                className="form-control"
+                                className="form-control input-finder"
                                 value={filters.sex}
                                 onChange={handleChange}
                             >
@@ -103,7 +103,7 @@ export const PetsFinder = () => {
                             <input
                                 type="text"
                                 name="city"
-                                className="form-control"
+                                className="form-control input-finder"
                                 value={filters.city}
                                 onChange={handleChange}
                             />
@@ -144,7 +144,7 @@ export const PetsFinder = () => {
                                         </div>
                                     )}
                                     <div className="card-body card-body-gallery">
-                                        <p className="card-text-finder">{pet.owner_city}</p>
+                                        <p className="card-text-finder text-gallery">{pet.owner_city}</p>
                                         <span className="card-text-finder">{pet.breed} </span> 
                                         <span className="card-text-finder">{pet.age} years </span> 
                                     </div>

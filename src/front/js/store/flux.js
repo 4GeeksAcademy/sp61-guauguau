@@ -150,9 +150,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 								email: data.owner.email,
 								owner: data.owner,
 								ownerDescription: data.owner.description,
-								city: data.owner.city,  // Store city in the state
+								city: data.owner.city,
 								currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null
 							});
+							getActions().fetchOwnerPets();  // Añade esta línea para obtener las mascotas del propietario
 						} else {
 							console.error("Error verifying token:", await response.text());
 							setStore({ auth: false });
@@ -165,7 +166,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error verifying token:", error);
 					setStore({ auth: false });
 				}
-			},	
+			},
 			selectPet: (petId) => {
 				setStore({ selectedPetId: petId });
 			},

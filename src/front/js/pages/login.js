@@ -18,7 +18,7 @@ const Login = () => {
             console.log("Attempting login with", email, password); // Log para depuración
             await actions.login(email, password);
             setIsLoggedIn(true);
-            navigate('/private');
+            navigate('/pets');
         } catch (error) {
             console.error("Login failed:", error); // Log para depuración
             setError(error.message);

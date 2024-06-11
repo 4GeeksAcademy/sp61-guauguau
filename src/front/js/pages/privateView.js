@@ -17,14 +17,7 @@ export const PrivateView = () => {
             
             <Pets />
 			<PetsFinder />
-            
-
-			
-
-			
-
-           
-            
+             
             
         </div>
     );

@@ -96,5 +96,6 @@
 		"react-swipeable-views-utils": "^0.14.0",
 		"socket.io": "^4.7.5",
 		"socket.io-client": "^4.7.5"
-	}
+	},
+	"proxy": "https://stunning-space-eureka-r4r7699gj7wfwv7j-3001.app.github.dev"
 }

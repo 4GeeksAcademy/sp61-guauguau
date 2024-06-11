@@ -932,6 +932,7 @@ a, a:hover, a:visited, a:active {
     margin: 0 auto;
     margin-top: 150px;
     width: 100%;
+    padding-bottom: 2em;
     
 }
 
@@ -943,9 +944,18 @@ a, a:hover, a:visited, a:active {
   background: linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
   color: white;
   padding: 5px;
-  border-radius: 0 0 0 5px;
+  border-radius: 10px 0 0 10px;
+  
 }
-
+.form-finder-main {
+  background-color: transparent;
+  border:none;
+  border-radius: 5px;
+  margin: 5rem;
+  
+  padding: 40px;
+  box-shadow: none;
+}
 
 .form-finder {
     z-index: 1;
@@ -959,6 +969,21 @@ a, a:hover, a:visited, a:active {
   font-style: normal;
   font-size: 1.2em;
   line-height: 1px;
+}
+
+.text-gallery {
+  color: rgb(255, 99, 71);  
+  font-family: "Dosis", sans-serif;
+  font-size: 1.5rem;
+}
+.input-finder {
+  border-radius: 30px;
+  padding: 0.8em;
+}
+.input-finder:hover {
+  background: -webkit-linear-gradient(0deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+  color: white;
+  font-weight: 600;
 }
 
 .finder-bg .container {
@@ -1008,6 +1033,7 @@ a, a:hover, a:visited, a:active {
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
+    
     
 }
 
