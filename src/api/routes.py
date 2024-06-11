@@ -167,6 +167,7 @@ def login():
     access_token = create_access_token(identity=email)
     return jsonify(access_token=access_token)
 
+
 @api.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
@@ -178,7 +179,7 @@ def protected():
             return jsonify({"error": "Owner not found"}), 404
 
         # Inicializar geolocator
-        geolocator = Nominatim(user_agent="geoapiExercises")
+        geolocator = Nominatim(user_agent="geoapiExercises", timeout=10)  # Añadir un tiempo de espera más largo
         location = geolocator.reverse(f"{owner.latitude}, {owner.longitude}")
         city = location.raw['address'].get('city', location.raw['address'].get('town', ''))
 
@@ -190,7 +191,6 @@ def protected():
     except Exception as e:
         print(f"Error in protected route: {str(e)}")  # Log para depuración
         return jsonify({"error": str(e)}), 500
-
 
 ##### ROUTES PETS #########################################
 @api.route('/pets', methods=['GET'])
