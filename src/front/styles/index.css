@@ -1,12 +1,51 @@
-/* Definimos el contenedor de la imagen */
-
-
+/* Contenedor de las imágenes */
 .image-container {
-    width: 100%; 
-    height: auto; 
-    overflow: hidden;
-    position: relative;
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
 }
+
+/* Imagen de fondo (corazones) */
+.image-container .background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  object-fit: cover;
+}
+
+/* Imagen en primer plano (salchichas) */
+.image-container .foreground-image {
+  position: relative;
+  width: 100%;
+  height: auto;
+  z-index: 2;
+  object-fit: cover;
+}
+
+.jumbo-contain {
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .main-img {
+      order: -1;
+  }
+}
+
+/* Ocultar las imágenes en pantallas muy pequeñas */
+@media (max-width: 576px) {
+  .image-container .background-image,
+  .image-container .foreground-image {
+      display: block;
+      width: 100%;
+  }
+}
+
+
 body {
   font-family: "Comfortaa", sans-serif;
 }
@@ -132,28 +171,7 @@ section {
   background-color: #c0392b;
 }
 
-/* FOOTER */
-.footer {
-  background-color: #E7B2A5;
-  padding: 1rem 0;
-  width: 100%;
-  bottom: 0;
-}
-.container {
-  font-family: "Comfortaa", sans-serif;
-  font-size: 1rem;
-  font-weight: normal;
-  line-height: 1.5;
-  color: #212529;
-  text-align: left;
-  background-color: #FEF5F0;
-}
-h1 {
-  color: #30475E;
-}
-h1, h5 {
-  font-weight: bold;
-}
+
 
 /* FORMULARIOS */
 form {
@@ -966,7 +984,8 @@ a, a:hover, a:visited, a:active {
 .finder-main-container {
     background-color: #FBF6F3;
     margin-top: 150px;
-    
+    width: 90%;
+    margin: 0 auto;
 }
 
 .form-finder {

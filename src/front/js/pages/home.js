@@ -32,9 +32,9 @@ export const Home = () => {
                             </p>
                         </div>
                         <div className="col-md-6 main-img">
-                        <div className="image-container position-relative">
-                                <img src={corazonesrojos} alt="Imagen de fondo" className="position-absolute top-0 start-0" style={{ zIndex: 1 }} />
-                                <img src={salchichas} alt="Imagen con máscara de recorte" style={{ position: "relative", zIndex: 2 }} />
+                            <div className="image-container position-relative">
+                                    <img src={corazonesrojos} alt="Imagen de fondo" className="position-absolute top-3 start-0" style={{ zIndex: 1 }} />
+                                    <img src={salchichas} alt="Imagen con máscara de recorte"  style={{ zIndex: 2 }} />
                             </div>
                         </div>
                     </div>
@@ -59,9 +59,7 @@ export const Home = () => {
 			<Team />
 
            
-            <div className="alert alert-info">
-                {store.message || "Loading message from the backend (make sure your python backend is running)..."}
-            </div>
+            
             
         </div>
     );
