@@ -138,14 +138,15 @@ const getState = ({ getStore, getActions, setStore }) => {
                         });
                         if (response.ok) {
                             const data = await response.json();
-                            console.log("Verify token data:", data);  // Log para depuración
                             setStore({
                                 profilePictureUrl: data.owner.profile_picture_url,
                                 email: data.owner.email,
                                 owner: data.owner,
                                 ownerDescription: data.owner.description,
-                                currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null  // Solo establece currentPetId si hay mascotas
+                                city: data.owner.city,
+                                currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null
                             });
+                            getActions().fetchOwnerPets();  // Añade esta línea para obtener las mascotas del propietario
                         } else {
                             console.error("Error verifying token:", await response.text());
                             setStore({ auth: false });
