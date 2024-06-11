@@ -95,10 +95,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 						console.log("Login response data:", data); // Log para depuración
 						localStorage.setItem("token", data.access_token);
 						setStore({ auth: true, email });
-			
 						const token = data.access_token;
 						console.log("Token:", token); // Log para depuración
-			
 						// Obtener datos del propietario autenticado
 						const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
 							method: 'GET',
