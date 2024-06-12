@@ -124,7 +124,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     throw error;
                 }
             },
-
             verifyToken: async () => {
 				try {
 					const token = localStorage.getItem("token");
@@ -132,8 +131,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 						setStore({ auth: false });
 						return;
 					}
-			
-					setStore({ auth: true, token });
 			
 					const response = await fetch(`${process.env.BACKEND_URL}/api/protected`, {
 						method: 'GET',
@@ -143,7 +140,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					});
 			
 					if (!response.ok) {
-						console.error("Error verifying token:", await response.text());
+						const errorText = await response.text();
+						console.error("Error verifying token:", errorText);
 						setStore({ auth: false });
 						localStorage.removeItem("token");
 						return;
@@ -151,6 +149,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			
 					const data = await response.json();
 					setStore({
+						auth: true,
+						token,
 						profilePictureUrl: data.owner.profile_picture_url,
 						email: data.owner.email,
 						owner: data.owner,
