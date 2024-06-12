@@ -1,10 +1,12 @@
 import React from 'react';
 import '../../styles/home.css'; // Asegúrate de que esta ruta sea correcta
+import Juan from "../../img/juan.jpg"
+
 
 const teamMembers = [
     {
         name: "Juan",
-        imgSrc: "https://img.freepik.com/foto-gratis/hombre-feliz-pie-playa_107420-9868.jpg?t=st=1717894016~exp=1717897616~hmac=6d76c1b62095073a1fdda1ec136dc1fd455b7ff03cce0c62fc6bf5d97e9ba9ac&w=1800" // Reemplaza con la ruta correcta
+        imgSrc: Juan // Reemplaza con la ruta correcta
     },
     {
         name: "Estrella",
@@ -22,9 +24,9 @@ const teamMembers = [
 
 export const Team = () => {
     return (
-        <div className="container team-container">
+        <div className="container-fluid team-container">
             <div className="team-row">
-                <h1 className='mt-3 p-3'>Know the developers</h1>
+                <h1 className='mt-3 p-3'>Meet the developers</h1>
             </div>
             <div className="team-row">
                 {teamMembers.map((member, index) => (
@@ -36,6 +38,7 @@ export const Team = () => {
                     </div>
                 ))}
             </div>
+           
         </div>
     );
 };

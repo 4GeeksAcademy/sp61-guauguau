@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
 import { Context } from "../store/appContext";
 import { useSpring, animated } from "react-spring";
+import { PetsFinder } from "./finder";
 
 export const Pets = () => {
     const { store, actions } = useContext(Context);
@@ -253,6 +254,7 @@ export const Pets = () => {
                     </div>
                 </div>
             </div>
+            <PetsFinder/>
         </div>
     );
 };
