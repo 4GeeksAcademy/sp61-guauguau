@@ -1,3 +1,4 @@
 release: pipenv run upgrade
-web: pipenv run gunicorn src.app:app
+web: pipenv run gunicorn src.wsgi:application
+
 
