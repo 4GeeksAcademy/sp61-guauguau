@@ -12,10 +12,8 @@ export const Chat = () => {
     const [newMessage, setNewMessage] = useState("");
 
     useEffect(() => {
-        // Unirse a la sala de chat
         socket.emit('joinRoom', { match_id: matchId });
 
-        // Cargar mensajes guardados desde el servidor
         const fetchMessages = async () => {
             try {
                 const response = await fetch(`${process.env.BACKEND_URL}/api/messages/${matchId}`, {
@@ -42,7 +40,6 @@ export const Chat = () => {
         };
         fetchMessages();
 
-        // Escuchar nuevos mensajes desde el servidor
         socket.on('new_message', message => {
             setMessages(prevMessages => [...prevMessages, message]);
         });
@@ -56,10 +53,9 @@ export const Chat = () => {
     const sendMessage = async () => {
         const messageData = {
             match_id: matchId,
-            sender_pet_id: store.currentPetId, // Asegúrate de usar sender_pet_id aquí
+            sender_pet_id: store.currentPetId,
             content: newMessage
         };
-        console.log("Sending message with:", messageData);
 
         try {
             const response = await fetch(`${process.env.BACKEND_URL}/api/message`, {
@@ -80,7 +76,6 @@ export const Chat = () => {
                 throw new Error(error.message || "Error sending message");
             }
 
-            const data = await response.json();
             setNewMessage("");
         } catch (error) {
             console.error("Error sending message:", error);
@@ -91,14 +86,24 @@ export const Chat = () => {
         <div className="chat-container">
             <h2>Chat</h2>
             <div className="messages-container">
-                {messages.map((msg, index) => (
-                    <div 
-                        key={index} 
-                        className={`message ${msg.sender_pet_id === store.currentPetId ? 'sent' : 'received'}`}
-                    >
-                        {msg.content}
-                    </div>
-                ))}
+                {messages.map((msg, index) => {
+                    const isSent = msg.sender_pet_id === store.currentPetId;
+                    const pet = store.pets.find(p => p.id === msg.sender_pet_id);
+                    return (
+                        <div 
+                            key={index} 
+                            className={`message ${isSent ? 'sent' : 'received'}`}
+                        >
+                            <div className="message-info">
+                                <img src={pet.profile_photo_url} alt={pet.name} className="pet-avatar" />
+                                <div className="message-details">
+                                    <span className="pet-name">{pet.name}</span>
+                                    <span className="message-content">{msg.content}</span>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
             <div className="input-container">
                 <input 

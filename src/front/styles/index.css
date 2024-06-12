@@ -811,25 +811,7 @@ a, a:hover, a:visited, a:active {
       transform: rotate(-1turn);
     }
   }
-/*Estilos del chat*/
-  .chat-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-}
 
-.messages-container {
-    max-height: 400px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #fff;
-}
 
 
 /* Nueva media query para ajustar el jumbotron */
@@ -1388,3 +1370,97 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+/* Estilos chat */
+
+/* Añadir este CSS a tu archivo de estilos */
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px;
+}
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.message.sent {
+  justify-content: flex-end;
+}
+
+.message.received {
+  justify-content: flex-start;
+}
+
+.message-info {
+  display: flex;
+  align-items: center;
+}
+
+.pet-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.message-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.pet-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.message-content {
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.message.sent .message-content {
+  background-color: #d1ffd1;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+}
+
+.input-container input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.input-container button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.input-container button:hover {
+  background-color: #0056b3;
+}
+
