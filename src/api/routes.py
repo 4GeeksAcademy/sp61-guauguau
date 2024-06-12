@@ -606,9 +606,9 @@ def update_photo_order():
 # Nuevas Rutas para Cuidados y Compatibilidad usando OpenAI
 @api.route('/cuidados/<string:raza>', methods=['GET'])
 def get_cuidados(raza):
-    prompt = f"Cuidados necesarios para {raza}:\n1. Alimentación:\n- \n2. Ejercicio:\n- \n3. Higiene:\n- \n4. Salud:\n- \n5. Entorno:\n-"
+    prompt = f"Necessary care for {raza}:\n1. Food:\n- \n2. Exercise:\n- \n3. Hygiene:\n- \n4. Health:\n- \n5. Environment:\n-"
     try:
-        current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
+        current_app.logger.info(f"Prompt sent to OpenAI: {prompt}")
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -616,17 +616,17 @@ def get_cuidados(raza):
                 {"role": "user", "content": prompt}
             ]
         )
-        current_app.logger.info(f"Respuesta de OpenAI: {response}")
+        current_app.logger.info(f"Response from OpenAI: {response}")
         return jsonify({"text": response.choices[0].message.content.strip()}), 200
     except Exception as e:
-        current_app.logger.error(f"Error al obtener cuidados: {str(e)}")
+        current_app.logger.error(f"Error obtaining care information: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @api.route('/compatibilidad/<string:raza>', methods=['GET'])
 def get_compatibilidad(raza):
-    prompt = f"Compatibilidad de {raza} con otras razas:\n1. Compatibilidad Alta:\n- \n2. Compatibilidad Moderada:\n- \n3. Compatibilidad Baja:\n-"
+    prompt = f"Compatibility of {raza} with other breeds:\n1. High Compatibility:\n- \n2. Moderate Compatibility:\n- \n3. Low Compatibility:\n-"
     try:
-        current_app.logger.info(f"Prompt enviado a OpenAI: {prompt}")
+        current_app.logger.info(f"Prompt sent to OpenAI: {prompt}")
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -634,11 +634,12 @@ def get_compatibilidad(raza):
                 {"role": "user", "content": prompt}
             ]
         )
-        current_app.logger.info(f"Respuesta de OpenAI: {response}")
+        current_app.logger.info(f"Response from OpenAI: {response}")
         return jsonify({"text": response.choices[0].message.content.strip()}), 200
     except Exception as e:
-        current_app.logger.error(f"Error al obtener compatibilidad: {str(e)}")
+        current_app.logger.error(f"Error obtaining compatibility information: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 
 # OBTENER OWNER PETS
