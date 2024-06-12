@@ -83,7 +83,6 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ adminAuth: false, adminEmail: null });
 			},
 			login: async (email, password) => {
-<<<<<<< HEAD
                 const requestOptions = {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -127,125 +126,47 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 
             verifyToken: async () => {
-                try {
-                    const token = localStorage.getItem("token");
-                    if (token) {
-                        setStore({ auth: true, token });
-                        const response = await fetch(process.env.BACKEND_URL + "/api/protected", {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        });
-                        if (response.ok) {
-                            const data = await response.json();
-                            setStore({
-                                profilePictureUrl: data.owner.profile_picture_url,
-                                email: data.owner.email,
-                                owner: data.owner,
-                                ownerDescription: data.owner.description,
-                                city: data.owner.city,
-                                currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null
-                            });
-                            getActions().fetchOwnerPets();  // Añade esta línea para obtener las mascotas del propietario
-                        } else {
-                            console.error("Error verifying token:", await response.text());
-                            setStore({ auth: false });
-                            localStorage.removeItem("token");
-                        }
-                    } else {
-                        setStore({ auth: false });
-                    }
-                } catch (error) {
-                    console.error("Error verifying token:", error);
-                    setStore({ auth: false });
-                }
-            },
-=======
-				const requestOptions = {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ email, password })
-				};
-				try {
-					const response = await fetch(process.env.BACKEND_URL + "/api/login", requestOptions);
-					if (response.ok) {
-						const data = await response.json();
-						console.log("Login response data:", data); // Log para depuración
-						localStorage.setItem("token", data.access_token);
-						setStore({ auth: true, email });
-						const token = data.access_token;
-						console.log("Token:", token); // Log para depuración
-						// Obtener datos del propietario autenticado
-						const ownerResponse = await fetch(process.env.BACKEND_URL + "/api/protected", {
-							method: 'GET',
-							headers: {
-								'Authorization': `Bearer ${token}`
-							}
-						});
-						if (ownerResponse.ok) {
-							const ownerData = await ownerResponse.json();
-							console.log("Owner data:", ownerData);  // Log para depuración
-							setStore({
-								profilePictureUrl: ownerData.owner.profile_picture_url,
-								email: ownerData.owner.email,
-								owner: ownerData.owner,
-								ownerDescription: ownerData.owner.description,
-								city: ownerData.owner.city,  // Add city to the store
-								currentPetId: ownerData.owner.pets.length > 0 ? ownerData.owner.pets[0].id : null  // Solo establece currentPetId si hay mascotas
-							});
-						} else {
-							console.error("Error fetching owner data:", await ownerResponse.text());
-						}
-					} else {
-						const errorData = await response.json();
-						throw new Error(errorData.message || "Email or password wrong");
-					}
-				} catch (error) {
-					console.error("Login error:", error);
-					setStore({ auth: false, email: null });
-					throw error;
-				}
-			},
-			
-			
-			
-			
-			verifyToken: async () => {
 				try {
 					const token = localStorage.getItem("token");
-					if (token) {
-						setStore({ auth: true, token });
-						const response = await fetch(process.env.BACKEND_URL + "/api/protected", {
-							method: 'GET',
-							headers: {
-								'Authorization': `Bearer ${token}`
-							}
-						});
-						if (response.ok) {
-							const data = await response.json();
-							setStore({
-								profilePictureUrl: data.owner.profile_picture_url,
-								email: data.owner.email,
-								owner: data.owner,
-								ownerDescription: data.owner.description,
-								city: data.owner.city,  // Store city in the state
-								currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null
-							});
-						} else {
-							console.error("Error verifying token:", await response.text());
-							setStore({ auth: false });
-							localStorage.removeItem("token");
-						}
-					} else {
+					if (!token) {
 						setStore({ auth: false });
+						return;
 					}
+			
+					setStore({ auth: true, token });
+			
+					const response = await fetch(`${process.env.BACKEND_URL}/api/protected`, {
+						method: 'GET',
+						headers: {
+							'Authorization': `Bearer ${token}`
+						}
+					});
+			
+					if (!response.ok) {
+						console.error("Error verifying token:", await response.text());
+						setStore({ auth: false });
+						localStorage.removeItem("token");
+						return;
+					}
+			
+					const data = await response.json();
+					setStore({
+						profilePictureUrl: data.owner.profile_picture_url,
+						email: data.owner.email,
+						owner: data.owner,
+						ownerDescription: data.owner.description,
+						city: data.owner.city,
+						currentPetId: data.owner.pets.length > 0 ? data.owner.pets[0].id : null
+					});
+			
+					getActions().fetchOwnerPets();
 				} catch (error) {
 					console.error("Error verifying token:", error);
 					setStore({ auth: false });
+					localStorage.removeItem("token");
 				}
-			},	
->>>>>>> develop
+			},
+			
 			selectPet: (petId) => {
 				setStore({ selectedPetId: petId });
 			},
@@ -380,26 +301,27 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error('Error updating description:', error);
 				}
 			},
-			fetchPets: () => {
-				console.log(process.env.BACKEND_URL + "/api/pets");
-				fetch(process.env.BACKEND_URL + "/api/pets")
-					.then(response => {
-						if (!response.ok) {
-							throw new Error("Network response was not ok " + response.statusText);
-						}
-						return response.json();
-					})
-					.then(data => {
-						console.log("Pets data fetched:", data);  // Log para depuración
-						setStore({ pets: data });
-					})
-					.catch(error => console.error("Error fetching pets:", error));
+			fetchPets: async () => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pets`);
+					if (!response.ok) {
+						const errorText = await response.text();
+						throw new Error(`Network response was not ok: ${errorText}`);
+					}
+					const data = await response.json();
+					console.log("Pets data fetched:", data);
+					setStore({ pets: data });
+				} catch (error) {
+					console.error("Error fetching pets:", error);
+				}
 			},
+			
 			fetchPetById: async (id) => {
 				try {
-					const response = await fetch(process.env.BACKEND_URL + `/api/pets/${id}`);
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pets/${id}`);
 					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`);
+						const errorText = await response.text();
+						throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
 					}
 					const data = await response.json();
 					setStore({ currentPet: data });
@@ -408,6 +330,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					console.error("Error fetching pet by ID:", error);
 				}
 			},
+			
 			getPetDetails: async (petId) => {
 				try {
 					const response = await fetch(`${process.env.BACKEND_URL}/api/pet/${petId}`);
@@ -447,7 +370,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			addPet: async (pet) => {
 				try {
 					const token = localStorage.getItem("token");
-					const response = await fetch(process.env.BACKEND_URL + "/api/pets", {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/pets`, {
 						method: "POST",
 						headers: {
 							"Content-Type": "application/json",
@@ -455,21 +378,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 						},
 						body: JSON.stringify(pet)
 					});
-					if (response.ok) {
-						const newPet = await response.json();
-						const store = getStore();
-						setStore({ pets: [...store.pets, newPet] });
-						return newPet;
-					} else {
+			
+					if (!response.ok) {
 						const errorData = await response.json();
 						console.error("Failed to add pet:", errorData);
 						throw new Error(errorData.message);
 					}
+			
+					const newPet = await response.json();
+					const store = getStore();
+					setStore({ pets: [...store.pets, newPet] });
+					return newPet;
 				} catch (error) {
 					console.error("Error adding pet:", error);
 					throw error;
 				}
 			},
+			
 			fetchDeletePet: (id) => {
 				fetch(process.env.BACKEND_URL + `/api/delete_pet/${id}`, {
 					method: 'DELETE',
@@ -549,6 +474,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 			fetchOwnerPets: async () => {
 				try {
 					const token = localStorage.getItem("token");
+					if (!token) throw new Error("No token found");
+			
 					const response = await fetch(`${process.env.BACKEND_URL}/api/owner_pets`, {
 						method: 'GET',
 						headers: {
@@ -556,15 +483,19 @@ const getState = ({ getStore, getActions, setStore }) => {
 							"Authorization": `Bearer ${token}`
 						}
 					});
+			
 					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`);
+						const errorText = await response.text();
+						throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
 					}
+			
 					const pets = await response.json();
 					setStore({ ownerPets: pets });
 				} catch (error) {
 					console.error("Error fetching owner's pets:", error);
 				}
 			},
+			
 			getCity: () => {
 				fetch(process.env.BACKEND_URL + "/api/city")
 					.then(response => response.json())
