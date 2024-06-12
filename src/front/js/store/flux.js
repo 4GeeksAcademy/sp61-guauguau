@@ -23,7 +23,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			adminEmail: null,
 			adminErrorMessage: null,
 			photo: [],
-			token: localStorage.getItem('token'), // Añadido para mantener el token en el estado
+			token: null,
 			demo: [
 				{
 					title: "FIRST",
@@ -238,11 +238,16 @@ const getState = ({ getStore, getActions, setStore }) => {
             },
 			signUp: async (name, email, password, address, latitude, longitude) => {
 				try {
+					const token = localStorage.getItem('token'); // Obtener el token del almacenamiento local si es necesario
 					const requestOptions = {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
+						headers: { 
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${token}` // Incluir el token en las cabeceras
+						},
 						body: JSON.stringify({ name, email, password, address, latitude, longitude })
 					};
+					console.log(requestOptions)
 					const response = await fetch(process.env.BACKEND_URL + '/api/add_owner', requestOptions);
 					if (response.ok) {
 						const data = await response.json();
@@ -260,6 +265,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					throw error;
 				}
 			},
+				
 			fetchOwners: () => {
 				fetch(process.env.BACKEND_URL + "/api/owner")
 					.then(response => response.json())
