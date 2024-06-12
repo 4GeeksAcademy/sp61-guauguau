@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 import requests
 import os
 from openai import OpenAI
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 from flask_socketio import join_room, leave_room, send, emit, SocketIO
 # Inicializar el cliente de OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -19,6 +19,9 @@ socketio = SocketIO()
 
 # Allow CORS requests to this API
 CORS(api)
+
+# Inicializar JWTManager
+jwt = JWTManager()
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():

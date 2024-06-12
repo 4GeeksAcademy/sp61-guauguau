@@ -110,7 +110,7 @@ cloudinary.config(
 )
 
 # Setup the Flask-JWT-Extended extension
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_SECRET_KEY"] = "nbsdjhfgiuweh89fyc89W3HNHFC9V8U89Syduvhb"  # Change this!
 jwt = JWTManager(app)
 
 # add the admin
