@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import SwipeableViews from "react-swipeable-views";
 import { Context } from "../store/appContext";
 import { useSpring, animated } from "react-spring";
-
+import { PetsFinder } from "./finder";
 
 export const Pets = () => {
     const { store, actions } = useContext(Context);
@@ -196,6 +196,7 @@ export const Pets = () => {
                                                     </h2>
                                                     <p className="card-text">{pet.breed} • {pet.sex} • {pet.age} years old</p>
                                                     <p className="card-text">Pedigree: {pet.pedigree ? "Yes" : "No"}</p>
+                                                    <p className="card-text">City: {pet.owner_city}</p> {/* Mostrar la ciudad del propietario */}
                                                 </div>
                                                 {like && (
                                                     <animated.div className="like-icon" style={likeAnimation}>
@@ -253,6 +254,7 @@ export const Pets = () => {
                     </div>
                 </div>
             </div>
+            <PetsFinder/>
         </div>
     );
 };

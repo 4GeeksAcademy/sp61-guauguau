@@ -18,7 +18,6 @@ export const PetSignUp = () => {
     const [showBackButton, setShowBackButton] = useState(false);
 
     useEffect(() => {
-        // Llamada para poblar las razas y luego cargarlas
         actions.populateBreeds();
     }, []);
 
@@ -53,22 +52,18 @@ export const PetSignUp = () => {
                 photo: null,
                 additional_photos: []
             });
-
+    
             if (addedPet) {
                 const petId = addedPet.pet_id;
-
+    
                 if (formData.photo) {
-                    const photoFormData = new FormData();
-                    photoFormData.append("file", formData.photo);
-                    await actions.uploadPetPhoto(petId, photoFormData);
+                    await actions.uploadPetPhoto(petId, formData.photo);
                 }
-
-                for (let photo of formData.additional_photos) {
-                    const additionalPhotoFormData = new FormData();
-                    additionalPhotoFormData.append("file", photo);
-                    await actions.uploadPetAdditionalPhotos(petId, additionalPhotoFormData);
+    
+                if (formData.additional_photos.length > 0) {
+                    await actions.uploadPetAdditionalPhotos(petId, formData.additional_photos);
                 }
-
+    
                 setSuccessMessage("Pet created successfully!");
                 setShowBackButton(true);
             } else {

@@ -70,6 +70,7 @@ export const Private = () => {
                     <div className="col-md-9">
                         <h3>About Me</h3>
                         <p>This is your personal space where you can manage your pets and update your profile information.</p>
+                        <p><strong>City:</strong> {store.city}</p>
                         {isEditingDescription ? (
                             <>
                                 <textarea 

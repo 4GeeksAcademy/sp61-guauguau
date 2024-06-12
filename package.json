@@ -88,6 +88,7 @@
 		"react-beautiful-dnd": "^13.1.1",
 		"react-bootstrap": "^2.10.2",
 		"react-dom": "^16.8.4",
+		"react-paginate": "^8.2.0",
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
 		"react-spring": "^9.7.3",
