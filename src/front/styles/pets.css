@@ -272,9 +272,17 @@
     color: white;
     font-size: 30px;
 }
-
+.modal {
+    
+}
+.modal-content {
+    
+   width: max-content;
+   
+    
+}
 .match-modal-content {
-    background-color: #001D23; /* Fondo rojo claro */
+    background-color: #000000ab; 
     text-align: center;
     font-family: "Dosis", sans-serif;
     font-optical-sizing: auto;
@@ -284,10 +292,8 @@
     margin-top: 1em;
     margin-bottom: 1em;
     color: #fff;
-    min-width: 100%;
-    
-    
-    
+    text-shadow: #ddd;
+        
 }
 
 .match-container {
@@ -298,18 +304,25 @@
     position: relative;
     padding: 20px;
 }
-
+.modal-title {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 4em;
+    text-align: center;
+}
 .match-photo {
     width: 300px;
-    height: 300px;
-    border-radius: 50%;
+    height: 400px;
+    border-radius: 10%;
     margin: 0 10px;
     object-fit: cover;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .match-heart {
-    font-size: 50px;
+    font-size: 20vh;
     position: absolute;
     color: #e91e63;
     animation: heartbeat 1.5s infinite;
