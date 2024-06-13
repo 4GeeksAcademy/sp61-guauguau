@@ -1,6 +1,232 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway:100,200,300,400,500,600,700,800,900&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
 
+
+/* NAVBAR - HEADER */
+.navbar {
+  background-color: #0a0e1a;
+  padding: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 0;
+  position: relative;
+  width: 100%;
+  z-index: 99999;
+  padding: 0 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) {
+  .navbar {
+      padding: 0 2%;
+  }
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand img {
+  width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+  margin: 0.5rem;
+}
+
+.container-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.navbar-nav {
+  flex-grow: 2;
+  display: flex;
+  justify-content: right;
+}
+.d-none.d-lg-inline {
+  font-weight: bold;
+  color: #FEF5F0;
+}
+/* Estilos base para los enlaces NavItem */
+.nav-item .nav-link {
+  color: white; /* Asegúrate de que el color inicial sea blanco */
+  font-family: "Comfortaa", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: .938rem;
+  text-decoration: none;
+}
+
+/* Estilos cuando el cursor pasa por encima */
+.nav-link:hover {
+  background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: rgb(255, 99, 71); 
+}
+
+/* Estilos cuando el enlace está activo */
+.nav-link.active {
+  background: -webkit-linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: rgb(255, 99, 71); 
+}
+
+/* Estilos cuando se hace clic */
+.nav-link:active {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-list li {
+  margin: 0 15px;
+}
+
+.header-area .main-menu .menu-list a {
+  color: white; /* Color blanco por defecto */
+  text-decoration: none; /* Eliminar subrayado */
+  display: inline-block;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, -webkit-text-fill-color 0.3s ease;
+}
+
+.menu-list a:hover,
+.menu-list a.active {
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; /* Usar el color original cuando se pase el cursor */
+  color: transparent; /* Necesario para que el color del texto use el fondo degradado */
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.header-icons a {
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0 10px;
+  transition: color 0.3s;
+}
+
+.header-icons a:hover {
+  color: #f39c12;
+}
+
+.header-icons i {
+  display: block;
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  border: 1px solid #FF7F18;
+  border-radius: 50%;
+  transition: background-color 0.3s, color 0.3s;
+  margin-right: 0.5rem;
+}
+
+.header-icons img {
+  cursor: pointer; 
+}
+
+.header-icons i:hover {
+  background-color: #FF7F18;
+  color: #0a0e1a;
+}
+
+.user-menu .user-name {
+  color: white;
+  cursor: pointer;
+}
+
+.Bttn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition-duration: 0.4s;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
+}
+
+.sign {
+  width: 100%;
+  transition-duration: 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign svg {
+  width: 17px;
+}
+
+.sign svg path {
+  fill: white;
+}
+
+.text {
+  position: absolute;
+  right: 0%;
+  width: 0%;
+  opacity: 0;
+  color: #ecf0f1;
+  font-size: 1.2em;
+  font-weight: 600;
+  transition-duration: 0.4s;
+}
+
+.Bttn:hover {
+  width: 150px;
+  border-radius: 20px;
+  transition-duration: 0.4s;
+  background: linear-gradient(90deg, #FF7F18 0%, #F86CA7 100%);
+}
+
+.Bttn:hover .sign {
+  width: 30%;
+  transition-duration: 0.4s;
+  padding-left: 12px;
+}
+
+.Bttn:hover .text {
+  opacity: 1;
+  width: 70%;
+  transition-duration: 0.4s;
+  padding-right: 10px;
+}
+
+.Bttn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+}
+
+
 header {
   background-color: #FBE5DA;
   padding: 3em;
