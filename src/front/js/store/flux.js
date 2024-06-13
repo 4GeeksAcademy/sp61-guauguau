@@ -243,7 +243,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						method: 'POST',
 						headers: { 
 							'Content-Type': 'application/json',
-							'Authorization': `Bearer ${token}` // Incluir el token en las cabeceras
+							
 						},
 						body: JSON.stringify({ name, email, password, address, latitude, longitude })
 					};

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import "../../styles/home.css";
 
@@ -16,6 +16,7 @@ export const PetSignUp = () => {
     });
     const [successMessage, setSuccessMessage] = useState("");
     const [showBackButton, setShowBackButton] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         actions.populateBreeds();
@@ -66,6 +67,12 @@ export const PetSignUp = () => {
     
                 setSuccessMessage("Pet created successfully!");
                 setShowBackButton(true);
+
+                // Redirigir a la ruta /private después de un breve retraso
+                setTimeout(() => {
+                    navigate("/private");
+                }, 2000); // 2000ms = 2 segundos
+
             } else {
                 console.error("Failed to add pet");
             }
@@ -174,9 +181,7 @@ export const PetSignUp = () => {
                                 />
                             </div>
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>
-                            {showBackButton && (
-                                <Link to="/private" className="btn btn-secondary mt-3">Back to Private</Link>
-                            )}
+                            
                         </form>
                     </div>
                 </div>

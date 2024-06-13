@@ -45,7 +45,7 @@ def create_owner():
         current_app.logger.info(f"Received data: {data}")
         required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
         for field in required_fields:
-            if field not in data:
+            if field not in data or not data[field]:
                 return jsonify({"error": f"The '{field}' cannot be empty"}), 400
 
         existing_owner = Owner.query.filter_by(email=data['email']).first()
@@ -61,7 +61,7 @@ def create_owner():
         # Buscar o crear la ciudad en la base de datos
         city = City.query.filter_by(name=city_name).first()
         if not city:
-            city = City(name=city_name, pet_friendly='Unknown')  # Ajustar según sea necesario
+            city = City(name=city_name, pet_friendly='Unknown')
             db.session.add(city)
             db.session.commit()
             current_app.logger.info(f"Created new city: {city_name}")
@@ -73,7 +73,7 @@ def create_owner():
             address=data['address'],
             latitude=data['latitude'],
             longitude=data['longitude'],
-            city_id=city.id  # Asociar la ciudad con el propietario
+            city_id=city.id
         )
         db.session.add(new_owner)
         db.session.commit()

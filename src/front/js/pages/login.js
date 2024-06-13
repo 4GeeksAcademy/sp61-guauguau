@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
@@ -7,7 +7,6 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -17,7 +16,6 @@ const Login = () => {
         try {
             console.log("Attempting login with", email, password); // Log para depuración
             await actions.login(email, password);
-            setIsLoggedIn(true);
             navigate('/private');
         } catch (error) {
             console.error("Login failed:", error); // Log para depuración
@@ -28,6 +26,12 @@ const Login = () => {
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
+
+    useEffect(() => {
+        if (store.auth) {
+            navigate('/private');
+        }
+    }, [store.auth, navigate]);
 
     return (
         <section className="section section-full section-top">
@@ -77,11 +81,6 @@ const Login = () => {
                                 <Link to="/home">Back home</Link>
                             </div>
                         </form>
-                        {store.auth && (
-                            <div className="mt-3">
-                                <Link to="/private" className="btn btn-success">Go to Private Area</Link>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
