@@ -4,6 +4,8 @@ import { Context } from "../store/appContext";
 
 import salchichas from "../../img/salchichas.png";
 import corazonesrojos from "../../img/corazonesrojos.png";
+import mujerconperros from "../../img/mujerconperros.jpg";
+import chat from "../../img/chat.webp";
 
 
 import "../../styles/home.css";
@@ -50,18 +52,38 @@ export const Home = () => {
 			<PetsFinder />
             
 
-			<div className=" container-fluid jumbotron-container">
-            <div className="jumbotron-content">
-                <div className="jumbotron-image">
-                    <img src={"https://img.freepik.com/foto-gratis/hermosa-mujer-morena-juega-dos-perros-shiba-inu-mira-otro-lado-piensa-como-alimentar-mascotas-ensenar-comandos-expresa-caricias-aisladas-sobre-fondo-rosa_273609-34195.jpg?t=st=1717894956~exp=1717898556~hmac=3f05cee4ff23049d132967897d049f4c37a01c52fecab0d36b786904197c133a&w=1800"} alt="title" />
+		<div className="container-fluid jumbotron-container">
+            <div className="row jumbotron-content">
+                
+                <div className="col-12 col-md-6 jumbotron-text">
+                    <h1>Match and Chat!</h1>
+                    <h3>"Here, your furry friend can connect with other dogs and start new friendships. While you can't chat directly from this page, our platform offers a secure and fun chat service for dogs to interact.
+
+How It Works:
+
+Create a Profile: Sign up your dog with a cute photo and some details.
+Find Friends: Browse through profiles to find potential friends for your dog.
+Start a Chat: Use our chat feature to initiate conversations and set up playdates.
+Join our community and let your dog make new friends today!"</h3>
                 </div>
-                <div className="jumbotron-text">
-                    <h1>We Are Providing Pet Care</h1>
-                    <h3>"With our advanced AI technology, you can access real-time advice on the best care for your pet. Whether it's nutrition, exercise, or general wellness, our AI-driven insights provide you with the latest and most accurate information. Visit the pet pages to discover how you can enhance your pet's well-being and ensure they live a happy, healthy life."</h3>
+                <div className="col-12 col-md-6 jumbotron-image">
+                    <img src={chat} alt="title" className="img-fluid" />
                 </div>
             </div>
         </div>
 
+
+        <div className="container-fluid jumbotron-container">
+            <div className="row jumbotron-content">
+                <div className="col-12 col-md-6 jumbotron-image">
+                    <img src={mujerconperros} alt="title" className="img-fluid" />
+                </div>
+                <div className="col-12 col-md-6 jumbotron-text">
+                    <h1>We Are Providing Pet Care</h1>
+                    <h3>"With our advanced AI technology, you can access real-time advice on the best care for your pet. Whether it's nutrition, exercise, or general wellness, our AI-driven insights provide you with the latest and most accurate information. Visit the pet pages to discover how you can enhance your pet's well-being and ensure they live a happy, healthy life."</h3>
+                </div>
+            </div>
+        </div>    
 			<Team />
 
            
