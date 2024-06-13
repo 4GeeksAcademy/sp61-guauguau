@@ -128,7 +128,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 					const token = localStorage.getItem("token");
 					if (!token) {
-						setStore({ auth: false });
+						setStore({ auth: true });
 						return;
 					}
 			
