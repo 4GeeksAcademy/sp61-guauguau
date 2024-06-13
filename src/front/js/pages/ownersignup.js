@@ -6,7 +6,7 @@ import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 
 const mapContainerStyle = {
     width: "100%",
-    height: "400px"
+    height: "200px" // Reducir la altura del mapa
 };
 
 const center = {
@@ -60,6 +60,11 @@ export const OwnerSignUp = () => {
                 clearTimeout(typingTimeout);
             }
 
+            if (!value.trim()) {
+                console.warn("Address is empty, skipping geocoding");
+                return;
+            }
+
             setTypingTimeout(
                 setTimeout(async () => {
                     try {
@@ -72,6 +77,8 @@ export const OwnerSignUp = () => {
                                 latitude: location.lat,
                                 longitude: location.lng
                             }));
+                        } else {
+                            console.warn("No results from geocoding API");
                         }
                     } catch (error) {
                         console.error("Error during geocoding:", error);
@@ -99,6 +106,8 @@ export const OwnerSignUp = () => {
                     ...prevState,
                     address: data.results[0].formatted_address
                 }));
+            } else {
+                console.warn("No results from geocoding API for coordinates");
             }
         } catch (error) {
             console.error("Error fetching address from coordinates:", error);
@@ -131,10 +140,10 @@ export const OwnerSignUp = () => {
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
-        <section className="section section-full section-top">
+        <section className="section section-full section-top" style={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
             <div className="container">
                 <div className="row justify-content-center">
-                    <div className="col-md-8 col-lg-6">
+                    <div className="col-12 col-md-10 col-lg-8"> {/* Ajuste del ancho del formulario */}
                         <form className="form-styled" onSubmit={handleSubmit}>
                             <h1 className="text-center px-3 mb-4">Sign up as a GuauuGuauu Owner!</h1>
                             <h5 className="text-center text-muted mb-5">Please fill out the form to sign up.</h5>
@@ -216,7 +225,7 @@ export const OwnerSignUp = () => {
                                     />  
                                 </div>
                             </div>
-                            <div className="form-group position-relative">
+                            <div className="form-group position-relative map">
                                 <GoogleMap
                                     mapContainerStyle={mapContainerStyle}
                                     zoom={14}

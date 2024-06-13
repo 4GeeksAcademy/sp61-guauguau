@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import { useParams, Link } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import "../../styles/singlepet.css"; // Import the same CSS for consistent styling
 
 export const OnePet = () => {
     const { petId } = useParams();
@@ -194,244 +195,217 @@ export const OnePet = () => {
     };
 
     return (
-        <div className="container">
-            <h2>Pet Details</h2>
-            {errorMessage && <p className="text-danger">{errorMessage}</p>}
-            <form onSubmit={handleSubmit} className="row">
-                <div className="col-md-4">
+        <div className="container single-pet-container">
+            <div className="pet-card">
+                <div className="pet-card-header">
+                    <h1>{petDetails.name}, {petDetails.age} years</h1>
                     {petDetails.profile_photo_url && (
-                        <img src={petDetails.profile_photo_url} alt="Pet Profile" className="img-thumbnail w-100 mb-3" />
+                        <img src={petDetails.profile_photo_url} alt="Pet Profile" className="pet-profile-photo" />
                     )}
-                    <input type="file" onChange={handleFileChange} className="form-control mb-2" />
+                    <input type="file" onChange={handleFileChange} className="form-control mb-2 " />
                     <input type="file" onChange={handleAdditionalFilesChange} className="form-control" multiple />
+                    <h3>Additional Photos</h3>
+                    <DragDropContext onDragEnd={handleOnDragEnd}>
+                        <Droppable droppableId="photos" direction="horizontal">
+                            {(provided) => (
+                                <div className="additional-photos" {...provided.droppableProps} ref={provided.innerRef}>
+                                    {petDetails.photos.map((photo, index) => (
+                                        <Draggable key={photo.id} draggableId={photo.id.toString()} index={index}>
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    className="additional-photo"
+                                                >
+                                                    <img src={photo.url} alt={`Pet ${index}`} className="img-fluid" />
+                                                    <button
+                                                        className="btn mt-2 delete-button"
+                                                        onClick={() => handleDeletePhoto(photo.id)}
+                                                    >
+                                                        <i className="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 </div>
-                <div className="col-md-8">
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Name:</label>
-                        {isEditing.name ? (
-                            <input
-                                type="text"
-                                name="name"
-                                value={petDetails.name}
-                                onChange={handleChange}
-                                className="form-control me-2"
-                            />
-                        ) : (
-                            <span className="me-2">{petDetails.name}</span>
-                        )}
-                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('name')}></i>
+                <form onSubmit={handleSubmit} className="onepet-form">
+                    <h1>Edit Pet Details</h1>
+                    {errorMessage && <p className="text-danger">{errorMessage}</p>}
+                    <div className="pet-info-container">
+                        <div className="detail-item">
+                            <label>Name:</label>
+                            {isEditing.name ? (
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={petDetails.name}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                />
+                            ) : (
+                                <span>{petDetails.name}</span>
+                            )}
+                            <i className="fas fa-edit cursor-pointer ms-3" onClick={() => handleEditClick('name')}></i>
+                        </div>
+                        <div className="detail-item">
+                            <label>Breed:</label>
+                            {isEditing.breed ? (
+                                <input
+                                    type="text"
+                                    name="breed"
+                                    value={petDetails.breed}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                />
+                            ) : (
+                                <span>{petDetails.breed}</span>
+                            )}
+                            <i className="fas fa-edit cursor-pointer ms-3" onClick={() => handleEditClick('breed')}></i>
+                        </div>
+                        <div className="detail-item">
+                            <label>Age:</label>
+                            {isEditing.age ? (
+                                <input
+                                    type="number"
+                                    name="age"
+                                    value={petDetails.age}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                />
+                            ) : (
+                                <span>{petDetails.age}</span>
+                            )}
+                            <i className="fas fa-edit cursor-pointer ms-3" onClick={() => handleEditClick('age')}></i>
+                        </div>
+                        <div className="detail-item">
+                            <label>Sex:</label>
+                            {isEditing.sex ? (
+                                <select
+                                    name="sex"
+                                    value={petDetails.sex}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                >
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            ) : (
+                                <span>{petDetails.sex}</span>
+                            )}
+                            <i className="fas fa-edit cursor-pointer ms-3" onClick={() => handleEditClick('sex')}></i>
+                        </div>
+                        <div className="detail-item">
+                            <label>Pedigree:</label>
+                            {isEditing.pedigree ? (
+                                <input
+                                    type="checkbox"
+                                    name="pedigree"
+                                    checked={petDetails.pedigree}
+                                    onChange={handleChange}
+                                    className="form-check-input"
+                                />
+                            ) : (
+                                <span>{petDetails.pedigree ? 'Sí' : 'No'}</span>
+                            )}
+                            <i className="fas fa-edit cursor-pointer ms-3" onClick={() => handleEditClick('pedigree')}></i>
+                        </div>
+                        <div className="detail-item-description">
+                            <label>Description:</label>
+                            {isEditing.description ? (
+                                <textarea
+                                    name="description"
+                                    value={petDetails.description}
+                                    onChange={handleChange}
+                                    className="form-control"
+                                />
+                            ) : (
+                                <span>{petDetails.description}</span>
+                            )}
+                            <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('description')}></i>
+                        </div>
+                        <button type="submit" className="btn btn-primary mt-2 btn-save-changes" disabled={isLoading}>
+                            {isLoading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-save"></i> Save Changes</>}
+                        </button>
                     </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Breed:</label>
-                        {isEditing.breed ? (
-                            <input
-                                type="string"
-                                name="breed"
-                                value={petDetails.breed}
-                                onChange={handleChange}
-                                className="form-control me-2"
-                            />
-                        ) : (
-                            <span className="me-2">{petDetails.breed}</span>
-                        )}
-                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('breed')}></i>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Age:</label>
-                        {isEditing.age ? (
-                            <input
-                                type="number"
-                                name="age"
-                                value={petDetails.age}
-                                onChange={handleChange}
-                                className="form-control me-2"
-                            />
-                        ) : (
-                            <span className="me-2">{petDetails.age}</span>
-                        )}
-                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('age')}></i>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Sex:</label>
-                        {isEditing.sex ? (
-                            <select
-                                name="sex"
-                                value={petDetails.sex}
-                                onChange={handleChange}
-                                className="form-control me-2"
-                            >
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        ) : (
-                            <span className="me-2">{petDetails.sex}</span>
-                        )}
-                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('sex')}></i>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Pedigree:</label>
-                        {isEditing.pedigree ? (
-                            <input
-                                type="checkbox"
-                                name="pedigree"
-                                checked={petDetails.pedigree}
-                                onChange={handleChange}
-                                className="form-check-input me-2"
-                            />
-                        ) : (
-                            <span className="me-2">{petDetails.pedigree ? 'Sí' : 'No'}</span>
-                        )}
-                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('pedigree')}></i>
-                    </div>
-                    <div className="mb-2 d-flex align-items-center">
-                        <label className="me-2">Description:</label>
-                        {isEditing.description ? (
-                            <textarea
-                                name="description"
-                                value={petDetails.description}
-                                onChange={handleChange}
-                                className="form-control me-2"
-                            />
-                        ) : (
-                            <span className="me-2">{petDetails.description}</span>
-                        )}
-                        <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('description')}></i>
-                    </div>
-                    <button type="submit" className="btn btn-primary mt-2" disabled={isLoading}>
-                        {isLoading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-save"></i> Save Changes</>}
+                </form>
+            </div>
+            <div className="additional-section">
+                <div className="info-buttons">
+                    <h1>Discover everything about your furry friend's care and compatibility!</h1>
+                    <p className="p-3">With just one click, our advanced AI provides real-time information on how to care for your dog and its compatibility with other pets. Click now to ensure the best life for your canine companion!</p>
+                    <button className="btn me-2 btn-multicolor info-buttons" onClick={fetchCareInfo} disabled={isFetchingCareInfo}>
+                        {isFetchingCareInfo ? 'Loading...' : 'Cares'}
+                    </button>
+                    <button className="btn me-2 btn-multicolor info-buttons" onClick={fetchCompatibilityInfo} disabled={isFetchingCompatibilityInfo}>
+                        {isFetchingCompatibilityInfo ? 'Loading...' : 'Compatibility'}
                     </button>
                 </div>
-            </form>
-            <h3>Additional Photos</h3>
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <Droppable droppableId="photos" direction="horizontal">
-                    {(provided) => (
-                        <div className="row" {...provided.droppableProps} ref={provided.innerRef}>
-                            {petDetails.photos.map((photo, index) => (
-                                <Draggable key={photo.id} draggableId={photo.id.toString()} index={index}>
-                                    {(provided) => (
-                                        <div
-                                            className="col-md-3 mb-3"
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                        >
-                                            <img src={photo.url} alt={`Pet ${index}`} className="img-fluid" />
-                                            <button
-                                                className="btn btn-danger mt-2"
-                                                onClick={() => handleDeletePhoto(photo.id)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-            <button className="btn btn-secondary me-2" onClick={fetchCareInfo}>
-                {isFetchingCareInfo ? (
-                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
-                        <div className="wheel"></div>
-                        <div className="hamster">
-                            <div className="hamster__body">
-                                <div className="hamster__head">
-                                    <div className="hamster__ear"></div>
-                                    <div className="hamster__eye"></div>
-                                    <div className="hamster__nose"></div>
-                                </div>
-                                <div className="hamster__limb hamster__limb--fr"></div>
-                                <div className="hamster__limb hamster__limb--fl"></div>
-                                <div className="hamster__limb hamster__limb--br"></div>
-                                <div className="hamster__limb hamster__limb--bl"></div>
-                                <div className="hamster__tail"></div>
+                {careInfo && (
+                    <div className="care-info">
+                        <h3>Cares</h3>
+                        <p>{careInfo}</p>
+                    </div>
+                )}
+                {compatibilityInfo && (
+                    <div className="compatibility-info">
+                        <h3>Compatibility</h3>
+                        <p>{compatibilityInfo}</p>
+                    </div>
+                )}
+                <Link to="/private" className="btn btn-back mt-3">
+                    <i className="fas fa-arrow-left"></i> Back to Private
+                </Link>
+                <h3 className="p-5 ps-0">Likes Received</h3>
+                <div className="row">
+                    {petDetails.likes.map((like, index) => (
+                        <div className="col-md-3 mb-3" key={index}>
+                            <div className="d-flex align-items-center">
+                                {like.liker_pet_photo && (
+                                    <img
+                                        src={like.liker_pet_photo}
+                                        alt={`${like.liker_pet_name} profile`}
+                                        className="rounded-circle me-2"
+                                        style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                    />
+                                )}
+                                <Link to={`/singlepet/${like.liker_pet_id}`}>
+                                    {like.liker_pet_name} likes you
+                                </Link>
                             </div>
                         </div>
-                        <div className="spoke"></div>
-                    </div>
-                ) : (
-                    "Care Info"
-                )}
-            </button>
-            {careInfo && (
-                <div>
-                    <h3>Care Info</h3>
-                    <p>{careInfo}</p>
+                    ))}
                 </div>
-            )}
-            <button className="btn btn-secondary me-2" onClick={fetchCompatibilityInfo}>
-                {isFetchingCompatibilityInfo ? (
-                    <div aria-label="Orange and tan hamster running in a metal wheel" role="img" className="wheel-and-hamster">
-                        <div className="wheel"></div>
-                        <div className="hamster">
-                            <div className="hamster__body">
-                                <div className="hamster__head">
-                                    <div className="hamster__ear"></div>
-                                    <div className="hamster__eye"></div>
-                                    <div className="hamster__nose"></div>
-                                </div>
-                                <div className="hamster__limb hamster__limb--fr"></div>
-                                <div className="hamster__limb hamster__limb--fl"></div>
-                                <div className="hamster__limb hamster__limb--br"></div>
-                                <div className="hamster__limb hamster__limb--bl"></div>
-                                <div className="hamster__tail"></div>
+                <h3 className="p-5 ps-0">Matches</h3>
+                <div className="row">
+                    {petDetails.matches.map((match, index) => (
+                        <div className="col-md-3 mb-3" key={index}>
+                            <div className="d-flex align-items-center">
+                                {match.match_pet_photo && (
+                                    <img
+                                        src={match.match_pet_photo}
+                                        alt={`${match.match_pet_name} profile`}
+                                        className="img-fluid rounded-circle me-2"
+                                        style={{ width: '30px', height: '30px', objectFit: 'cover' }}
+                                    />
+                                )}
+                                <Link to={`/singlepet/${match.match_pet_id}`} className="me-2">
+                                    {match.match_pet_name}
+                                </Link>
+                                <Link to={`/chat/${match.match_id}`} className="btn btn-secondary">
+                                    Chat
+                                </Link>
                             </div>
                         </div>
-                        <div className="spoke"></div>
-                    </div>
-                ) : (
-                    "Compatibility Info"
-                )}
-            </button>
-            {compatibilityInfo && (
-                <div>
-                    <h3>Compatibility Info</h3>
-                    <p>{compatibilityInfo}</p>
+                    ))}
                 </div>
-            )}
-            <Link to="/private" className="btn btn-primary mt-3">
-                Back to Private
-            </Link>
-            <h3>Likes Received</h3>
-            <ul>
-                {petDetails.likes.map((like, index) => (
-                    <li key={index}>
-                        <Link to={`/singlepet/${like.liker_pet_id}`}>
-                            {like.liker_pet_photo && (
-                                <img
-                                    src={like.liker_pet_photo}
-                                    alt={`${like.liker_pet_name} profile`}
-                                    className="rounded-circle me-2"
-                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
-                                />
-                            )}
-                            {like.liker_pet_name} likes you
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-            <h3>Matches</h3>
-            <ul>
-                {petDetails.matches.map((match, index) => (
-                    <li key={index} className="d-flex align-items-center">
-                        <Link to={`/singlepet/${match.match_pet_id}`} className="me-2">
-                            {match.match_pet_photo && (
-                                <img
-                                    src={match.match_pet_photo}
-                                    alt={`${match.match_pet_name} profile`}
-                                    className="rounded-circle me-2"
-                                    style={{ width: '30px', height: '30px', objectFit: 'cover' }}
-                                />
-                            )}
-                            {match.match_pet_name}
-                        </Link>
-                        <Link to={`/chat/${match.match_id}`} className="btn btn-primary">Chat</Link>
-                    </li>
-                ))}
-            </ul>
+            </div>
         </div>
     );
 };

@@ -19,7 +19,7 @@ header {
   width: 100%;
   max-width: 450px;
   height: auto;
-  z-index: -1;
+  z-index: 0;
 }
 
 .salchichas {
@@ -33,6 +33,9 @@ header {
 @media (max-width: 1199px) {
   .salchichas {
       display: none;
+  }
+  .corazones {
+    display: none;
   }
 }
 
@@ -533,6 +536,12 @@ img {
     background: linear-gradient(90deg, rgba(248,110,150,1) 0%, rgba(250,113,128,1) 35%, rgba(253,121,73,1) 69%, rgba(255,126,31,1) 100%);
     color: #fff;
     border-radius: 30px; /* Ensure this is applied */
+}
+
+@media (max-width: 768px) {
+  .btn-multicolor, .btn-multicolor-border {
+      display: none;
+  }
 }
 
 a, a:hover, a:visited, a:active {
