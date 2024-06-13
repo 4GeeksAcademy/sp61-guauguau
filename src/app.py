@@ -14,7 +14,7 @@ from api.routes import api, socketio  # Importar socketio desde routes
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_cors import CORS, cross_origin
-# from flask_socketio import join_room, leave_room, send, emit
+from flask_socketio import join_room, leave_room, send, emit
 from api.models import Message
 
 from flask_jwt_extended import create_access_token
@@ -32,62 +32,62 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.url_map.strict_slashes = False
 
 # Configurar SocketIO
-# socketio.init_app(app, cors_allowed_origins="*")
+socketio.init_app(app, cors_allowed_origins="*")
 
-# # Configurar eventos de socket.io
-# @socketio.on('message')
-# def handle_message(data):
-#     print('received message: ' + data)
-#     socketio.emit('response', data)
+# Configurar eventos de socket.io
+@socketio.on('message')
+def handle_message(data):
+    print('received message: ' + data)
+    socketio.emit('response', data)
 
-# @socketio.on('connect')
-# def handle_connect():
-#     print('Client connected')
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
 
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     print('Client disconnected')
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
 
-# @socketio.on('joinRoom')
-# def handle_join_room(data):
-#     room = f"match_{data['match_id']}"
-#     join_room(room)
-#     emit('message', f"User joined room {room}", room=room)
+@socketio.on('joinRoom')
+def handle_join_room(data):
+    room = f"match_{data['match_id']}"
+    join_room(room)
+    emit('message', f"User joined room {room}", room=room)
 
-# @socketio.on('leaveRoom')
-# def handle_leave_room(data):
-#     room = f"match_{data['match_id']}"
-#     leave_room(room)
-#     emit('message', f"User left room {room}", room=room)
+@socketio.on('leaveRoom')
+def handle_leave_room(data):
+    room = f"match_{data['match_id']}"
+    leave_room(room)
+    emit('message', f"User left room {room}", room=room)
 
-# @socketio.on('sendMessage')
-# def handle_send_message(data):
-#     room = f"match_{data['match_id']}"
-#     emit('message', data['message'], room=room)
+@socketio.on('sendMessage')
+def handle_send_message(data):
+    room = f"match_{data['match_id']}"
+    emit('message', data['message'], room=room)
 
-# @socketio.on('join')
-# def on_join(data):
-#     match_id = data['match_id']
-#     join_room(f"match_{match_id}")
-#     emit('status', {'msg': f"Joined room match_{match_id}"}, room=f"match_{match_id}")
+@socketio.on('join')
+def on_join(data):
+    match_id = data['match_id']
+    join_room(f"match_{match_id}")
+    emit('status', {'msg': f"Joined room match_{match_id}"}, room=f"match_{match_id}")
 
-# @socketio.on('leave')
-# def on_leave(data):
-#     match_id = data['match_id']
-#     leave_room(f"match_{match_id}")
-#     emit('status', {'msg': f"Left room match_{match_id}"}, room=f"match_{match_id}")
+@socketio.on('leave')
+def on_leave(data):
+    match_id = data['match_id']
+    leave_room(f"match_{match_id}")
+    emit('status', {'msg': f"Left room match_{match_id}"}, room=f"match_{match_id}")
 
-# @socketio.on('send_message')
-# def on_send_message(data):
-#     match_id = data['match_id']
-#     sender_pet_id = data['sender_pet_id']
-#     text = data['text']
+@socketio.on('send_message')
+def on_send_message(data):
+    match_id = data['match_id']
+    sender_pet_id = data['sender_pet_id']
+    text = data['text']
 
-#     new_message = Message(match_id=match_id, sender_pet_id=sender_pet_id, content=text)
-#     db.session.add(new_message)
-#     db.session.commit()
+    new_message = Message(match_id=match_id, sender_pet_id=sender_pet_id, content=text)
+    db.session.add(new_message)
+    db.session.commit()
 
-#     emit('new_message', new_message.serialize(), room=f"match_{match_id}")
+    emit('new_message', new_message.serialize(), room=f"match_{match_id}")
 
 
 # database configuration
