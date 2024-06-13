@@ -81,7 +81,7 @@ export const Pets = () => {
 
         const result = await actions.likePet(selectedPetId, store.pets[index].id);
         if (result.match) {
-            setModalTitle("Match");
+            setModalTitle("It's a Match!");
             setMatchedPet(store.pets[index]);
             setMatchMessage("It's a match!");
             setShowModal(true);
