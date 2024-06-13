@@ -19,7 +19,7 @@ header {
   width: 100%;
   max-width: 450px;
   height: auto;
-  z-index: 1;
+  z-index: -1;
 }
 
 .salchichas {
@@ -845,7 +845,7 @@ a, a:hover, a:visited, a:active {
 
 .jumbotron-container {
     margin: 2em auto;
-    background-color: #F5F2FC; /* Ajusta el color de fondo según tus necesidades */
+    background-color: #FBFBFB; /* Ajusta el color de fondo según tus necesidades */
     padding: 2em;
     border-radius: 10px; /* Opcional: para esquinas redondeadas */
 }
@@ -857,14 +857,13 @@ a, a:hover, a:visited, a:active {
 }
 
 .jumbotron-image {
-    flex: 1;
-    margin-right: 2em;
-    
+     
     margin-bottom: 1em; /* Añadir margen inferior para evitar que la imagen se pegue al texto en pantallas pequeñas */
 }
 
 .jumbotron-image img {
     width: 100%; /* Ajusta la imagen para que tome el 100% del contenedor */
+    max-width: 500px;
     height: auto;
     border-radius: 10px; /* Opcional: para esquinas redondeadas */
 }
@@ -872,6 +871,8 @@ a, a:hover, a:visited, a:active {
 .jumbotron-text {
     flex: 1;
     text-align: left;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 /* Estilos específicos para pantallas más pequeñas */
@@ -904,6 +905,7 @@ a, a:hover, a:visited, a:active {
     font-weight: 400;
     font-style: normal;
     color: #6c757d; /* Ajusta el color del subtítulo según tus necesidades */
+  
 }
 
 
@@ -935,7 +937,7 @@ a, a:hover, a:visited, a:active {
   border-radius: 5px;
   margin: 5rem;
   
-  padding: 40px;
+  padding: 0 40px;
   box-shadow: none;
 }
 
