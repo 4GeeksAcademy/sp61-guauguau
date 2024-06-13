@@ -21,11 +21,9 @@ typing-extensions = "*"
 flask-jwt-extended = "*"
 openai = "*"
 flask-socketio = "*"
-
 geopy = "*"
-
 requests = "*"
-
+gevent = "*"
 
 [requires]
 python_version = "3.10"
