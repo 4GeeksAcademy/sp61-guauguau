@@ -316,7 +316,7 @@ export const OnePet = () => {
                             )}
                             <i className="fas fa-edit cursor-pointer ms-3" onClick={() => handleEditClick('pedigree')}></i>
                         </div>
-                        <div className="detail-item-description">
+                        <div className="detail-item-description detail-item">
                             <label>Description:</label>
                             {isEditing.description ? (
                                 <textarea
