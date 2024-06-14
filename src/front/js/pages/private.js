@@ -59,8 +59,8 @@ export const Private = () => {
     return (
         <div className="container d-flex flex-column justify-content-center align-items-center gap-3 p-4">
             <div className="form-container">
-                <p><span style={{ fontWeight: "bolder" }}>Welcome</span> {store.email}</p>
-                <p className="title">This is your private area</p>
+                <h1><span style={{ fontWeight: "bolder" }}>Welcome</span> {store.email}</h1>
+                <h3>This is your private area</h3>
                 <div className="row align-items-center mb-4">
                     <div className="col-md-3 text-center">
                         {store.profilePictureUrl && (
@@ -68,9 +68,8 @@ export const Private = () => {
                         )}
                     </div>
                     <div className="col-md-9">
-                        <h3>About Me</h3>
+                        <h3 className="title">About Me</h3>
                         <p>This is your personal space where you can manage your pets and update your profile information.</p>
-                        <p><strong>City:</strong> {store.city}</p>
                         {isEditingDescription ? (
                             <>
                                 <textarea 
@@ -79,7 +78,7 @@ export const Private = () => {
                                     className="form-control mb-2"
                                     placeholder="Add a description about yourself"
                                 />
-                                <button onClick={handleSaveDescription} className="btn btn-primary">Save Description</button>
+                                <button onClick={handleSaveDescription} className="primary-btn2">Save Description</button>
                             </>
                         ) : (
                             <div className="d-flex align-items-center">
@@ -91,36 +90,38 @@ export const Private = () => {
                 </div>
                 <div>
                     <input type="file" onChange={handleFileChange} />
-                    <button onClick={handleUpload}>Upload Profile Picture</button>
+                    <button onClick={handleUpload} className="primary-btn2">Upload Profile Picture</button>
                 </div>
                 <div className="container d-flex flex-column justify-content-center align-items-center">
                     <Link to="/petSignUp">
-                        <button className="btn btn-warning m-2">Add new pet</button>
-                    </Link>
-                    <p className="signup pe-2">Do you want to exit?</p>
-                    <Link to="/">
-                        <button className="btn btn-danger m-2" onClick={() => actions.logout()}>Log Out</button>
+                        <button className="primary-btn2 m-2 mt-3 ">Add new pet</button>
                     </Link>
                 </div>
                 <div className="container mt-4">
-                    <h3>Your Pets</h3>
+                    <h3 className="title">Your Pets</h3>
                     {store.ownerPets && store.ownerPets.length > 0 ? (
                         <div className="row">
                             {store.ownerPets.map(pet => (
-                                <div key={pet.id} className="col-md-4">
+                                <div key={pet.id} className="col-md-12">
                                     <div className="card mb-4">
                                         {pet.photo && (
                                             <img src={pet.photo} alt={pet.name} className="card-img-top" />
                                         )}
-                                        <div className="card-body">
-                                            <h5 className="card-title">{pet.name}</h5>
-                                            <p className="card-text">Breed: {pet.breed}</p>
-                                            <p className="card-text">Age: {pet.age}</p>
-                                            <p className="card-text">Sex: {pet.sex}</p>
-                                            <p className="card-text">Pedigree: {pet.pedigree ? 'Yes' : 'No'}</p>
-                                            <div className="d-flex justify-content-between">
-                                                <Link to={`/pet/${pet.id}`} className="btn btn-primary">View Details</Link>
-                                                <button className="btn btn-danger" onClick={() => actions.fetchDeletePet(pet.id)}>Delete</button>
+                                        <div className="card-body-container">
+                                            <div className="card-body">
+                                                <h5 className="card-title">{pet.name}</h5>
+                                                <p className="card-text">Breed: {pet.breed}</p>
+                                                <p className="card-text">Age: {pet.age}</p>
+                                                <p className="card-text">Sex: {pet.sex}</p>
+                                                <p className="card-text">Pedigree: {pet.pedigree ? 'Yes' : 'No'}</p>
+                                                <div className="buttons-container">
+                                                    <Link to={`/pet/${pet.id}`} className="primary-btn primary-btn2">View Details</Link>
+                                                    <button className="button" onClick={() => actions.fetchDeletePet(pet.id)}>
+                                                        <svg viewBox="0 0 448 512" className="svgIcon">
+                                                            <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -132,9 +133,20 @@ export const Private = () => {
                     )}
                 </div>
             </div>
-            <Link to="/">
-                <span className="btn btn-primary btn-lg" role="button">Back home</span>
-            </Link>
+            <h4 className="signup pe-2">Do you want to exit?</h4>
+            <button className="Btn ms-2" onClick={() => actions.logout()}>
+                    <div className="sign">
+                        <svg viewBox="0 0 512 512">
+                            <path
+                                d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"
+                            ></path>
+                        </svg>
+                    </div>
+                    <div className="text">Logout</div>
+            </button>
+            <div className="login-redirect">
+                <Link to="/">Back home</Link>
+            </div>
         </div>
     );
 };
