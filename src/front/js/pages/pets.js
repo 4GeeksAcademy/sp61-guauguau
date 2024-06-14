@@ -228,32 +228,33 @@ export const Pets = () => {
                 </>
             )}
             <div className="modal fade" id="matchModal" tabIndex="-1" aria-labelledby="matchModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content match-modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="matchModalLabel">{modalTitle}</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            {modalTitle === "Match" && matchedPet && selectedPet ? (
-                                <div className="match-container">
-                                    <img src={selectedPet.profile_photo_url} alt={selectedPet.name} className="match-photo" />
-                                    <div className="match-heart">❤️</div>
-                                    <img src={matchedPet.profile_photo_url} alt={matchedPet.name} className="match-photo" />
-                                </div>
-                            ) : (
-                                <div className="notice-content">
-                                    <p>{matchMessage}</p>
-                                    <i className="fas fa-exclamation-circle notice-icon"></i>
-                                </div>
-                            )}
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
+    <div className="modal-dialog">
+        <div className="modal-content match-modal-content">
+            <div className="modal-header">
+                <h5 className="modal-title" id="matchModalLabel">{modalTitle}</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div className="modal-body">
+                {modalTitle === "It's a Match!" && matchedPet && selectedPet ? (
+                    <div className="match-container">
+                        <img src={selectedPet.profile_photo_url} alt={selectedPet.name} className="match-photo" />
+                        <div className="match-heart">❤️</div>
+                        <img src={matchedPet.profile_photo_url} alt={matchedPet.name} className="match-photo" />
+                    </div>
+                ) : (
+                    <div className="notice-content">
+                        <p>{matchMessage}</p>
+                        <i className="fas fa-exclamation-circle notice-icon"></i>
+                    </div>
+                )}
+            </div>
+            <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
             <PetsFinder/>
         </div>
     );

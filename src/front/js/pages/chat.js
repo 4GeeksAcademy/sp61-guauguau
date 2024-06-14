@@ -3,11 +3,11 @@ import io from 'socket.io-client';
 import { useParams } from 'react-router-dom';
 import { Context } from '../store/appContext';
 
-const socket = io(process.env.BACKEND_URL);
+const socket = io(process.env.REACT_APP_BACKEND_URL);
 
 export const Chat = () => {
     const { matchId } = useParams();
-    const { store } = useContext(Context);
+    const { store, actions } = useContext(Context);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
 
@@ -16,28 +16,14 @@ export const Chat = () => {
 
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`${process.env.BACKEND_URL}/api/messages/${matchId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${store.token}`
-                    }
-                });
-
-                if (response.status === 401) {
-                    throw new Error("Unauthorized");
-                }
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || "Error fetching messages");
-                }
-
-                const data = await response.json();
+                const data = await actions.fetchMessages(matchId);
                 setMessages(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error("Error fetching messages:", error);
                 setMessages([]);
             }
         };
+
         fetchMessages();
 
         socket.on('new_message', message => {
@@ -48,34 +34,15 @@ export const Chat = () => {
             socket.emit('leaveRoom', { match_id: matchId });
             socket.off();
         };
-    }, [matchId, store.token]);
+    }, [matchId, actions]);
 
     const sendMessage = async () => {
-        const messageData = {
-            match_id: matchId,
-            sender_pet_id: store.currentPetId,
-            content: newMessage
-        };
+        if (!newMessage.trim()) {
+            return;
+        }
 
         try {
-            const response = await fetch(`${process.env.BACKEND_URL}/api/message`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${store.token}`
-                },
-                body: JSON.stringify(messageData)
-            });
-
-            if (response.status === 401) {
-                throw new Error("Unauthorized");
-            }
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || "Error sending message");
-            }
-
+            await actions.sendMessage(matchId, store.currentPetId, newMessage);
             setNewMessage("");
         } catch (error) {
             console.error("Error sending message:", error);

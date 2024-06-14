@@ -38,6 +38,8 @@ def get_owners():
     results = list(map(lambda owner: owner.serialize(), all_owners))
     return jsonify(results), 200
 
+# OWNER
+
 @api.route('/add_owner', methods=['POST'])
 def create_owner():
     try:
@@ -84,6 +86,27 @@ def create_owner():
     except Exception as e:
         current_app.logger.error(f"Error creating owner: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+@api.route('/login', methods=['POST'])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    owner = Owner.query.filter_by(email=email).first()
+    if owner is None:
+        return jsonify({"message": "Email not found"}), 401
+    if password != owner.password:
+        return jsonify({"message": "Wrong password"}), 401
+
+    # Simular una respuesta de login exitosa con datos del propietario
+    return jsonify({
+        "message": "Login successful",
+        "owner": {
+            "profile_picture_url": owner.profile_picture_url,
+            "email": owner.email,
+            "description": owner.description,
+            "pets": [pet.serialize() for pet in owner.pets]
+        }
+    }), 200
 
 
 
@@ -144,31 +167,19 @@ def update_owner(owner_id):
 
 
 @api.route("/update_owner_description", methods=["PUT"])
-@jwt_required()
 def update_owner_description():
-    current_owner_email = get_jwt_identity()
-    owner = Owner.query.filter_by(email=current_owner_email).first()
+    data = request.get_json()
+    email = data.get('email')
+    owner = Owner.query.filter_by(email=email).first()
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
 
-    data = request.get_json()
     owner.description = data.get("description", owner.description)
     db.session.commit()
 
     return jsonify(owner.serialize()), 200
 
-@api.route('/login', methods=['POST'])
-def login():
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
-    owner = Owner.query.filter_by(email=email).first()
-    if owner is None:
-        return jsonify({"message": "Email not found"}), 401
-    if password != owner.password:
-        return jsonify({"message": "Wrong password"}), 401
-    
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+
 
 
 @api.route('/protected', methods=['GET'])
@@ -237,14 +248,12 @@ def get_pet(pet_id):
         return jsonify({'error': 'Pet not found'}), 404
 
 @api.route('/pets', methods=['POST'])
-@jwt_required()
 def add_pet():
     data = request.get_json()
-    if not all(key in data for key in ['name', 'breed_id', 'sex', 'age', 'pedigree']):
+    if not all(key in data for key in ['name', 'breed_id', 'sex', 'age', 'pedigree', 'owner_email']):
         return jsonify({'error': 'Missing data'}), 400
-    
-    current_owner_email = get_jwt_identity()
-    owner = Owner.query.filter_by(email=current_owner_email).first()
+
+    owner = Owner.query.filter_by(email=data['owner_email']).first()
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
 
@@ -257,13 +266,10 @@ def add_pet():
         owner_id=owner.id
     )
 
-    if 'profile_photo_url' in data and data['profile_photo_url']:
-        new_pet.profile_photo_url = data['profile_photo_url']
-
     db.session.add(new_pet)
     db.session.commit()
-    
     return jsonify({'message': 'New pet added!', 'pet_id': new_pet.id}), 201
+
 
 @api.route('/pet/<int:pet_id>', methods=['PUT'])
 def update_pet(pet_id):
@@ -498,12 +504,17 @@ def create_photo():
     db.session.commit()
     return jsonify({'message': 'New photo added!'}), 201
 
-@api.route('/photo/<int:id>', methods=['DELETE'])
-def delete_photo(id):
-    photo = Photo.query.get_or_404(id)
+@api.route('/photos/<int:photo_id>', methods=['DELETE'])
+def delete_photo(photo_id):
+    photo = Photo.query.get(photo_id)
+
+    if not photo:
+        return jsonify({"error": "Photo not found"}), 404
+
     db.session.delete(photo)
     db.session.commit()
-    return jsonify({'message': 'Photo deleted successfully!'}), 200
+    return jsonify({"message": "Photo deleted successfully"}), 200
+
 
 @api.route('/photo/<int:id>', methods=['PUT'])
 def update_photo(id):
@@ -516,7 +527,6 @@ def update_photo(id):
 
 # Upload profile picture
 @api.route('/upload_profile_picture', methods=['POST'])
-@jwt_required()
 def upload_profile_picture():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
@@ -524,8 +534,8 @@ def upload_profile_picture():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    current_owner_email = get_jwt_identity()
-    owner = Owner.query.filter_by(email=current_owner_email).first()
+    email = request.form.get('email')
+    owner = Owner.query.filter_by(email=email).first()
     if not owner:
         return jsonify({"error": "Owner not found"}), 404
 
@@ -645,44 +655,33 @@ def get_compatibilidad(raza):
 # OBTENER OWNER PETS
 
 @api.route('/owner_pets', methods=['GET'])
-@jwt_required()
 def get_owner_pets():
     try:
-        current_owner_email = get_jwt_identity()
-        print(f"Current owner email: {current_owner_email}")  # Log para depuración
-        owner = Owner.query.filter_by(email=current_owner_email).first()
+        owner_email = request.headers.get('Owner-Email')
+        if not owner_email:
+            return jsonify({"error": "Owner email is required"}), 400
+        
+        owner = Owner.query.filter_by(email=owner_email).first()
         if not owner:
             return jsonify({"error": "Owner not found"}), 404
 
         pets = Pet.query.filter_by(owner_id=owner.id).all()
-        return jsonify([{
-            'id': pet.id,
-            'name': pet.name,
-            'breed': pet.breed.name if pet.breed else None,
-            'sex': pet.sex,
-            'age': pet.age,
-            'pedigree': pet.pedigree,
-            'photo': pet.profile_photo_url,
-            'owner_id': pet.owner_id,
-            'owner_name': pet.owner.name if pet.owner else None
-        } for pet in pets]), 200
+        return jsonify([pet.serialize() for pet in pets]), 200
     except Exception as e:
-        print(f"Error fetching owner's pets: {str(e)}")  # Log para depuración
         return jsonify({"error": str(e)}), 500
 
 
 # LIKES Y MATCH
 
 @api.route('/like_pet', methods=['POST'])
-@jwt_required()
 def like_pet():
-    current_owner_email = get_jwt_identity()
-    data = request.json
+    data = request.get_json()
+
     liker_pet_id = data.get('liker_pet_id')
     liked_pet_id = data.get('liked_pet_id')
 
     if not liker_pet_id or not liked_pet_id:
-        return jsonify({"error": "Missing data"}), 400
+        return jsonify({"error": "Missing liker_pet_id or liked_pet_id"}), 422
 
     liker_pet = Pet.query.get(liker_pet_id)
     liked_pet = Pet.query.get(liked_pet_id)
@@ -709,6 +708,7 @@ def like_pet():
         return jsonify({"match": True}), 200
 
     return jsonify({"match": False}), 200
+
 
 @api.route('/pet/<int:pet_id>/likes', methods=['GET'])
 def get_pet_likes(pet_id):
@@ -761,7 +761,6 @@ def get_pet_matches(pet_id):
 
 
 @api.route('/matches/<int:pet_id>', methods=['GET'])
-@jwt_required()
 def get_matches(pet_id):
     pet = Pet.query.get(pet_id)
     if not pet:
@@ -784,16 +783,20 @@ def get_matches(pet_id):
 
 # MENSAJES
 
-@api.route('/messages/<int:match_id>', methods=['GET'])
-@jwt_required()
-@cross_origin()
-def get_messages(match_id):
-    messages = Message.query.filter_by(match_id=match_id).order_by(Message.timestamp).all()
-    return jsonify([message.serialize() for message in messages]), 200
+# Mock data for messages
+messages_data = {
+    1: [{"id": 1, "match_id": 1, "sender_pet_id": 1, "content": "Hello!"}],
+    2: [{"id": 2, "match_id": 2, "sender_pet_id": 2, "content": "Hi!"}]
+}
 
-@api.route('/message', methods=['POST'])
-@jwt_required()
-@cross_origin()
+@api.route('/api/messages/<int:match_id>', methods=['GET'])
+def get_messages(match_id):
+    if match_id in messages_data:
+        return jsonify(messages_data[match_id]), 200
+    else:
+        return jsonify([]), 200
+
+@api.route('/api/message', methods=['POST'])
 def send_message():
     data = request.get_json()
     match_id = data.get('match_id')
@@ -803,11 +806,16 @@ def send_message():
     if not match_id or not sender_pet_id or not content:
         return jsonify({"error": "Missing data"}), 400
 
-    new_message = Message(match_id=match_id, sender_pet_id=sender_pet_id, content=content)
-    db.session.add(new_message)
-    db.session.commit()
+    message = {
+        "id": len(messages_data.get(match_id, [])) + 1,
+        "match_id": match_id,
+        "sender_pet_id": sender_pet_id,
+        "content": content
+    }
+    if match_id in messages_data:
+        messages_data[match_id].append(message)
+    else:
+        messages_data[match_id] = [message]
 
-    # Emitir el mensaje a los clientes conectados
-    socketio.emit('new_message', new_message.serialize(), room=f"match_{match_id}")
+    return jsonify(message), 201
 
-    return jsonify(new_message.serialize()), 201 

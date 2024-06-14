@@ -29,6 +29,10 @@ export const SinglePet = () => {
     const [matches, setMatches] = useState([]);
     const [isLoadingCareInfo, setIsLoadingCareInfo] = useState(false);
     const [isLoadingCompatibilityInfo, setIsLoadingCompatibilityInfo] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState("");
+    const [matchMessage, setMatchMessage] = useState("");
+    const [matchedPet, setMatchedPet] = useState(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -73,22 +77,43 @@ export const SinglePet = () => {
         try {
             if (store.auth) {
                 if (!selectedPetId) {
-                    alert("You need to select one of your pets to like another pet.");
+                    setModalTitle("Notice");
+                    setMatchMessage("You need to select one of your pets to like another pet.");
+                    setShowModal(true);
+                    var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+                    myModal.show();
                     return;
                 }
                 const result = await actions.likePet(selectedPetId, petId);
                 if (result.match) {
-                    alert("It's a match!");
+                    setModalTitle("It's a Match!");
+                    setMatchedPet(result.matchPet);
+                    setMatchMessage("It's a match!");
+                    setShowModal(true);
+                    var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+                    myModal.show();
                     setMatches(prevMatches => [...prevMatches, result.matchPet]);
                 } else {
-                    alert("You liked this pet!");
+                    setModalTitle("Notice");
+                    setMatchMessage("You liked this pet!");
+                    setShowModal(true);
+                    var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+                    myModal.show();
                 }
             } else {
-                alert("You need to be logged in to like a pet.");
+                setModalTitle("Notice");
+                setMatchMessage("You need to be logged in to like a pet.");
+                setShowModal(true);
+                var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+                myModal.show();
             }
         } catch (error) {
             console.error('Error liking the pet:', error);
-            alert('Failed to like the pet. Please try again.');
+            setModalTitle("Error");
+            setMatchMessage('Failed to like the pet. Please try again.');
+            setShowModal(true);
+            var myModal = new window.bootstrap.Modal(document.getElementById('matchModal'));
+            myModal.show();
         }
     };
 
@@ -146,13 +171,12 @@ export const SinglePet = () => {
                     </div>
                 </div>
                 <div className="pet-card-body">
-                        <h1>More About Me</h1>
+                    <h1>More About Me</h1>
                     <div className="pet-info-container">
                         <div className="detail-item-description">
                             <p>{petDetails.description}</p>
                         </div>
                         <div className="pet-details">
-                            
                             <div className="detail-item">
                                 <label>Breed:</label>
                                 <span>{petDetails.breed}</span>
@@ -184,8 +208,8 @@ export const SinglePet = () => {
             </div>
             <div className="additional-section">
                 <div className="info-buttons">
-                <h1>Discover everything about your furry friend's care and compatibility!</h1>
-                <p className="p-3">With just one click, our advanced AI provides real-time information on how to care for your dog and its compatibility with other pets. Click now to ensure the best life for your canine companion!</p>
+                    <h1>Discover everything about your furry friend's care and compatibility!</h1>
+                    <p className="p-3">With just one click, our advanced AI provides real-time information on how to care for your dog and its compatibility with other pets. Click now to ensure the best life for your canine companion!</p>
                     <button className="btn me-2 btn-multicolor info-buttons" onClick={fetchCareInfo} disabled={isLoadingCareInfo}>
                         {isLoadingCareInfo ? 'Loading...' : 'Cares'}
                     </button>
@@ -222,6 +246,33 @@ export const SinglePet = () => {
                 <Link to="/pets" className="btn btn-back mt-3">
                     <i className="fas fa-arrow-left"></i> Back to the list of pets
                 </Link>
+            </div>
+            <div className="modal fade" id="matchModal" tabIndex="-1" aria-labelledby="matchModalLabel" aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content match-modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="matchModalLabel">{modalTitle}</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            {modalTitle === "It's a Match!" && matchedPet ? (
+                                <div className="match-container">
+                                    <img src={petDetails.profile_photo_url} alt={petDetails.name} className="match-photo" />
+                                    <div className="match-heart">❤️</div>
+                                    <img src={matchedPet.match_pet_photo} alt={matchedPet.match_pet_name} className="match-photo" />
+                                </div>
+                            ) : (
+                                <div className="notice-content">
+                                    <p>{matchMessage}</p>
+                                    <i className="fas fa-exclamation-circle notice-icon"></i>
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
