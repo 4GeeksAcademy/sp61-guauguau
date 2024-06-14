@@ -1548,56 +1548,75 @@ a, a:hover, a:visited, a:active {
 
 
 /* TEAM */
-
 .team-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2em 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2em 0;
+  width: 100vw;
 }
 
 .team-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .team-member {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 1em;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1em;
+  text-align: center;
 }
 
 .image-circle {
-    width: 150px; /* Ajusta el tamaño según tus necesidades */
-    height: 150px; /* Ajusta el tamaño según tus necesidades */
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1em;
+  width: 150px; /* Ajusta el tamaño según tus necesidades */
+  height: 150px; /* Ajusta el tamaño según tus necesidades */
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1em;
 }
 
 .team-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .team-name {
-    font-family: "Dosis", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 800;
-    font-style: normal;
-    color: #000; /* Ajusta el color según tus necesidades */
+  font-family: "Comfortaa", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  color: #000; /* Ajusta el color según tus necesidades */
+}
+.team-links {
+display: flex;
+justify-content: center;
+gap: 10px;
+margin-top: 10px;
 }
 
+.team-links a {
+color: #000; /* Puedes cambiar el color según tu diseño */
+font-size: 24px;
+transition: color 0.3s ease;
+}
+
+.team-links a:hover {
+color: #0073b1; /* Color de LinkedIn */
+}
+
+.team-links a.team-github:hover {
+color: #333; /* Color de GitHub */
+}
 /* Media Queries para Responsividad */
 @media (max-width: 768px) {
     .team-row {
