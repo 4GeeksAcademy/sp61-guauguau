@@ -45,7 +45,7 @@ def create_owner():
         current_app.logger.info(f"Received data: {data}")
         required_fields = ["email", "password", "name", "address", "latitude", "longitude"]
         for field in required_fields:
-            if field not in data or not data[field]:
+            if field not in data:
                 return jsonify({"error": f"The '{field}' cannot be empty"}), 400
 
         existing_owner = Owner.query.filter_by(email=data['email']).first()
@@ -53,7 +53,7 @@ def create_owner():
             return jsonify({"error": "Email already exists!"}), 409
 
         # Obtener la ciudad basada en la latitud y longitud
-        geolocator = Nominatim(user_agent="geoapiExercises")
+        geolocator = Nominatim(user_agent="geoapiExercises", timeout=10)  # Aumentar el tiempo de espera a 10 segundos
         location = geolocator.reverse(f"{data['latitude']}, {data['longitude']}")
         city_name = location.raw['address'].get('city', location.raw['address'].get('town', ''))
         current_app.logger.info(f"Geolocation result: {location.raw}")
@@ -61,7 +61,7 @@ def create_owner():
         # Buscar o crear la ciudad en la base de datos
         city = City.query.filter_by(name=city_name).first()
         if not city:
-            city = City(name=city_name, pet_friendly='Unknown')
+            city = City(name=city_name, pet_friendly='Unknown')  # Ajustar según sea necesario
             db.session.add(city)
             db.session.commit()
             current_app.logger.info(f"Created new city: {city_name}")
@@ -73,7 +73,7 @@ def create_owner():
             address=data['address'],
             latitude=data['latitude'],
             longitude=data['longitude'],
-            city_id=city.id
+            city_id=city.id  # Asociar la ciudad con el propietario
         )
         db.session.add(new_owner)
         db.session.commit()
@@ -84,6 +84,7 @@ def create_owner():
     except Exception as e:
         current_app.logger.error(f"Error creating owner: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 
 
@@ -159,8 +160,8 @@ def update_owner_description():
 
 @api.route('/login', methods=['POST'])
 def login():
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
+    email = request.json.get("email")
+    password = request.json.get("password")
     owner = Owner.query.filter_by(email=email).first()
     if owner is None:
         return jsonify({"message": "Email not found"}), 401
@@ -168,7 +169,8 @@ def login():
         return jsonify({"message": "Wrong password"}), 401
     
     access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    return jsonify(access_token=access_token), 200
+
 
 
 @api.route('/protected', methods=['GET'])
@@ -176,7 +178,6 @@ def login():
 def protected():
     try:
         current_owner_email = get_jwt_identity()
-        print(f"Current owner email: {current_owner_email}")  # Log para depuración
         owner = Owner.query.filter_by(email=current_owner_email).first()
         if not owner:
             return jsonify({"error": "Owner not found"}), 404
@@ -188,12 +189,13 @@ def protected():
 
         owner_data = owner.serialize()
         owner_data["pets"] = [pet.serialize() for pet in owner.pets]
-        owner_data["city"] = city  # Add city to owner data
+        owner_data["city"] = city  # Añadir ciudad a los datos del propietario
 
         return jsonify({"owner": owner_data}), 200
     except Exception as e:
-        print(f"Error in protected route: {str(e)}")  # Log para depuración
+        current_app.logger.error(f"Error in protected route: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
 
 ##### ROUTES PETS #########################################
 @api.route('/pets', methods=['GET'])

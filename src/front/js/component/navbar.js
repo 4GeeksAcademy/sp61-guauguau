@@ -24,10 +24,12 @@ export const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{ backgroundColor: '#0a0e1a' }}>
             <div className="container-fluid">
-                <h2 className="navbar-brand" href="/">
-                    <img alt="logo" className="img-fluid" src={logo} />
-                    <span className="d-none d-lg-inline">GuauuuGuauuu</span>
-                </h2>
+                <Link to="/">
+                    <h2 className="navbar-brand" link="/">
+                        <img alt="logo" className="img-fluid" src={logo} />
+                        <span className="d-none d-lg-inline">GuauuuGuauuu</span>
+                    </h2>
+                </Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>

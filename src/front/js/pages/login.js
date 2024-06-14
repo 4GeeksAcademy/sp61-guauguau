@@ -72,7 +72,7 @@ const Login = () => {
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Login</button>
                             {error && <div className="alert alert-danger mt-3">{error}</div>}
                             <div className="login-redirect">
-                                <Link to="/home">Back home</Link>
+                                <Link to="/">Back home</Link>
                             </div>
                         </form>
                     </div>

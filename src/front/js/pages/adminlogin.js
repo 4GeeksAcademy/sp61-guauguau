@@ -83,7 +83,7 @@ export const AdminLogin = () => {
                             )}
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Login</button>
                             <div className="login-redirect">
-                                <Link to="/home">Back home</Link>
+                                <Link to="/">Back home</Link>
                             </div>
                         </form>
                     </div>
