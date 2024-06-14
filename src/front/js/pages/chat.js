@@ -7,7 +7,7 @@ const socket = io(process.env.BACKEND_URL);
 
 export const Chat = () => {
     const { matchId } = useParams();
-    const { store } = useContext(Context);
+    const { store, actions } = useContext(Context);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
 
@@ -23,10 +23,6 @@ export const Chat = () => {
                         'Authorization': `Bearer ${store.token}`
                     }
                 });
-
-                if (response.status === 401) {
-                    throw new Error("Unauthorized");
-                }
 
                 if (!response.ok) {
                     const error = await response.json();
@@ -56,7 +52,7 @@ export const Chat = () => {
     const sendMessage = async () => {
         const messageData = {
             match_id: matchId,
-            sender_pet_id: store.currentPetId, // Asegúrate de usar sender_pet_id aquí
+            sender_pet_id: store.currentPetId,
             content: newMessage
         };
         console.log("Sending message with:", messageData);
@@ -70,10 +66,6 @@ export const Chat = () => {
                 },
                 body: JSON.stringify(messageData)
             });
-
-            if (response.status === 401) {
-                throw new Error("Unauthorized");
-            }
 
             if (!response.ok) {
                 const error = await response.json();

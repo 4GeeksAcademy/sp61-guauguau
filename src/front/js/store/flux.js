@@ -156,47 +156,38 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },
 			sendMessage: async (matchId, senderPetId, content) => {
-                console.log("sendMessage called with:", {
-                    matchId,
-                    senderPetId,
-                    content
-                });
-
-                if (!matchId || !senderPetId || !content) {
-                    console.error("Missing data:", {
-                        matchId,
-                        senderPetId,
-                        content
-                    });
-                    throw new Error("Missing data");
-                }
-
-                try {
-                    const response = await fetch(`${process.env.BACKEND_URL}/api/message`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem("token")}`
-                        },
-                        body: JSON.stringify({
-                            match_id: matchId,
-                            sender_pet_id: senderPetId,
-                            content: content
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || "Error sending message");
-                    }
-
-                    const data = await response.json();
-                    return data;
-                } catch (error) {
-                    console.error("Error sending message:", error);
-                    throw error;
-                }
-            },
+				if (!matchId || !senderPetId || !content) {
+					console.error("Missing data:", { matchId, senderPetId, content });
+					throw new Error("Missing data");
+				}
+			
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/message`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${localStorage.getItem("token")}`
+						},
+						body: JSON.stringify({
+							match_id: matchId,
+							sender_pet_id: senderPetId,
+							content: content
+						})
+					});
+			
+					if (!response.ok) {
+						const errorData = await response.json();
+						throw new Error(errorData.error || "Error sending message");
+					}
+			
+					const data = await response.json();
+					return data;
+				} catch (error) {
+					console.error("Error sending message:", error);
+					throw error;
+				}
+			},
+			
 			signUp: async (name, email, password, address, latitude, longitude) => {
 				try {
 					const requestOptions = {
