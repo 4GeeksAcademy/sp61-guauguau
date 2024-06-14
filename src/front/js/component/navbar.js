@@ -52,7 +52,7 @@ export const Navbar = () => {
                                 ) : (
                                     <i className="fas fa-user"></i>
                                 )}
-                                <span className="ms-2 user-name" id="owner-name">{store.owner.name}</span>
+                                <span className="ms-2 btn-multicolor" id="owner-name">{store.owner.name}</span>
                             </Link>
                             <button className="Bttn btn-link ms-2" onClick={handleLogout}>
                                 <div className="sign">

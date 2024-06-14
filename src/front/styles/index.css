@@ -894,7 +894,7 @@ img {
 
 a, a:hover, a:visited, a:active {
     text-decoration: none;
-    color: black;
+    color: #000;
 }
 .wheel-and-hamster {
     --dur: 1s;
@@ -1675,6 +1675,7 @@ h1 {
     display: flex;
     align-items: center;
     margin-bottom: 10px; /* Espacio entre los elementos de la lista */
+    color:#000
 }
 
 .footer .list-unstyled li i {
@@ -1684,6 +1685,9 @@ h1 {
 .footer-text {
     border-top: 1px solid #DEE2E6;
     padding-top: 1em;
+}
+a .geeks-footer{
+  color: #000;
 }
 .message {
     padding: 10px;
@@ -1720,14 +1724,10 @@ button {
     padding: 10px 20px;
     border: none;
     border-radius: 20px;
-    background-color: #007bff;
     color: #fff;
     cursor: pointer;
 }
 
-button:hover {
-    background-color: #0056b3;
-}
 /* Estilos chat */
 
 /* Añadir este CSS a tu archivo de estilos */
@@ -1863,4 +1863,7 @@ button:hover {
 .align-items-center{
   display:flex;
   align-items: center;
+}
+.li{
+  color:black;
 }

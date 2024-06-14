@@ -253,16 +253,16 @@ export const OwnerSignUp = () => {
                                                     </div>
                                                 </label>
                                             </div>
-                                            {successMessage && (
-                                                <div className="alert alert-success" role="alert">
-                                                    {successMessage}
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
                                 <p className="mb-0 me-1 align-items-center">I agree to</p>
                                 <a href="#" className="align-items-center">terms and conditions</a>
+                                        {successMessage && (
+                                            <div className="alert alert-success" role="alert">
+                                                {successMessage}
+                                            </div>
+                                        )}
                             </div>
                             <div className="button-group">
                                 <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>   
