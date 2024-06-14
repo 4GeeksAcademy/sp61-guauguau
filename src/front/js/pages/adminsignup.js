@@ -29,23 +29,13 @@ export const AdminSignUp = () => {
     };
 
     return (
-        <section className="section section-full section-top">
+        <section className="section section-full">
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">
                         <form className="form-styled" onSubmit={handleSubmit}>
                             <h1 className="text-center px-3 mb-4">Sign up as a GuauuGuauu Admin!</h1>
                             <h5 className="text-center text-muted mb-5">Please fill out the form to sign up.</h5>
-                            {errorMessage && (
-                                <div className="alert alert-danger" role="alert">
-                                    {errorMessage}
-                                </div>
-                            )}
-                            {successMessage && (
-                                <div className="alert alert-success" role="alert">
-                                    {successMessage}
-                                </div>
-                            )}
                             <div className="form-group position-relative">
                                 <label htmlFor="inputName" className="form-label">Full name*</label>
                                 <div className="input-icon d-flex align-items-center">
@@ -54,7 +44,7 @@ export const AdminSignUp = () => {
                                     </svg>
                                     <input
                                     type="text"
-                                    className="form-control mb-3"
+                                    className="form-control"
                                     id="inputName"
                                     placeholder="Your name"
                                     value={name}
@@ -70,7 +60,7 @@ export const AdminSignUp = () => {
                                     </svg>
                                     <input
                                         type="email"
-                                        className="form-control mb-3"
+                                        className="form-control"
                                         id="inputEmail4"
                                         placeholder="Enter your email"
                                         value={email}
@@ -85,12 +75,12 @@ export const AdminSignUp = () => {
                                     </svg>
                                     <input
                                         type={passwordVisible ? "text" : "password"}
-                                        className="form-control mb-3"
+                                        className="form-control"
                                         id="inputPassword4"
                                         placeholder="Create your password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)} 
-                                    />
+                                        />
                                     <button type="button" id="toggle-password" onClick={togglePasswordVisibility} className="btn btn-link toggle-password">
                                         <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
                                     </button>
@@ -110,6 +100,16 @@ export const AdminSignUp = () => {
                             <div className="button-group">
                                 <button type="submit" className="primary-btn primary-btn2 mt-2">Sign up now</button>
                             </div>   
+                            {errorMessage && (
+                                <div className="alert alert-danger" role="alert">
+                                    {errorMessage}
+                                </div>
+                            )}
+                            {successMessage && (
+                                <div className="alert alert-success" role="alert">
+                                    {successMessage}
+                                </div>
+                            )}
                             <div className="login-redirect">
                                 <Link to="/home">Back home</Link>
                             </div>

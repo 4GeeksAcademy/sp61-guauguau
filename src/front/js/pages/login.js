@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
@@ -7,6 +7,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -14,11 +15,10 @@ const Login = () => {
         e.preventDefault();
         setError("");
         try {
-            console.log("Attempting login with", email, password); // Log para depuración
             await actions.login(email, password);
+            setIsLoggedIn(true);
             navigate('/private');
         } catch (error) {
-            console.error("Login failed:", error); // Log para depuración
             setError(error.message);
         }
     };
@@ -27,19 +27,13 @@ const Login = () => {
         setPasswordVisible(!passwordVisible);
     };
 
-    useEffect(() => {
-        if (store.auth) {
-            navigate('/private');
-        }
-    }, [store.auth, navigate]);
-
     return (
-        <section className="section section-full section-top">
+        <section className="section section-full"> 
             <div className="container">
                 <div className="row justify-content-center">
-                    <div className="col-md-8 col-lg-6">
+                    <div className="col-md-12">
                         <form className="form-styled" onSubmit={handleSubmit}>
-                            <h1 className="text-center px-3 mb-4">Log in as a GuauuGuauu User!</h1>
+                            <h1 className="text-center px-3 mb-4">Log in</h1>
                             <h5 className="text-center text-muted mb-5">Please fill out the form to log in.</h5>
                             <div className="form-group position-relative">
                                 <label htmlFor="email" className="form-label">Email address</label>
@@ -74,11 +68,11 @@ const Login = () => {
                                         <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
                                     </button>
                                 </div>
-                            </div>
+                            </div>    
                             <button type="submit" className="primary-btn primary-btn2 mt-2">Login</button>
                             {error && <div className="alert alert-danger mt-3">{error}</div>}
                             <div className="login-redirect">
-                                <Link to="/home">Back home</Link>
+                                <Link to="/">Back home</Link>
                             </div>
                         </form>
                     </div>

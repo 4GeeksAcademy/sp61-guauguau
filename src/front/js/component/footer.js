@@ -29,7 +29,7 @@ export const Footer = () => (
 			
 			<p className="mt-4 footer-text">
 				Made with <i className="fa fa-heart text-danger" /> by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>
+				<a href="http://www.4geeksacademy.com"className="geeks-footer">4Geeks Academy</a>
 			</p>
 			<div className="">
 					<h5>Are you the admin?</h5>
