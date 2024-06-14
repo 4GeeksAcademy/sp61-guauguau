@@ -235,7 +235,7 @@ export const Pets = () => {
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            {modalTitle === "Match" && matchedPet && selectedPet ? (
+                            {modalTitle === "It's a Match!" && matchedPet && selectedPet ? (
                                 <div className="match-container">
                                     <img src={selectedPet.profile_photo_url} alt={selectedPet.name} className="match-photo" />
                                     <div className="match-heart">❤️</div>
