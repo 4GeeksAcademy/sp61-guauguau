@@ -1886,3 +1886,245 @@ button {
 .li{
   color:black;
 }
+
+.form-container {
+  background-color: #fef5f0;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+}
+h1 {
+  font-family: "Dosis", sans-serif;
+  font-weight: bolder;
+  margin-bottom: 1rem;
+}
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.card-img-top {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+.card-body-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.card-title {
+  font-family: "Dosis", sans-serif;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.card-text {
+  font-family: "Dosis", sans-serif;
+  margin-bottom: 0.5rem;
+}
+
+/* Contenedor de botones dentro de la tarjeta */
+.buttons-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Iconos de edición */
+.cursor-pointer {
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.cursor-pointer:hover {
+  color: #495057;
+}
+
+/* Input de archivo */
+input[type="file"] {
+  margin-top: 1rem;
+}
+
+/* Área de texto */
+textarea.form-control {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  resize: vertical;
+}
+
+/* Mensaje de "Loading" */
+.loading {
+  font-family: "Dosis", sans-serif;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+/* Contenedor de enlace para agregar nueva mascota */
+.container .link-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container .link-container a {
+  text-decoration: none;
+}
+
+.container .link-container .primary-btn2 {
+  margin: 2rem 0 0.5rem;
+}
+
+.signup {
+  font-family: "Dosis", sans-serif;
+}
+
+.Btn {
+  background: linear-gradient(90deg, #ff7f18 0%, #f86ca7 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.Btn:hover {
+  background: linear-gradient(90deg, #f86ca7 0%, #ff7f18 100%);
+}
+
+/* Estilo para los enlaces de navegación */
+.nav-link {
+  color: white;
+  font-family: "Comfortaa", sans-serif;
+  font-weight: 400;
+  font-size: 0.938rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: rgb(255, 99, 71);
+}
+
+.nav-link.active {
+  color: rgb(255, 99, 71);
+}
+
+/* Estilo para el botón de carga de imagen */
+.upload-btn {
+  background: linear-gradient(90deg, #f86ca7 0%, #ff7f18 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.upload-btn:hover {
+  background: linear-gradient(90deg, #ff7f18 0%, #f86ca7 100%);
+}
+
+/* Estilo para el botón de logout */
+.logout-btn {
+  background: linear-gradient(90deg, #ff7f18 0%, #f86ca7 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: linear-gradient(90deg, #f86ca7 0%, #ff7f18 100%);
+}
+
+.logout-btn svg {
+  width: 20px;
+  height: 20px;
+}
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+.button {
+width: 50px;
+height: 50px;
+border-radius: 50%;
+background-color: #202429;
+border: none;
+font-weight: 600;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0px 0px 20px #202429;
+cursor: pointer;
+transition-duration: .3s;
+overflow: hidden;
+position: relative;
+}
+
+.svgIcon {
+width: 12px;
+transition-duration: .3s;
+}
+
+.svgIcon path {
+fill: white;
+}
+
+.button:hover {
+width: 140px;
+border-radius: 50px;
+transition-duration: .3s;
+background-color: rgb(255, 69, 69);
+align-items: center;
+}
+
+.button:hover .svgIcon {
+width: 50px;
+transition-duration: .3s;
+transform: translateY(60%);
+}
+
+.button::before {
+position: absolute;
+top: -20px;
+content: "Delete";
+color: white;
+transition-duration: .3s;
+font-size: 2px;
+}
+
+.button:hover::before {
+font-size: 13px;
+opacity: 1;
+transform: translateY(30px);
+transition-duration: .3s;
+}
