@@ -204,7 +204,7 @@ export const OnePet = () => {
                     )}
                     <input type="file" onChange={handleFileChange} className="form-control mb-2 " />
                     <input type="file" onChange={handleAdditionalFilesChange} className="form-control" multiple />
-                    <h3>Additional Photos</h3>
+                    <h3 className='pt-3'>Additional Photos</h3>
                     <DragDropContext onDragEnd={handleOnDragEnd}>
                         <Droppable droppableId="photos" direction="horizontal">
                             {(provided) => (
@@ -330,9 +330,9 @@ export const OnePet = () => {
                             )}
                             <i className="fas fa-edit cursor-pointer" onClick={() => handleEditClick('description')}></i>
                         </div>
-                        <button type="submit" className="btn btn-primary mt-2 btn-save-changes" disabled={isLoading}>
-                            {isLoading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-save"></i> Save Changes</>}
-                        </button>
+                        <button type="submit" className="btn primary-btn2 mt-2" disabled={isLoading}>
+                        {isLoading ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-save"></i> Save Changes</>}
+                    </button>
                     </div>
                 </form>
             </div>

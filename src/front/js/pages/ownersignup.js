@@ -1,22 +1,24 @@
 import React, { useState, useContext, useEffect } from "react";
 import GeocodingService from "./GeocodingService";
 import { Context } from "../store/appContext";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
+
 
 const mapContainerStyle = {
     width: "100%",
-    height: "200px" // Reducir la altura del mapa
+    height: "400px"
 };
+
 
 const center = {
     lat: 40.4169473,
     lng: -3.7035285
 };
 
+
 export const OwnerSignUp = () => {
     const { actions } = useContext(Context);
-    const navigate = useNavigate();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
@@ -27,18 +29,22 @@ export const OwnerSignUp = () => {
         longitude: center.lng
     });
 
+
     const [successMessage, setSuccessMessage] = useState(null);
     const [typingTimeout, setTypingTimeout] = useState(null);
+
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GEOCODING_API_KEY
     });
+
 
     useEffect(() => {
         if (formData.latitude && formData.longitude) {
             getAddressFromCoordinates(formData.latitude, formData.longitude);
         }
     }, [formData.latitude, formData.longitude]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -48,6 +54,7 @@ export const OwnerSignUp = () => {
         });
     };
 
+
     const handleAddressChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -55,15 +62,12 @@ export const OwnerSignUp = () => {
             [name]: value
         });
 
+
         if (name === "address") {
             if (typingTimeout) {
                 clearTimeout(typingTimeout);
             }
 
-            if (!value.trim()) {
-                console.warn("Address is empty, skipping geocoding");
-                return;
-            }
 
             setTypingTimeout(
                 setTimeout(async () => {
@@ -77,16 +81,15 @@ export const OwnerSignUp = () => {
                                 latitude: location.lat,
                                 longitude: location.lng
                             }));
-                        } else {
-                            console.warn("No results from geocoding API");
                         }
                     } catch (error) {
                         console.error("Error during geocoding:", error);
                     }
-                }, 500)
+                }, 500) // Ajusta el retraso según sea necesario (500 ms en este caso)
             );
         }
     };
+
 
     const handleMarkerDragEnd = async (e) => {
         const lat = e.latLng.lat();
@@ -98,6 +101,7 @@ export const OwnerSignUp = () => {
         });
     };
 
+
     const getAddressFromCoordinates = async (lat, lng) => {
         try {
             const data = await GeocodingService.getCoordinates(`${lat},${lng}`);
@@ -106,13 +110,12 @@ export const OwnerSignUp = () => {
                     ...prevState,
                     address: data.results[0].formatted_address
                 }));
-            } else {
-                console.warn("No results from geocoding API for coordinates");
             }
         } catch (error) {
             console.error("Error fetching address from coordinates:", error);
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -127,12 +130,10 @@ export const OwnerSignUp = () => {
                 latitude: center.lat,
                 longitude: center.lng
             });
-            navigate("/login"); // Redirigir al login
         } catch (error) {
             console.error("Error signing up:", error);
         }
     };
-
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     };
@@ -140,18 +141,13 @@ export const OwnerSignUp = () => {
     if (!isLoaded) return <div>Loading...</div>;
 
     return (
-        <section className="section section-full section-top" style={{ height: '100vh', display: 'flex', alignItems: 'center' }}>
+        <section className="section section-full">
             <div className="container">
                 <div className="row justify-content-center">
-                    <div className="col-12 col-md-10 col-lg-8"> {/* Ajuste del ancho del formulario */}
+                    <div className="col-md-12">
                         <form className="form-styled" onSubmit={handleSubmit}>
-                            <h1 className="text-center px-3 mb-4">Sign up as a GuauuGuauu Owner!</h1>
+                            <h1 className="text-center px-3 mb-4">Sign up!</h1>
                             <h5 className="text-center text-muted mb-5">Please fill out the form to sign up.</h5>
-                            {successMessage && (
-                                <div className="alert alert-success" role="alert">
-                                    {successMessage}
-                                </div>
-                            )}
                             <div className="form-group position-relative">
                                 <label htmlFor="name" className="form-label">Name*</label>
                                 <div className="input-icon d-flex align-items-center">
@@ -167,98 +163,117 @@ export const OwnerSignUp = () => {
                                         value={formData.name} 
                                         onChange={handleChange} 
                                         required 
-                                    />
+                                        />
                                 </div>
                             </div>    
                             <div className="form-group position-relative">
                                 <label htmlFor="email" className="form-label">Email*</label>
                                 <div className="input-icon d-flex align-items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope me-2" viewBox="0 0 16 16">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-envelope" viewBox="0 0 16 16">
                                         <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
                                     </svg>
                                     <input 
                                         type="email" 
-                                        className="form-control mb-3" 
+                                        className="form-control" 
                                         id="email" 
                                         name="email" 
                                         placeholder="Enter your email"
                                         value={formData.email} 
                                         onChange={handleChange} 
                                         required 
-                                    />
+                                        />
                                 </div>
                             </div>
+
                             <div className="form-group position-relative">
                                 <label htmlFor="password" className="form-label">Password*</label>
                                 <div className="input-icon d-flex align-items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock me-2" viewBox="0 0 16 16">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock" viewBox="0 0 16 16">
                                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1" />
                                     </svg>
                                     <input 
                                         type={passwordVisible ? "text" : "password"} 
-                                        className="form-control mb-3" 
+                                        className="form-control" 
                                         id="password" 
                                         name="password" 
                                         placeholder="Create your password"
                                         value={formData.password} 
                                         onChange={handleChange} 
                                         required 
-                                    />
+                                        />
                                     <button type="button" id="toggle-password" onClick={togglePasswordVisibility} className="btn btn-link toggle-password">
                                         <i className={`fa ${passwordVisible ? "fa-eye" : "fa-eye-slash"}`} id="toggle-icon"></i>
                                     </button>
                                 </div>
                             </div>
+
                             <div className="form-group position-relative">
                                 <label htmlFor="address" className="form-label">Address</label>
                                 <div className="input-icon d-flex align-items-center">
-                                    <i className="fa fa-map-location-dot me-2"></i>
+                                    <i className="fa fa-map-location-dot"></i>
                                     <input 
                                         type="text" 
-                                        className="form-control mb-3" 
+                                        className="form-control" 
                                         id="address" 
                                         name="address" 
                                         placeholder="Enter your address"
                                         value={formData.address} 
                                         onChange={handleAddressChange} 
                                         required 
-                                    />  
+                                        />  
                                 </div>
                             </div>
-                            <div className="form-group position-relative map">
+                            <div className="form-group position-relative">
                                 <GoogleMap
                                     mapContainerStyle={mapContainerStyle}
                                     zoom={14}
                                     center={{ lat: formData.latitude, lng: formData.longitude }}
                                 >
-                                    <Marker
-                                        position={{ lat: formData.latitude, lng: formData.longitude }}
-                                        draggable={true}
-                                        onDragEnd={handleMarkerDragEnd}
+                                <Marker
+                                    position={{ lat: formData.latitude, lng: formData.longitude }}
+                                    draggable={true}
+                                    onDragEnd={handleMarkerDragEnd}
                                     />
                                 </GoogleMap>
                             </div>  
                             <div className="form-row align-items-center">
-                                <div className="col-md-auto">
-                                    <div className="custom-control custom-checkbox mb-3 mb-md-0">
-                                        <input type="checkbox" name="checkbox"  className="custom-control-input mr-2" id="sign-in-checkbox"></input>
-                                        <label className="custom-control-label d-flex align-items-center" htmlFor="sign-in-checkbox">
-                                            <p className="mb-0 me-1">I agree to</p>
-                                            <a href="#">terms and conditions</a>
-                                        </label>
+                                <div className="col-md-auto me-2">
+                                    <div className="reject-checkbox">
+                                        <div className="mb-2 text-center">
+                                            <div className="checkbox-wrapper">
+                                                <input
+                                                    name="ehs_approval"
+                                                    className="form-check-label custom-radio-label"
+                                                    id="Rejected"
+                                                    type="checkbox"
+                                                    />
+                                                <label htmlFor="Rejected">
+                                                    <div className="tick_mark">
+                                                        <div className="cross"></div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <p className="mb-0 me-1 align-items-center">I agree to</p>
+                                <a href="#" className="align-items-center">terms and conditions</a>
+                                        {successMessage && (
+                                            <div className="alert alert-success" role="alert">
+                                                {successMessage}
+                                            </div>
+                                        )}
                             </div>
                             <div className="button-group">
                                 <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>   
                             </div>
                             <div className="login-redirect">
-                                <Link to="/home">Back home</Link>
+                                <Link to="/">Back home</Link>
                             </div>
                             <div className="login-redirect">
                                 <p>Already have an account? <Link to="/login">Log In Here</Link></p>
                             </div>
-                         </form>      
+                        </form>      
                     </div>
                 </div>
             </div>
