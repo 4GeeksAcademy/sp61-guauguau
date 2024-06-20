@@ -14,7 +14,7 @@ export const Footer = () => (
 					</ul>
 				</div>
 				<div className="col-md-6">
-					<h1>Want To Know<br/>More Abou Us?</h1>
+					<h1>Want To Know<br/>More About Us?</h1>
 					<button className="btn btn-multicolor mt-2 ps-5 pe-5">About Us</button>
 				</div>
 				<div className="col-md-3">
