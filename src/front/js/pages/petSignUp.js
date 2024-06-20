@@ -82,7 +82,7 @@ export const PetSignUp = () => {
     };
 
     return (
-        <section className="section section-full section-top">
+        <section className="section-signuppet section-full section-top">
             <div className="container">
                 <div className="row justify-content-center">
                     <div className="col-md-8 col-lg-6">

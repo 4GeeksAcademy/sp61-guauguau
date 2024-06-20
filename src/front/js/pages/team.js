@@ -36,7 +36,7 @@ export const Team = () => {
     return (
         <div className="container team-container">
             <div className="team-header">
-                <h1 className='mt-3 p-3'>Know the developers</h1>
+                <h1 className='mt-3 p-3'>Behind the Code: Our Developers</h1>
             </div>
             <div className="team-row">
                 {teamMembers.map((member, index) => (

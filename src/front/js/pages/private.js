@@ -59,7 +59,7 @@ export const Private = () => {
     return (
         <div className="container d-flex flex-column justify-content-center align-items-center gap-3 p-4">
             <div className="form-container">
-                <h1><span style={{ fontWeight: "bolder" }}>Welcome</span> {store.email}</h1>
+                <h1><span style={{ fontWeight: "bolder" }}>Welcome</span> {store.owner.name}</h1>
                 <h3>This is your private area</h3>
                 <div className="row align-items-center mb-4">
                     <div className="col-md-3 text-center">

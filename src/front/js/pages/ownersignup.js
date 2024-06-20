@@ -7,7 +7,7 @@ import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 
 const mapContainerStyle = {
     width: "100%",
-    height: "400px"
+    height: "28vh"
 };
 
 
@@ -146,8 +146,13 @@ export const OwnerSignUp = () => {
                 <div className="row justify-content-center">
                     <div className="col-md-12">
                         <form className="form-styled" onSubmit={handleSubmit}>
-                            <h1 className="text-center px-3 mb-4">Sign up!</h1>
-                            <h5 className="text-center text-muted mb-5">Please fill out the form to sign up.</h5>
+                            <h1 className="text-center px-2 mb-1">Sign up!</h1>
+                            <h5 className="text-center text-muted mb-2">Please fill out the form to sign up.</h5>
+                            {successMessage && (
+                                            <div className="alert alert-success" role="alert">
+                                                {successMessage}
+                                            </div>
+                                        )}
                             <div className="form-group position-relative">
                                 <label htmlFor="name" className="form-label">Name*</label>
                                 <div className="input-icon d-flex align-items-center">
@@ -258,11 +263,7 @@ export const OwnerSignUp = () => {
                                 </div>
                                 <p className="mb-0 me-1 align-items-center">I agree to</p>
                                 <a href="#" className="align-items-center">terms and conditions</a>
-                                        {successMessage && (
-                                            <div className="alert alert-success" role="alert">
-                                                {successMessage}
-                                            </div>
-                                        )}
+                                        
                             </div>
                             <div className="button-group">
                                 <button type="submit" className="primary-btn primary-btn2 mt-2">Submit</button>   
